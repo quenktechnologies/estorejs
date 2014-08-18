@@ -1,0 +1,55 @@
+{
+  "name": "estore",
+  "version": "0.1.0",
+  "description": "Run an e-store in the cloud using mongodb, keystone and nunjucks.",
+  "keywords": [
+    "ecommerce",
+    "keystone",
+    "retail",
+    "nunjucks",
+    "mongoose"
+  ],
+  "main": "run",
+  "author": {
+    "name": "Lasana Murray",
+    "email": "dev@quenk.com"
+  },
+  "scripts": {
+    "start": "node run.js",
+    "stop": "node -e \"require('dotenv')().load();require('child_process').exec('pkill --signal SIGTERM '+process.env.DOMAIN);\""
+  },
+  "dependencies": {
+    "bignumber.js": "1.4.x",
+    "connect-mongo": "0.4.x",
+    "dotenv": "0.0.x",
+    "express": "3.3.x",
+    "json2csv": "2.2.x",
+    "keystone": "^0.2.x",
+    "lodash": "2.4.x",
+    "mpromise": "^0.5.1",
+    "nunjucks": "1.0.x",
+    "nunjucks-mongoose": "^0.1.1",
+    "passport": "0.2.x",
+    "q": "1.0.x",
+    "winston": "0.7.x"
+  },
+  "bundledDependencies": [
+    "vzlib",
+    "bignumber.js",
+    "connect-mongo",
+    "dotenv",
+    "express",
+    "json2csv",
+    "keystone",
+    "lodash",
+    "nunjucks",
+    "nunjucks-mongoose",
+    "passport",
+    "q",
+    "winston"
+  ],
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.4.x"
+  }
+}

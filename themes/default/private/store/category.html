@@ -1,0 +1,57 @@
+{% provide model='Category', bind='category',chain=[{m:'findOne'},{m:'where', a:{slug:params[0]}},{m:'populate', a:'products'}] %} {% provide model='Category', bind='categories',chain=[{m:'find'},{m:'limit', a:50}] %} {% extends "common/base.html" %}
+{% set PAGE_IS_STORE=true %}
+{% block body %}
+<section style="min-height:500px">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-3">
+          <div class="left-sidebar">
+            <h2>Categories</h2>
+            <div class="panel-group category-products" id="accordian">
+              <!--category-productsr-->
+              {% for cat in categories %}
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="panel-title"><a href="/store/categories/<$ cat.slug $>"><$ cat.name $></a></h4>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            <!--/category-products-->
+          </div>
+        </div>
+
+        <div class="col-sm-9 padding-right">
+          <div class="features_items">
+            <!--features_items-->
+            <h2 class="title text-center"><$ category.name $></h2>
+            {% for product in category.products %}
+            <div class="col-sm-4">
+              <div class="product-image-wrapper">
+                <div class="single-products">
+                  <div class="productinfo text-center">
+                    <img src="<$ product.image.url $>" alt="<$ product.name $>" />
+                    <h2><$ product._.price.format('0,00.00') $></h2>
+                    <a href="/store/products/<$ product.slug $>">
+                      <p>
+                        <$ product.name $>
+                      </p>
+                    </a>
+                    <a href="/store/products/<$ product.slug $>" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>View</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+              {% if not category.products %}
+              <p>Select a category to browse.</p>
+              {% endif %}
+
+          </div>
+          <!--features_items-->
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

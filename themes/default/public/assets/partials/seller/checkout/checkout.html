@@ -1,0 +1,14 @@
+<checkout-email bind="order.customer"></checkout-email>
+<div class="row">
+  <div class="col-md-6">
+<checkout-address title="Billing" bind="order.address.billing"></checkout-address>
+<div class="row">
+<checkout-ship-to-bill copy="order.address.billing" to="order.address.shipping"></checkout-ship-to-bill>
+</div>
+</div>
+<div class="col-md-6">
+<checkout-address title="Shipping" bind="order.address.shipping" ng-show="!shipper.hide"></checkout-address>
+</div>
+</div>
+<a class="btn btn-success" href="#" ng-click="checkout.confirm()"> Confirm</a>
+

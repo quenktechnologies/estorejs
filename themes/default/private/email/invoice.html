@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <style>
+    {% include 'css/bootstrap.css' %}
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+     <div class="col-xs-12">
+<p>Thank you for your order, details are below. Please look out for a call from us!</p>
+       </div>
+      <div class="col-xs-12">
+        <div class="invoice-title">
+          <h2>Invoice</h2>
+          <h3 class="pull-right">Invoice # <$ invoice.number $></h3>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-xs-6">
+            <address>
+    				<strong>Billed To:</strong><br>
+                                <$ invoice.customer.name.full $><br>
+                                <$ invoice.customer.email $><br>
+    				</address>
+          </div>
+          <div class="col-xs-6 text-right">
+
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6">
+            <address>
+    					<strong>Payment Method:</strong><br>
+                                        <p><$ invoice.payment.type $><p>
+                                        <p><strong>Status:</strong></p>
+<p>                                        <$ invoice.payment.status $></p>
+
+    				</address>
+          </div>
+          <div class="col-xs-6 text-right">
+            <address>
+    					<strong>Date:</strong><br>
+                                        <$ invoice.date $><br><br>
+    				</address>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title"><strong>Order summary</strong></h3>
+          </div>
+          <div class="panel-body">
+            <div class="table-responsive">
+              <table class="table table-condensed">
+                <thead>
+                  <tr>
+                    <td><strong>Item</strong>
+                    </td>
+                    <td class="text-center"><strong>Price</strong>
+                    </td>
+                    <td class="text-center"><strong>Quantity</strong>
+                    </td>
+                    <td class="text-right"><strong>Totals</strong>
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in items %}
+                  <tr>
+                    <td>
+                      <$ item.name $>
+                    </td>
+                    <td class="text-center">
+                      <$ item.price $>
+                    </td>
+                    <td class="text-center">
+                      <$ item.quantity $>
+                    </td>
+                    <td class="text-right">
+                      <$ item.subtotal $>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                  <tr>
+                    <td class="thick-line"></td>
+                    <td class="thick-line"></td>
+                    <td class="thick-line text-center"><strong>Subtotal</strong>
+                    </td>
+                    <td class="thick-line text-right">
+                      <$ invoice.totals.gross $>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="no-line"></td>
+                    <td class="no-line"></td>
+                    <td class="no-line text-center"><strong>Shipping</strong>
+                    </td>
+                    <td class="no-line text-right">
+                      <$ invoice.delivery.charge $>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="no-line"></td>
+                    <td class="no-line"></td>
+                    <td class="no-line text-center"><strong>Total</strong>
+                    </td>
+                    <td class="no-line text-right">
+                      <$ invoice.totals.net  $>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>

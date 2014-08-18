@@ -1,0 +1,59 @@
+{% set DISABLE_NAVBAR=true %} {% set DISABLE_FOOTER=true %} {% extends "common/base.html" %} {% block script %} {% endblock %} {% block body %}
+<div class="container main" data-ng-controller="CheckOutController as checkout">
+  <div class="col-md-10 col-md-offset-1">
+    <div class="form-horizontal">
+      <div class="col-md-12">
+        <div class="row">
+          <div class="step-one">
+            <h2 class="heading">Step 1: Contact Email</h2>
+          </div>
+        </div>
+        <div class="row">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <email data-ng-model="checkout.order.email"></email>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="step-one">
+            <h2 class="heading">Step 2: Billing and Shipping</h2>
+          </div>
+          <div class="col-md-5">
+            <div class="col-md-12 form-group">
+              <label>Billing</label>
+            </div>
+            <address data-ng-model="checkout.order.address.billing"></address>
+          </div>
+          <div class="col-md-1"></div>
+          <div class="col-md-5">
+            <div class="col-md-12 form-group">
+              <label>Shipping</label>
+              <label class="checkbox inline pull-right">
+                <input type="checkbox" data-ng-model="checkout.SHIP_TO_BILLING">same as billing address?</label>
+            </div>
+            <address disable="checkout.SHIP_TO_BILLING" data-ng-model="checkout.order.address.shipping"></address>
+          </div>
+        </div>
+        <div class="row">
+          <div class="step-one">
+            <h2 class="heading">Step 3: Payment Method</h2>
+          </div>
+          <!-- to be turned into a directive -->
+          <div class="payment-options" style="margin-bottom:0px">
+            <span>
+              <label><input type="checkbox" checked> Cash on Delivery</label>
+            </span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="step-one">
+            <h2 class="heading">Step 4: Review and Confirm</h2>
+          </div>
+          <cart></cart>
+          <button class="btn btn-primary btn-lg pull-right" ng-click="checkout.confirm()" style="margin-bottom:100px;">Place Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endblock %}
