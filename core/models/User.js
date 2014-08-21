@@ -1,11 +1,25 @@
-module.exports = function() {
+/**
+ * User
+ * @class User
+ * @param {Estore} store
+ * @constructor
+ *
+ */
+module.exports = function UserModel(store) {
 
 	var self = {};
 
-	self.onKeyStoneReady = function(keystone) {
-		var Types = keystone.Field.Types;
+	/**
+	 * register
+	 *
+	 * @method register
+	 * @return
+	 *
+	 */
+	self.register = function() {
 
-		var User = new keystone.List('User');
+		var Types = store.keystone.Field.Types;
+		var User = store.keystone.List('User');
 
 		User.add({
 				name: {
@@ -39,14 +53,19 @@ module.exports = function() {
 		User.schema.virtual('canAccessKeystone').get(function() {
 			console.log('accessing');
 			console.log(this.roles.admin);
-                        console.log(this);
+			console.log(this);
 			return this.roles.admin;
 		}); // for some reason updates files are not populating the roles field.
 
 		User.defaultColumns = 'name, email, roles.admin';
 		User.register();
 
+
+
 	};
+
+
+
 	return self;
 
 
