@@ -51,5 +51,8 @@
   "engines": {
     "node": "0.10.x",
     "npm": "1.4.x"
+  },
+  "devDependencies": {
+    "look": "^0.1.3"
   }
 }
