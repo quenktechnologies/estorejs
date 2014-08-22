@@ -5,21 +5,21 @@
  * @constructor
  *
  */
-module.exports = function ProductsBinding(keystone) {
+module.exports = function ProductsBinding(store) {
 
 	var self = {};
 	var EFactory = require('../../../vzlib/api/ErrorHandlerFactory')();
 	var config = require('../../../vzlib/api/Endpoints')();
 
 	/**
-	 * onRoutingReady sets up the routing.
+	 * main sets up the routing.
 	 *
-	 * @method onRoutingReady
+	 * @method main
 	 * @param {Object} app
 	 * @return
 	 *
 	 */
-	self.onRoutingReady = function(app) {
+	self.main = function(app) {
 		app.get(config.PRODUCTS, self.onGetProductListRequest);
 		app.get(config.PRODUCT, self.onGetProductRequest);
 	};
@@ -41,7 +41,7 @@ module.exports = function ProductsBinding(keystone) {
 	self.onGetProductListRequest = function(req, res) {
 
 		var errors = EFactory.create(res);
-		keystone.list('Product').model.
+		store.keystone.list('Product').model.
 		getProductList(req.query.offset,
 			process.env.MAX_PRODUCTS_RESPONSE || 100,
 			errors.C(503, function(data) {
@@ -64,7 +64,7 @@ module.exports = function ProductsBinding(keystone) {
 	self.onGetProductRequest = function(req, res) {
 
 		var errors = EFactory.create(res);
-		keystone.list('Product').model.
+		store.keystone.list('Product').model.
 		findOneBySlug(req.params[0]).exec(
 			errors.C(503, function(product) {
 				if (!product) return res.send(404);

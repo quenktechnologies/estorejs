@@ -1,3 +1,4 @@
 require('dotenv')().load();
-var store = new require('./index')(require('keystone'));
+var Estore = require('./index');
+var store = new Estore(require('keystone'));
 store.start();

@@ -17,7 +17,7 @@ module.exports = function ClientModel(store) {
 	 * @return
 	 *
 	 */
-	self.onKeyStoneReady = function() {
+	self.register = function() {
 
 		var t = store.keystone.Field.Types;
 		var Model = new store.keystone.List('Client', {});

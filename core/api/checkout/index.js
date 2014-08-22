@@ -5,7 +5,7 @@
  * @constructor
  *
  */
-module.exports = function CheckoutBindings(keystone) {
+module.exports = function CheckoutBindings(store) {
 
 	var self = {};
 
@@ -20,11 +20,11 @@ module.exports = function CheckoutBindings(keystone) {
 
 		var BatchTransaction = require('./BatchTransaction');
 
-		keystone.list('Transaction').model.
+		store.keystone.list('Transaction').model.
 		getPending(10).
 		then(function(transactions) {
 
-			var trn = BatchTransaction(-1, transactions, keystone);
+			var trn = BatchTransaction(-1, transactions, store.keystone);
 
 			trn.on(trn.ITEM_OUT_OF_STOCK, self.onItemOutOfStock);
 			trn.on(trn.TRANSACTION_COMPLETE, self.onTransactionComplete);
@@ -50,7 +50,7 @@ module.exports = function CheckoutBindings(keystone) {
 	 * @return
 	 *
 	 */
-	self.onRoutingReady = function(app) {
+	self.main = function(app) {
 
 		app.post('/_/checkout/transactions', self.onCheckoutTransactionRequest);
 		setInterval(daemon, 10000); //In the future I would like this to be handled by an external process.
@@ -70,8 +70,8 @@ module.exports = function CheckoutBindings(keystone) {
 
 		var InvoiceNumberPromise = require('./InvoiceNumberPromise');
 		var SaveTransactionPromise = require('./SaveTransactionPromise');
-		var Counter = keystone.list('Counter').model;
-		var Transaction = keystone.list('Transaction').model;
+		var Counter = store.keystone.list('Counter').model;
+		var Transaction = store.keystone.list('Transaction').model;
 		//var ctl = require('./CheckoutTransactionController')(req,res);
 
 		if ((!req.session.cart) || (req.session.cart.length < 1))
@@ -138,7 +138,7 @@ module.exports = function CheckoutBindings(keystone) {
 		var Email = require('../../emails/NewInvoiceEmail');
 		var q = require('q');
 
-		var Invoice = keystone.list('Invoice').model;
+		var Invoice = store.keystone.list('Invoice').model;
 		var invoice = new Invoice(transaction.get('invoice'));
 
 		q.ninvoke(invoice, 'save').

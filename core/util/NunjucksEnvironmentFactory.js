@@ -21,7 +21,6 @@ module.exports = function NunjucksEnvironmentFactory() {
 	self.getEnvironment = function(path, app) {
 
 		var nunjucks = require('nunjucks');
-
 		var env = new nunjucks.Environment(new nunjucks.FileSystemLoader(
 			path), {
 			autoescape: true,

@@ -9,6 +9,7 @@ module.exports = function GeneralSettings(store) {
 		label: 'General',
 		singular: 'General Configuration',
 		plural: 'General Configurations',
+                track: true
 
 	};
 	this.fields = [{

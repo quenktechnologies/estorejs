@@ -16,6 +16,7 @@ module.exports = function StoreSettings(store) {
 		label: 'Store',
 		plural: 'Store Configurations',
 		singular: 'Store Configurations',
+                track: true
 
 	};
 	this.fields = [{

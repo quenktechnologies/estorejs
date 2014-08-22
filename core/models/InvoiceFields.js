@@ -1,12 +1,12 @@
 /**
- * InvoiceBlock provides the invoice object for the model.
- * @class InvoiceBlock
+ * InvoiceFields provides the invoice object for the model.
+ * @class InvoiceFields
  * @param {Object<keystone.Types>} t The keystone type object.
  *
  * @constructor
  *
  */
-module.exports = function InvoiceBlock(t) {
+module.exports = function InvoiceFields(t) {
 
 	return {
 
@@ -37,8 +37,8 @@ module.exports = function InvoiceBlock(t) {
                   }
 		},
 		address: {
-			billing: require('./AddressBlock')(t),
-			shipping: require('./AddressBlock')(t)
+			billing: require('./AddressFields')(t),
+			shipping: require('./AddressFields')(t)
 		},
 		subtotal: {
 
@@ -54,7 +54,7 @@ module.exports = function InvoiceBlock(t) {
 		},
 
 
-		payment: require('./PaymentBlock')(t)
+		payment: require('./PaymentFields')(t)
 
 
 	};

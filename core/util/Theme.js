@@ -113,6 +113,21 @@ module.exports = function Theme(base, theme) {
 	};
 
 	/**
+	 * get returns the required file specified.
+	 *
+	 * @method get
+         * @param {String} file 
+	 * @return {Object}
+	 *
+	 */
+	self.get= function(file) {
+
+
+		return require(_path + '/'+file);
+
+	};
+
+	/**
 	 * use changes the theme in use.
 	 *
 	 * @method use

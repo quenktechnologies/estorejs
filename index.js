@@ -5,8 +5,7 @@ var DefaultKeystoneConfiguration = require('./core/util/DefaultKeystoneConfigura
 var Express = require('express');
 var System = require('./core/sys/System');
 var NunjucksMongoose = require('nunjucks-mongoose');
-var ModelInstaller = require('./core/models/Installer');
-var RoutesInstaller = require('./core/routes/Installer');
+var Subscription = require('./core/util/Subscription');
 
 
 /**
@@ -42,8 +41,8 @@ module.exports = function Estore(keystone) {
 	 *
 	 */
 	self.events = {
-		INSTALL_ROUTES: 0xf,
-		INSTALL_MODELS: 0x3e
+		ROUTE_REGISTRATION: 0xf,
+		MEMBER_REGISTRATION: 0x3e
 	};
 
 	/**
@@ -79,9 +78,9 @@ module.exports = function Estore(keystone) {
 	self.navigation = {
 		'products': ['product_categories', 'products'],
 		'sales': ['invoices'],
-		'clients': 'clients',
-		'pages': 'pages',
-		'posts': 'posts',
+		//	'clients': 'clients',
+		//	'pages': 'pages',
+		//	'posts': 'posts',
 		'settings': ['general_settings', 'store_settings', 'checkout_settings', 'users']
 
 	};
@@ -97,21 +96,19 @@ module.exports = function Estore(keystone) {
 	 */
 	self.start = function() {
 
-		var theme = new Theme(process.cwd() + '/themes', process.env.THEME);
-		var models = new ModelInstaller();
-		var routes = new RoutesInstaller();
-
-		self.nunjucksEnvironment = NFactory.getEnvironment(theme.getTemplatePath(), self.app);
+		self.theme = new Theme(process.cwd() + '/themes', process.env.THEME || 'default');
+		var subs = new Subscription(this.ebus);
+		self.nunjucksEnvironment = NFactory.getEnvironment(self.theme.getTemplatePath(), self.app);
 
 		process.title = self.title;
 		global.system = new System();
 
-		var o_0 = theme.exists() || theme.use('default');
+		var o_O = self.theme.exists() || self.theme.use('default');
 
 		self.keystone.connect(self.app);
 
-		self.ebus.once(self.events.INSTALL_MODELS, models.install);
-		self.ebus.once(self.events.INSTALL_ROUTES, routes.install);
+		subs.once(self.events.MEMBER_REGISTRATION, 'memberRegistration', self);
+		subs.once(self.events.ROUTE_REGISTRATION, 'routeRegistration', self);
 
 		/** Temporary hack to ensure CSRF protection for Estore routes **/
 		self.keystone.pre('routes', function(req, res, next) {
@@ -133,26 +130,24 @@ module.exports = function Estore(keystone) {
 		/** end hack **/
 
 
-		self.nunjucksEnvironment.
-		addExtension('provide',
-			new NunjucksMongoose('provide', self.keystone.mongoose));
 
-		var defaults = new DefaultKeystoneConfiguration(theme);
+		var defaults = new DefaultKeystoneConfiguration(self.theme);
 		defaults['custom engine'] = self.nunjucksEnvironment.render;
 
 		self.keystone.init(defaults);
 
-		self.ebus.emit(self.events.INSTALL_MODELS, self);
+		self.nunjucksEnvironment.
+		addExtension('provide',
+			new NunjucksMongoose('provide', self.keystone.mongoose));
 
-		self.keystone.set('user model', 'User');
+		self.ebus.emit(self.events.MEMBER_REGISTRATION, self);
 
-		self.keystone.set('routes', function() {
+		self.keystone.set('routes', function(app) {
 
-			self.ebus.emit(self.events.INSTALL_ROUTES, self);
+			self.ebus.emit(self.events.ROUTE_REGISTRATION, app);
 
 		});
 
-		self.keystone.set('nav', self.navigation);
 
 		self.keystone.start({
 			//	onHttpServerCreated: scanPlugins,
@@ -165,7 +160,135 @@ module.exports = function Estore(keystone) {
 
 	};
 
+	/**
+	 * memberRegistration registers the core members for Estore.
+	 *
+	 * @method memberRegistration
+	 * @return
+	 *
+	 */
+	self.memberRegistration = function() {
 
+		var members = [
+			require('./core/models/User'),
+			require('./core/models/Counter'),
+			require('./core/models/CheckoutSettings'),
+			require('./core/models/GeneralSettings'),
+			require('./core/models/StoreSettings'),
+			require('./core/models/ProductCategory'),
+			require('./core/models/Product'),
+			require('./core/models/Invoice'),
+			require('./core/models/Transaction'),
+		];
+
+		if (self.theme.has('/pages'))
+			members.push(require('./core/models/Page'));
+
+		members.forEach(function(Member) {
+
+			self.onMemberFound(new Member(self));
+
+		});
+
+		self.keystone.set('user model', 'User');
+		self.keystone.set('nav', self.navigation);
+
+
+	};
+
+	/**
+	 * routeRegistration
+	 *
+	 * @method routeRegistration
+	 * @return
+	 *
+	 */
+	self.routeRegistration = function(app) {
+
+		var route;
+		var routes = [
+			require('./core/api/cart'),
+			require('./core/api/checkout'),
+			require('./core/api/products'),
+		];
+
+		routes.forEach(function(Route) {
+			route = new Route(self);
+			route.main(app);
+		});
+
+		var theme = self.theme.get('package.json').estore;
+
+		var _ = require('lodash');
+
+		var render = function(value) {
+
+			return function(req, res) {
+				res.locals._csrf = req.csrfToken();
+				res.locals.BRAND = process.env.BRAND;
+				res.locals.user = req.session.user;
+				res.locals.cart = req.session.cart;
+				res.locals.params = req.params;
+				res.locals.DOMAIN = process.env.DOMAIN;
+				res.locals.CART_COUNT = _.unique(req.session.cart).length;
+				res.render(value);
+			};
+
+		};
+
+		if (theme.serve) {
+
+			_.forIn(theme.serve.static,
+				function(value, key) {
+
+					if ('index' == key)
+						return app.get('/', render(value));
+					app.get(key, render(value));
+
+				});
+
+			_.forIn(theme.serve.pattern, function(file, key) {
+				app.get(new RegExp(key), render(file));
+
+			});
+
+
+
+		}
+
+	};
+
+
+
+	/**
+	 * onMemberFound sets up model registration with keystone.
+	 *
+	 * A member should be an object like the following:
+	 *  { NAME: 'MyModel', COLLECTION: 'models', fields: []}
+	 *
+	 * @method onMemberFound
+	 * @param {Member} member
+	 * @return
+	 *
+	 */
+	self.onMemberFound = function(member) {
+
+		var options = member.options || {};
+		var list = new self.keystone.List(member.NAME, options);
+
+		if (member.DEFAULT_COLUMNS)
+			list.defaultColumns = member.DEFAULT_COLUMNS;
+
+		list.add.apply(list, member.fields);
+
+		var O_o = member.run && member.run(list, self.keystone);
+
+		list.register();
+
+		system.log.info('Registered List ' + member.NAME + '.');
+
+
+	};
 
 	return self;
 

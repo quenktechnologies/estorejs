@@ -5,7 +5,7 @@
  * @constructor
  */
 
-module.exports = function CartBindings(keystone) {
+module.exports = function CartBindings(store) {
 
 	var self = {};
 
@@ -16,13 +16,13 @@ module.exports = function CartBindings(keystone) {
 
 
 	/**
-	 * onRoutingReady will setup the cart bindings.
-	 * @method onRoutingReady
+	 * main will setup the cart bindings.
+	 * @method main
 	 * @param {Object} app
 	 * @return
 	 *
 	 */
-	self.onRoutingReady = function(app) {
+	self.main = function(app) {
 
 		app.get(config.CART_ITEMS, self.onGetItemsInCartRequest);
 		app.get(config.CART_ITEMS_COUNT, self.onGetCartItemsCountRequest);
@@ -92,7 +92,7 @@ module.exports = function CartBindings(keystone) {
 		if (!product)
 			return res.send(404);
 
-		Models(keystone).get('Product').
+		Models(store.keystone).get('Product').
 		findById(req.params[0], EFactory.create(res).C(503, function(product) {
 			res.send(product);
 		}));
@@ -160,7 +160,7 @@ module.exports = function CartBindings(keystone) {
 
 
 		//Adjust what was actually created.
-		Models(keystone).get('Product').findOne({
+		Models(store.keystone).get('Product').findOne({
 			_id: req.body._id
 		}).
 		select('_id name price stock.sku image').exec(function(err, product) {
@@ -204,7 +204,7 @@ module.exports = function CartBindings(keystone) {
 
 		var total;
 
-		keystone.
+		store.keystone.
 		list('Product').
 		model.
 		find({

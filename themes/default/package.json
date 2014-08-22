@@ -1,12 +1,13 @@
 {
   "name": "seller",
   "version": "0.1.0",
-  "description": "Default theme for vendorlizer.",
+  "description": "Default theme for estore.",
   "author": "Lasana Murray <lmurray@quenk.com> (http://blog.quenk.com/)",
   "license": "Apache2",
-  "vendorlizer": {
+  "estore": {
     "serve": {
       "static": {
+        "/": "index/index.html",
         "/cart": "cart/index.html",
         "/checkout":"checkout/index.html",
         "/store/categories": "store/category.html"

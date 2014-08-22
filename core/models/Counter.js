@@ -2,15 +2,15 @@
  * Counter model.
  * Counter objects are used to simulate auto increment fields in mongo.1
  * @class Counter
- * @param {Estore} store
  * @constructor
  *
  */
-module.exports = function Counter(store) {
+module.exports = function Counter() {
 
 	this.NAME = 'Counter';
 	this.options = {
 		nocreate: true,
+                hidden:true,
 		map: {
 			name: '_id'
 		}

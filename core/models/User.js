@@ -4,8 +4,9 @@
  * @constructor
  *
  */
-module.exports = function UserModel(types) {
+module.exports = function UserModel(store) {
 
+	var types = store.keystone.Field.Types;
 	this.NAME = 'User';
 	this.COLLECTION = 'users';
 	this.DEFAULT_COLUMNS = 'name, email, roles.admin';

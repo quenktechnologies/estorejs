@@ -11,14 +11,14 @@ module.exports = function Post() {
 
 
 	/**
-	 * onKeyStoneReady
+	 * register
 	 *
-	 * @method onKeyStoneReady
+	 * @method register
 	 * @param {Object} keystone s
 	 * @return
 	 *
 	 */
-	self.onKeyStoneReady = function(keystone) {
+	self.register = function(keystone) {
 
 		Types = keystone.Field.Types;
 

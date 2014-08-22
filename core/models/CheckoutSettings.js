@@ -9,14 +9,15 @@ module.exports = function CheckoutSettings(store) {
 
 
 	this.COLLECTION = 'checkout_settings';
-        this.NAME='CheckoutSettings';
+	this.NAME = 'CheckoutSettings';
 	this.options = {
 		nocreate: true,
 		nodelete: true,
-                path: 'checkout_settings',
+		path: 'checkout_settings',
 		label: 'Checkout',
 		singular: 'customer checkout configuration',
 		plural: ' customer checkout configurations',
+                track: true
 	};
 
 	this.fields = [{

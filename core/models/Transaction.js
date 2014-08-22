@@ -16,38 +16,42 @@
  * @constructor
  *
  */
-module.exports = function Transaction() {
+module.exports = function Transaction(store) {
 
-	var self = {};
+	var t = store.keystone.Field.Types;
+	this.NAME = 'Transaction';
 
-	self.onKeyStoneReady = function(keystone) {
+	this.options = {
+		nocreate: true,
+		noedit: true,
+		hidden: true,
+	};
 
-		var Transaction = keystone.List('Transaction', {
-			nocreate: true,
-			noedit: true
+	this.fields = [{
+		invoice: require('./InvoiceFields')(t),
+		status: {
+			type: t.Select,
+			options: 'pending,comitted,error,rollback,done',
+			default: 'pending'
+		}
+
+	}];
+
+	/**
+	 * run
+	 *
+	 * @method run
+	 * @param {List} list
+	 * @return
+	 *
+	 */
+	this.run = function(list) {
+
+		list.schema.add({
+			items: Array
 		});
 
-		var t = keystone.Field.Types;
-
-		Transaction.schema.add({
-			invoice: {
-				items: Array,
-			}
-		});
-
-		Transaction.add({
-
-			invoice: require('./InvoiceBlock')(t),
-			status: {
-				type: t.Select,
-				options: 'pending,comitted,error,rollback,done',
-				default: 'pending'
-			}
-
-		});
-
-		Transaction.schema.statics.getPending = function(limit) {
-
+		list.schema.statics.getPending = function(limit) {
 
 			var that = this.model('Transaction').find({
 				status: 'pending'
@@ -63,7 +67,7 @@ module.exports = function Transaction() {
 
 		};
 
-		Transaction.schema.methods.promiseInvoice = function() {
+		list.schema.methods.promiseInvoice = function() {
 
 			var invoice = this.model('Invoice').create(this.invoice);
 			return invoice.onReject(function(err) {
@@ -74,7 +78,7 @@ module.exports = function Transaction() {
 		};
 
 
-		Transaction.schema.methods.start = function() {
+		list.schema.methods.start = function() {
 
 			return this.model('Transaction').create(this).
 			onReject(function(err) {
@@ -84,9 +88,6 @@ module.exports = function Transaction() {
 
 		};
 
-		Transaction.addPattern('standard meta');
-		Transaction.register();
 	};
-	return self;
 
 };

@@ -10,16 +10,16 @@ module.exports = function Blog() {
 	var self = {};
 
 	/**
-	 * onKeyStoneReady
+	 * register
 	 *
-	 * @method onKeyStoneReady
+	 * @method register
 	 * params
 	 * @return
 	 *
 	 */
-	self.onKeyStoneReady = function(keystone) {
+	self.register = function(keystone) {
 
-		require('./Post')().onKeyStoneReady(keystone);
+		require('./Post')().register(keystone);
 
 
 
