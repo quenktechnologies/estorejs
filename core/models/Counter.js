@@ -2,43 +2,41 @@
  * Counter model.
  * Counter objects are used to simulate auto increment fields in mongo.1
  * @class Counter
- *
+ * @param {Estore} store
  * @constructor
  *
  */
-module.exports = function Counter() {
+module.exports = function Counter(store) {
 
-	var self = {};
-
+	this.NAME = 'Counter';
+	this.options = {
+		nocreate: true,
+		map: {
+			name: '_id'
+		}
+	};
+	this.fields = [{
+		_id: {
+			type: String
+		},
+		next: {
+			type: Number,
+			noedit: true
+		}
+	}];
 
 	/**
-	 * onKeyStoneReady
+	 * run
 	 *
-	 * @method onKeyStoneReady
-	 * @param {Object} keystone
+	 * @method run
+	 * @param {List} list
 	 * @return
 	 *
 	 */
-	self.onKeyStoneReady = function(keystone) {
+	this.run = function(list) {
 
-		var Counter = keystone.List('Counter', {
-			nocreate: true,
-			map: {
-				name: '_id'
-			}
-		});
 
-		Counter.add({
-			_id: {
-				type: String
-			},
-			next: {
-				type: Number,
-				noedit: true
-			}
-		});
-
-		Counter.schema.methods.increment = function(id, qty) {
+		list.schema.methods.increment = function(id, qty) {
 
 			return this.model('Counter').findOneAndUpdate({
 				_id: id
@@ -63,7 +61,7 @@ module.exports = function Counter() {
 		 *  Like increment but does not return a Promise.
 		 *
 		 */
-		Counter.schema.methods.increase = function(id, qty, cb) {
+		list.schema.methods.increase = function(id, qty, cb) {
 
 			return this.model('Counter').findOneAndUpdate({
 				_id: id
@@ -78,13 +76,10 @@ module.exports = function Counter() {
 		};
 
 
-		Counter.register();
 
 
 	};
 
-
-	return self;
 
 
 };

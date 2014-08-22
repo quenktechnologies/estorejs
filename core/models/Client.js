@@ -1,27 +1,26 @@
 /**
  * ClientModel is the model for customers.
  * @class ClientModel
- *
+ * @param {Estore} store
  * @constructor
  *
  */
-module.exports = function ClientModel() {
+module.exports = function ClientModel(store) {
 
 	var self = {};
 
 
 	/**
-	 * onKeyStoneReady sets up the model.
+	 * register
 	 *
-	 * @method onKeyStoneReady
-	 * @param {Object} keystone
+	 * @method register
 	 * @return
 	 *
 	 */
-	self.onKeyStoneReady = function(keystone) {
+	self.onKeyStoneReady = function() {
 
-		var t = keystone.Field.Types;
-		var Model = new keystone.List('Client', {});
+		var t = store.keystone.Field.Types;
+		var Model = new store.keystone.List('Client', {});
 		Model.add({
 
 			name: {

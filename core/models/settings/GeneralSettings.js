@@ -1,12 +1,12 @@
-module.exports = function GeneralSettings() {
+module.exports = function GeneralSettings(store) {
 
 	var self = {};
 
-	self.onKeyStoneReady = function(keystone) {
-		var t = keystone.Field.Types;
+	self.register = function() {
+		var t = store.keystone.Field.Types;
 		var path = require('path');
 
-		var General = new keystone.List('GeneralSettings', {
+		var General = new store.keystone.List('GeneralSettings', {
 			nocreate: true,
 			nodelete: true,
 			path: 'general_settings',

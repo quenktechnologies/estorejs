@@ -1,72 +1,63 @@
 /**
  * User
  * @class User
- * @param {Estore} store
  * @constructor
  *
  */
-module.exports = function UserModel(store) {
+module.exports = function UserModel(types) {
 
-	var self = {};
+	this.NAME = 'User';
+	this.COLLECTION = 'users';
+	this.DEFAULT_COLUMNS = 'name, email, roles.admin';
+	this.fields = [{
+
+			name: {
+				type: types.Name,
+				required: true,
+				index: true
+			},
+			email: {
+				type: types.Email,
+				initial: true,
+				required: true,
+				index: true
+			},
+			password: {
+				type: types.Password,
+				initial: true,
+				required: false
+			}
+		},
+		'Roles', {
+			roles: {
+				admin: {
+					type: Boolean,
+					label: 'Super User',
+
+				},
+			}
+		}
+	];
 
 	/**
-	 * register
+	 * run
 	 *
-	 * @method register
+	 * @method run
+	 * @param {List} list
 	 * @return
 	 *
 	 */
-	self.register = function() {
-
-		var Types = store.keystone.Field.Types;
-		var User = store.keystone.List('User');
-
-		User.add({
-				name: {
-					type: Types.Name,
-					required: true,
-					index: true
-				},
-				email: {
-					type: Types.Email,
-					initial: true,
-					required: true,
-					index: true
-				},
-				password: {
-					type: Types.Password,
-					initial: true,
-					required: false
-				}
-			},
-			'Roles', {
-				roles: {
-					admin: {
-						type: Boolean,
-						label: 'Super User',
-
-					},
-				}
-			});
+	this.run = function(list) {
 
 		// Provide access to Keystone
-		User.schema.virtual('canAccessKeystone').get(function() {
-			console.log('accessing');
-			console.log(this.roles.admin);
-			console.log(this);
+		list.schema.virtual('canAccessKeystone').get(function() {
 			return this.roles.admin;
-		}); // for some reason updates files are not populating the roles field.
-
-		User.defaultColumns = 'name, email, roles.admin';
-		User.register();
-
-
+		});
 
 	};
 
 
 
-	return self;
 
 
 };

@@ -1,25 +1,24 @@
 /**
  * CheckoutSettings is the model for checkout settings.
  * @class Checkout
- *
+ * @param {Estore} store
  * @constructor
  *
  */
-module.exports = function CheckoutSettings() {
+module.exports = function CheckoutSettings(store) {
 
 	var self = {};
 
 	/**
-	 * onKeyStoneReady
+	 * register
 	 *
-	 * @method onKeyStoneReady
-	 * params
+	 * @method register
 	 * @return
 	 *
 	 */
-	self.onKeyStoneReady = function(keystone) {
+	self.register = function() {
 
-		var t = keystone.Field.Types;
+		var t = store.keystone.Field.Types;
 		var path = require('path');
 
 		var Checkout = new keystone.List('CheckoutSettings', {
