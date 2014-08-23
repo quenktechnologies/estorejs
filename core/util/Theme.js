@@ -8,7 +8,6 @@
  */
 module.exports = function Theme(base, theme) {
 
-	var self = {};
 	var _path = base + '/' + theme;
 
 	/**
@@ -19,7 +18,7 @@ module.exports = function Theme(base, theme) {
 	 * @return {Boolean}
 	 *
 	 */
-	self.has = function(folder) {
+	this.has = function(folder) {
 
 		if ((folder === '') || (!folder))
 			return false;
@@ -37,7 +36,7 @@ module.exports = function Theme(base, theme) {
 	 * @return {Object}
 	 *
 	 */
-	self.get = function(folder) {
+	this.get = function(folder) {
 
 		var O = require(_path + '/' + folder);
 		return new O();
@@ -51,7 +50,7 @@ module.exports = function Theme(base, theme) {
 	 * @return
 	 *
 	 */
-	self.exists = function() {
+	this.exists = function() {
 
 		var fs = require('fs');
 		return fs.existsSync(_path);
@@ -66,7 +65,7 @@ module.exports = function Theme(base, theme) {
 	 * @return {String}
 	 *
 	 */
-	self.getThemePath = function() {
+	this.getThemePath = function() {
 
 		return _path;
 
@@ -79,7 +78,7 @@ module.exports = function Theme(base, theme) {
 	 * @return  {String}
 	 *
 	 */
-	self.getTemplatePath = function() {
+	this.getTemplatePath = function() {
 
 		return _path + '/private';
 
@@ -92,7 +91,7 @@ module.exports = function Theme(base, theme) {
 	 * @return {String}
 	 *
 	 */
-	self.getStaticPath = function() {
+	this.getStaticPath = function() {
 
 		return _path + '/public';
 
@@ -106,7 +105,7 @@ module.exports = function Theme(base, theme) {
 	 * @return {String}
 	 *
 	 */
-	self.getEmailPath = function() {
+	this.getEmailPath = function() {
 
 		return _path + '/emails';
 
@@ -120,12 +119,14 @@ module.exports = function Theme(base, theme) {
 	 * @return {Object}
 	 *
 	 */
-	self.get= function(file) {
+	this.get= function(file) {
 
 
 		return require(_path + '/'+file);
 
 	};
+
+        
 
 	/**
 	 * use changes the theme in use.
@@ -135,15 +136,14 @@ module.exports = function Theme(base, theme) {
 	 * @return
 	 *
 	 */
-	self.use = function(theme) {
+	this.use = function(theme) {
 
 		_path = base + '/' + theme;
-		return self;
+		return this;
 
 	};
 
 
-	return self;
 
 
 };
