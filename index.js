@@ -6,6 +6,8 @@ var Express = require('express');
 var System = require('./core/sys/System');
 var NunjucksMongoose = require('nunjucks-mongoose');
 var Subscription = require('./core/util/Subscription');
+var fs = require('fs');
+var o_O;
 
 
 /**
@@ -96,19 +98,29 @@ module.exports = function Estore(keystone) {
 	 */
 	self.start = function() {
 
+		var subs = new Subscription(self.ebus);
 		self.theme = new Theme(process.cwd() + '/themes', process.env.THEME || 'default');
-		var subs = new Subscription(this.ebus);
 		self.nunjucksEnvironment = NFactory.getEnvironment(self.theme.getTemplatePath(), self.app);
+		self.plugins = fs.readdirSync('./plugins');
+		self.plugins.splice(self.plugins.indexOf('.gitkeep'), 1);
 
 		process.title = self.title;
 		global.system = new System();
 
-		var o_O = self.theme.exists() || self.theme.use('default');
+		o_O = self.theme.exists() || self.theme.use('default');
 
 		self.keystone.connect(self.app);
 
 		subs.once(self.events.MEMBER_REGISTRATION, 'memberRegistration', self);
 		subs.once(self.events.ROUTE_REGISTRATION, 'routeRegistration', self);
+
+                var plugin;
+                self.plugins.forEach(function(Plugin) {
+
+                  plugin = new Plugin(self);
+                  o_O = plugin.main && plugin.main();
+                  
+                });
 
 		/** Temporary hack to ensure CSRF protection for Estore routes **/
 		self.keystone.pre('routes', function(req, res, next) {

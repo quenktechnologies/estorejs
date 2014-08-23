@@ -80,7 +80,7 @@ module.exports = function Theme(base, theme) {
 	 */
 	this.getTemplatePath = function() {
 
-		return _path + '/private';
+		return _path + '/templates';
 
 	};
 
@@ -115,18 +115,18 @@ module.exports = function Theme(base, theme) {
 	 * get returns the required file specified.
 	 *
 	 * @method get
-         * @param {String} file 
+	 * @param {String} file
 	 * @return {Object}
 	 *
 	 */
-	this.get= function(file) {
+	this.get = function(file) {
 
 
-		return require(_path + '/'+file);
+		return require(_path + '/' + file);
 
 	};
 
-        
+
 
 	/**
 	 * use changes the theme in use.
