@@ -195,7 +195,7 @@ module.exports = function Estore(keystone) {
 
 			this.onModelFound(new Model(this));
 
-		});
+		}.bind(this));
 
 		this.ebus.emit(this.events.MODEL_REGISTRATION, this);
 		this.keystone.set('user model', 'User');
@@ -271,7 +271,13 @@ module.exports = function Estore(keystone) {
 			routes.forEach(function(Route) {
 				route = new Route(this);
 				route.main(app);
-			});
+			}.bind(this));
+
+                        this.gateways.forEach(function(gw) {
+
+                          gw.routes(app);
+
+                        });
 
 			var theme = this.theme.get('package.json').estore;
 
@@ -313,7 +319,7 @@ module.exports = function Estore(keystone) {
 			}
 			this.ebus.emit(this.events.ROUTE_REGISTRATION, app);
 
-		});
+		}.bind(this));
 
 	};
 
@@ -328,38 +334,19 @@ module.exports = function Estore(keystone) {
 	this.start = function() {
 
 		this._init();
-
-		//	subs.once(this.events.model_REGISTRATION, 'modelRegistration', this);
-		//	subs.once(this.events.ROUTE_REGISTRATION, 'routeRegistration', this);
-
 		this._gatewayRegistration();
-		this._modelRegistration();
 		this._engineConfiguration();
+		this._modelRegistration();
 		this._routeRegistration();
-
 		this.keystone.start({
 			onMount: function() {
 				system.log.info('Estore started on port ' + this.keystone.get('port'));
 
-			}
+			}.bind(this)
 		});
 
 
 	};
-
-	/**
-	 * routeRegistration
-	 *
-	 * @method routeRegistration
-	 * @return
-	 *
-	 */
-	this.routeRegistration = function(app) {
-
-
-	};
-
-
 
 	/**
 	 * onModelFound sets up model registration with keystone.
