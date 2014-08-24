@@ -8,55 +8,8 @@
  */
 module.exports = function Theme(base, theme) {
 
-	var _path = base + '/' + theme;
-
-	/**
-	 * has makes a check for a folder in the theme path.
-	 *
-	 * @method has
-	 * @param {String} folder
-	 * @return {Boolean}
-	 *
-	 */
-	this.has = function(folder) {
-
-		if ((folder === '') || (!folder))
-			return false;
-
-		var fs = require('fs');
-		return fs.existsSync(_path + '/' + folder);
-
-	};
-
-	/**
-	 * get returns the object exported from the specified path.
-	 *
-	 * @method get
-	 * @param {String} folder
-	 * @return {Object}
-	 *
-	 */
-	this.get = function(folder) {
-
-		var O = require(_path + '/' + folder);
-		return new O();
-
-	};
-
-	/**
-	 * exists checks if the current theme is actually available.
-	 *
-	 * @method exists
-	 * @return
-	 *
-	 */
-	this.exists = function() {
-
-		var fs = require('fs');
-		return fs.existsSync(_path);
-
-	};
-
+	var Directory = require('./Directory');
+	Directory.call(this, base + '/' + theme);
 
 	/**
 	 * getThemePath returns the path to the theme.
@@ -65,9 +18,9 @@ module.exports = function Theme(base, theme) {
 	 * @return {String}
 	 *
 	 */
-	this.getThemePath = function() {
+	self.getThemePath = function() {
 
-		return _path;
+		return this._path;
 
 	};
 
@@ -78,9 +31,9 @@ module.exports = function Theme(base, theme) {
 	 * @return  {String}
 	 *
 	 */
-	this.getTemplatePath = function() {
+	self.getTemplatePath = function() {
 
-		return _path + '/templates';
+		return this._path + '/templates';
 
 	};
 
@@ -91,9 +44,9 @@ module.exports = function Theme(base, theme) {
 	 * @return {String}
 	 *
 	 */
-	this.getStaticPath = function() {
+	self.getStaticPath = function() {
 
-		return _path + '/public';
+		return this._path + '/public';
 
 
 	};
@@ -105,28 +58,11 @@ module.exports = function Theme(base, theme) {
 	 * @return {String}
 	 *
 	 */
-	this.getEmailPath = function() {
+	self.getEmailPath = function() {
 
-		return _path + '/emails';
-
-	};
-
-	/**
-	 * get returns the required file specified.
-	 *
-	 * @method get
-	 * @param {String} file
-	 * @return {Object}
-	 *
-	 */
-	this.get = function(file) {
-
-
-		return require(_path + '/' + file);
+		return this._path + '/emails';
 
 	};
-
-
 
 	/**
 	 * use changes the theme in use.
@@ -136,14 +72,15 @@ module.exports = function Theme(base, theme) {
 	 * @return
 	 *
 	 */
-	this.use = function(theme) {
+	self.use = function(theme) {
 
-		_path = base + '/' + theme;
-		return this;
+		this._path = base + '/' + theme;
+		return self;
 
 	};
 
 
+	return self;
 
 
 };
