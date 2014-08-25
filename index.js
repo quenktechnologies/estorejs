@@ -273,11 +273,11 @@ module.exports = function Estore(keystone) {
 				route.main(app);
 			}.bind(this));
 
-                        this.gateways.forEach(function(gw) {
+			this.gateways.forEach(function(gw) {
 
-                          gw.routes(app);
+				gw.routes(app);
 
-                        });
+			});
 
 			var theme = this.theme.get('package.json').estore;
 

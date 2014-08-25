@@ -9,7 +9,7 @@
       "static": {
         "/": "index/index.html",
         "/cart": "cart/index.html",
-        "/checkout":"checkout/index.html",
+        "/checkout": "checkout/index.html",
         "/store/categories": "store/category.html"
       },
       "pattern": {
@@ -34,6 +34,7 @@
     "html2js": "0.0.3",
     "load-grunt-tasks": "^0.6.0",
     "minifyify": "^3.0.10",
+    "partialify": "^3.1.1",
     "time-grunt": "^0.3.2",
     "uglifyify": "^2.4.0",
     "uglifyjs": "^2.3.6"

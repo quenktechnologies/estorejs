@@ -2,7 +2,6 @@
 var config = {
 	port: 3000
 };
-
 module.exports = function(grunt) {
 
 	// Load grunt tasks automatically
@@ -31,7 +30,10 @@ module.exports = function(grunt) {
 				files: {
 					'<%= config.dest %>': ['<%= config.src+"/**/*.js" %>', ]
 				},
-				options: {}
+				options: {
+					debug: true,
+					transform: [require('partialify')]
+				}
 			},
 			install: {
 				files: {
@@ -128,6 +130,7 @@ module.exports = function(grunt) {
 			}
 		},
 	});
+	grunt.option('stack', true);
 	grunt.loadNpmTasks('grunt-html2js');
 	grunt.loadNpmTasks('grunt-debug-task');
 	grunt.loadNpmTasks('grunt-concurrent');
