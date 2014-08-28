@@ -40,3 +40,10 @@ them when building a template.
  ----------|  -------------                                        
   PUT      | Create a new checkout transaction.
 
+
+`/_/payment/options`
+
+  Method   |      Result                                          
+ ----------|  -------------                                        
+  GET      | Returns a list of payment options.
+
