@@ -97,6 +97,14 @@ module.exports = function Estore(keystone) {
 	this.gateways = [];
 
 	/**
+	 * themePackage
+	 *
+	 * @property themePackage
+	 * @type {Object}
+	 */
+	this.themePackage = undefined;
+
+	/**
 	 * subs are the event subscriptions currently active.
 	 * @property subs
 	 * @type {Subscription}
@@ -122,6 +130,10 @@ module.exports = function Estore(keystone) {
 	this.blacklist = [];
 
 
+
+
+
+
 	/**
 	 * _init initializes the application.
 	 *
@@ -139,6 +151,11 @@ module.exports = function Estore(keystone) {
 		this.app = new Express();
 		this.subs = new Subscription(this.ebus);
 		this.theme = new Theme(process.cwd() + '/themes', process.env.THEME || 'default');
+
+		this.themePackage = this.theme.get('package.json');
+		if (this.themePackage.blacklist)
+			this.blacklist.push.apply(this.blacklist, this.themePackage.blacklist);
+
 		this.extras = new Extras(process.cwd() + '/extras');
 		this.Extension = require('./core/util/Extension');
 		this.extensions = new CompositeExtension(this);
@@ -292,13 +309,13 @@ module.exports = function Estore(keystone) {
 				}.bind(this));
 
 				this.extensions.onRouting(app);
-			}else{
+			} else {
 
-                          system.log.warn('Disabling api!');
+				system.log.warn('Disabling api!');
 
-                        }
+			}
 
-			var theme = this.theme.get('package.json').estore;
+			var theme = this.themePackage.estore;
 
 			var _ = require('lodash');
 
