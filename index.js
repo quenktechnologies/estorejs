@@ -153,8 +153,8 @@ module.exports = function Estore(keystone) {
 		this.theme = new Theme(process.cwd() + '/themes', process.env.THEME || 'default');
 
 		this.themePackage = this.theme.get('package.json');
-		if (this.themePackage.blacklist)
-			this.blacklist.push.apply(this.blacklist, this.themePackage.blacklist);
+		if (this.themePackage.estore.blacklist)
+			this.blacklist.push.apply(this.blacklist, this.themePackage.estore.blacklist);
 
 		this.extras = new Extras(process.cwd() + '/extras');
 		this.Extension = require('./core/util/Extension');
