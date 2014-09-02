@@ -10,6 +10,7 @@ logs
 results
 node_modules
 !themes/default
+extras
 themes
 npm-debug.log
 .mongo
