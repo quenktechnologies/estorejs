@@ -25,12 +25,12 @@ module.exports = function CompositeExtension() {
 	 * onModels
 	 *
 	 * @method onModels
-	 * @param {keystone} keystone
+	 * @param {ModelRegistrar} reg
 	 * @return CompositeExtension
 	 *
 	 */
-	this.onModels = function(keystone) {
-		this._callEach('onModels', keystone);
+	this.onModels = function(reg) {
+		this._callEach('onModels', reg);
 		return this;
 	};
 
@@ -39,4 +39,4 @@ module.exports = function CompositeExtension() {
 
 };
 
-CompositeExtension.prototype = new Composite();
+module.exports.prototype = new Composite();
