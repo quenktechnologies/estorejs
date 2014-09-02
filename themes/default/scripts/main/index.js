@@ -1,13 +1,10 @@
 require('../lib/angular');
-require('../vlizer');
-require('../templates');
-require('../product');
-require('../cart');
-require('../checkout');
+require('../estore-angular');
 
-var app = angular.module('seller', ['seller.product', 'seller.cart', 'seller.checkout']);
+var app = angular.module('seller', ['estore']);
 
-app.factory('EventEmitter', [require('events').EventEmitter]);
+app.controller('CheckOut', ['$scope', 'CartService', require('../controllers/CheckOut')]);
+
 angular.element(document).ready(function() {
 
 	angular.bootstrap(document, ['seller']);

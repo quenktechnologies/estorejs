@@ -18,7 +18,7 @@ module.exports = function Theme(base, theme) {
 	 * @return {String}
 	 *
 	 */
-	self.getThemePath = function() {
+	this.getThemePath = function() {
 
 		return this._path;
 
@@ -31,7 +31,7 @@ module.exports = function Theme(base, theme) {
 	 * @return  {String}
 	 *
 	 */
-	self.getTemplatePath = function() {
+	this.getTemplatePath = function() {
 
 		return this._path + '/templates';
 
@@ -44,7 +44,7 @@ module.exports = function Theme(base, theme) {
 	 * @return {String}
 	 *
 	 */
-	self.getStaticPath = function() {
+	this.getStaticPath = function() {
 
 		return this._path + '/public';
 
@@ -58,7 +58,7 @@ module.exports = function Theme(base, theme) {
 	 * @return {String}
 	 *
 	 */
-	self.getEmailPath = function() {
+	this.getEmailPath = function() {
 
 		return this._path + '/emails';
 
@@ -72,15 +72,15 @@ module.exports = function Theme(base, theme) {
 	 * @return
 	 *
 	 */
-	self.use = function(theme) {
+	this.use = function(theme) {
 
 		this._path = base + '/' + theme;
-		return self;
+		return this;
 
 	};
 
 
-	return self;
+	return this;
 
 
 };

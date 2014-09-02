@@ -1,3 +1,4 @@
+var CheckoutRequest = require('./CheckoutRequest');
 /**
  * CheckoutBindings provides bindings for the checkout api.
  * @class CheckoutBindings
@@ -52,7 +53,16 @@ module.exports = function CheckoutBindings(store) {
 	 */
 	self.main = function(app) {
 
+		//	store.checkouts.push(new CODCheckout(store));
+		//	store.checkouts.push(new UnknownCheckout());
+
+		store.ebus.on(store.events.TRANSACTION_APPROVED,
+			self.transactionApproved.bind(self));
+
+		store.ebus.on(store.events.TRANSACTION_DECLINED, self.transactionDeclined.bind(self));
+
 		app.post('/_/checkout/transactions', self.onCheckoutTransactionRequest);
+
 		setInterval(daemon, 10000); //In the future I would like this to be handled by an external process.
 
 	};
@@ -68,18 +78,54 @@ module.exports = function CheckoutBindings(store) {
 	 */
 	self.onCheckoutTransactionRequest = function(req, res) {
 
+		var Invoice = store.keystone.list('Invoice').model;
+		var Transaction = store.keystone.list('Transaction').model;
+
+		if ((!req.session.cart) || (req.session.cart.length < 1))
+			return res.send(409, "The cart is empty!");
+
+		if ((!req.body.workflow) || ('string' !== typeof req.body.workflow))
+			return res.send(409, 'No workflow specified!') && console.log(req.body);
+
+		var invoice = new Invoice({
+			email: req.body.email,
+			address: req.body.address,
+			items: req.session.cart
+		});
+
+		invoice.validate(function(err) {
+
+			if (err) return res.send(409, err);
+
+			console.log(err);
+
+
+
+		});
+
+
+
+
+	};
+
+	/**
+	 * transactionApproved
+	 *
+	 * @method purchaseAccepted
+	 * @param {Object} order
+	 * @return
+	 *
+	 */
+	self.transactionApproved = function(order, res) {
+
 		var InvoiceNumberPromise = require('./InvoiceNumberPromise');
 		var SaveTransactionPromise = require('./SaveTransactionPromise');
 		var Counter = store.keystone.list('Counter').model;
 		var Transaction = store.keystone.list('Transaction').model;
 		//var ctl = require('./CheckoutTransactionController')(req,res);
 
-		if ((!req.session.cart) || (req.session.cart.length < 1))
-			return res.send(409, "The cart is empty");
-		//XXX Needs proper validation and protection from overwriting important keys.
-		req.body.items = req.session.cart;
 		var sale = new Transaction({
-			invoice: req.body
+			invoice: order
 
 		});
 
@@ -111,6 +157,23 @@ module.exports = function CheckoutBindings(store) {
 
 
 	};
+
+	/**
+	 * transactionDeclined
+	 *
+	 * @method transactionDeclined
+	 * @return
+	 *
+	 */
+	self.transactionDeclined = function() {
+
+		console.log('transaction declined'); //Yeah there is work to be done here...
+
+
+
+	};
+
+
 
 	/**
 	 * onItemOutOfStock is called when an item is out of stock.

@@ -2,7 +2,6 @@
   <label class="col-md-2 control-label" for="bind.name.first">Name*</label>
   <div class="col-md-5">
     <input ng-disabled="disable" ng-model="bind.name.first" id="bind.name.first" name="order[customer][name][first]" placeholder="First" class="form-control input-md" required type="text">
-
   </div>
   <div class="col-md-5">
     <input ng-disabled="disable" data-ng-model="bind.name.last" id="bind.name.last" name="order[customer][name][last]" placeholder="Last" class="form-control input-md" required type="text">
@@ -17,7 +16,7 @@
 <div class="form-group">
   <label class="col-md-2 control-label" for="bind.customer.address.street1">Address</label>
   <div class="col-md-10">
-    <input ng-dis/abled="disable" ng-model="bind.street1" id="bind.customer.address.street1" name="bind.customer.address.street1" placeholder="" class="form-control input-md" required="" type="text">
+    <input ng-disabled="disable" ng-model="bind.street1" id="bind.customer.address.street1" name="bind.customer.address.street1" placeholder="" class="form-control input-md" required="" type="text">
   </div>
 </div>
 <div class="form-group">
@@ -27,17 +26,14 @@
   </div>
 </div>
 <div class="form-group">
-  <label class="col-md-2 control-label" for="bind.customer.address.city">City</label>
+  <label class="col-md-2 control-label" for="bind.city">City</label>
   <div class="col-md-10">
     <input ng-disabled="disable" data-ng-model="bind.city" id="bind.customer.address.city" name="bind.customer.address.city" placeholder="" class="form-control input-md" required="" type="text">
   </div>
 </div>
-
-<!-- Text input-->
 <div class="form-group">
   <label class="col-md-2 control-label" for="order[phone]">Phone*</label>
   <div class="col-md-10">
-    <input ng-disabled="disable" data-ng-model="bind.phone" id="order[phone]" name="order[phone]" placeholder="868-777-7777" class="form-control input-md" type="text" data-ng-pattern="/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})?[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/" required>
-
+    <input ng-disabled="disable" data-ng-model="bind.phone" id="order[phone]" name="order[phone]" placeholder="868-777-7777" class="form-control input-md" type="text" ng-pattern="/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})?[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/" required>
   </div>
 </div>

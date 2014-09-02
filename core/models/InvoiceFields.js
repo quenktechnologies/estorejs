@@ -15,7 +15,8 @@ module.exports = function InvoiceFields(t) {
 			type: Number,
 			unique: true,
 			initial: true,
-			noedit: true
+			noedit: true,
+                  default:-1
 
 		},
 

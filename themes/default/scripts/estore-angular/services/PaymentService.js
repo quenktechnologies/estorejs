@@ -8,7 +8,7 @@
  */
 module.exports = function PaymentService($http) {
 
-
+return {
 	/**
 	 * getPaymentOptions returns a list of options for payment.
 	 *
@@ -16,12 +16,13 @@ module.exports = function PaymentService($http) {
 	 * @return {HttpService}
 	 *
 	 */
-	this.getPaymentOptions = function() {
+  getPaymentOptions : function() {
 
 		return $http.get('/_/payments/options');
 
 
-	};
+	}
+};
 
 
 

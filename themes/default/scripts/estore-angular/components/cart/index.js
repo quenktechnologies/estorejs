@@ -11,9 +11,9 @@ module.exports = function CartDirective() {
 
 		scope: {},
 		restrict: 'AE',
-		controller: 'CartApplication',
+		controller: ['CartService', require('./CartController')],
 		controllerAs: 'cart',
-		templateUrl: '/assets/partials/seller/cart/cart.html'
+		template: require('./cart.html')
 
 
 	};

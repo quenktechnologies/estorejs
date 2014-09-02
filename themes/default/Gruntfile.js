@@ -18,7 +18,8 @@ module.exports = function(grunt) {
 			src: grunt.option('src'),
 			dest: grunt.option('dest'),
 			map: grunt.option('map'),
-			watch: grunt.option('watch')
+			focus: grunt.option('focus'),
+			watch: grunt.option('watch'),
 		},
 		debug: {
 			options: {
@@ -32,6 +33,7 @@ module.exports = function(grunt) {
 				},
 				options: {
 					debug: true,
+					watch: '<%= config.watch %>',
 					transform: [require('partialify')]
 				}
 			},
@@ -94,22 +96,20 @@ module.exports = function(grunt) {
 
 		},
 
-
-
 		watch: {
+
 			install: {
 				files: ['<%= config.src+"/*.js" %>', '<%= config.src+"/*/*.js" %>'],
 				tasks: ['browserify:install']
 			},
 			build: {
-				files: ['<%= config.watch+"/**/*.js" %>'],
+				files: ['<%= config.focus+"/**/*.js" %>'],
 				tasks: ['browserify:build']
 
 			},
 			templates: {
 				files: ['public/assets/partials/seller/**/*.html'],
 				tasks: ['html2js:templates']
-
 
 			},
 			template: {
@@ -137,5 +137,6 @@ module.exports = function(grunt) {
 	grunt.registerTask('install', ['watch:install']);
 	grunt.registerTask('build', ['watch:build']);
 	grunt.registerTask('default', ['install']);
+
 
 };

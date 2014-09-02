@@ -8,6 +8,22 @@
 module.exports = function CashGateway() {
 
 
+  /**
+   * routes 
+   *
+   * @method routes
+   * @return 
+   *
+   */
+  this.routes = function () {
+
+
+
+  };
+
+
+
+
 
 
 };

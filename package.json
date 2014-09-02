@@ -53,6 +53,7 @@
     "npm": "1.4.x"
   },
   "devDependencies": {
+    "grunt-supervisor": "^0.2.4",
     "look": "^0.1.3"
   }
 }

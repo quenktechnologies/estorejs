@@ -74,6 +74,12 @@ module.exports = function Estore(keystone) {
 
 	/**
 	 *
+	 * @property {Array} models
+	 */
+	this.models = [];
+
+	/**
+	 *
 	 *
 	 *  @property {Object} navigation Navigation settings for keystone.
 	 *
@@ -172,7 +178,7 @@ module.exports = function Estore(keystone) {
 	this._modelRegistration = function() {
 
 
-		var models = [
+		this.models.push.apply(this.models, [
 			require('./core/models/User'),
 			require('./core/models/Counter'),
 			require('./core/models/CheckoutSettings'),
@@ -182,16 +188,18 @@ module.exports = function Estore(keystone) {
 			require('./core/models/Product'),
 			require('./core/models/Invoice'),
 			require('./core/models/Transaction'),
-		];
+			require('./core/models/Address'),
+			require('./core/models/Item')
+		]);
 
 
 		if (this.theme.has('pages'))
-			models.push(require('./core/models/Page'));
+			this.models.push(require('./core/models/Page'));
 
 		if (this.extras.has('models'))
-			models.push.apply(models, this.extras.get('models', true));
+			this.models.push.apply(models, this.extras.get('models', true));
 
-		models.forEach(function(Model) {
+		this.models.forEach(function(Model) {
 
 			this.onModelFound(new Model(this));
 
@@ -263,6 +271,7 @@ module.exports = function Estore(keystone) {
 				require('./core/api/cart'),
 				require('./core/api/checkout'),
 				require('./core/api/products'),
+				require('./core/api/payments')
 			];
 
 			if (this.extras.has('routes'))

@@ -11,22 +11,13 @@ module.exports = function AddressElementDirective() {
 
 		scope: {
 			title: "@",
-			bind: "=bind",
+			bind: "=ngModel",
 			disable: "="
 
 		},
-                require:'ngModel',
+		require: 'ngModel',
 		restrict: 'AE',
-		templateUrl: '/assets/partials/seller/checkout/address.html',
-		controller: [
-
-			function() {
-
-
-
-
-			}
-		]
+		template: require('./address.html'),
 	};
 
 };

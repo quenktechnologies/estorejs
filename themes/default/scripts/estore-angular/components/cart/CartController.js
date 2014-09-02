@@ -2,11 +2,10 @@
  * CartApplication is the main controller for the shopping cart.
  * @class CartApplication
  * @param {CartService} cart
- * @param {EventEmitter} events
  * @constructor
  *
  */
-module.exports = function CartApplication(cart, events) {
+module.exports = function CartApplication(cart) {
 
 	var self = {
 

@@ -1,0 +1,10 @@
+<div class="form-group">
+  <div class="col-md-12">
+    <ul>
+<li ng-repeat="option in select.options">
+        <label>
+          <input type="radio" checked ng-model="bind" value="{{option.value}}">{{option.name}}</label>
+      </li>      
+    </ul>
+  </div>
+</div>

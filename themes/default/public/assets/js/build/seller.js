@@ -2018,320 +2018,201 @@
 })( this );
 
 },{}],2:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
+/**
+ * CheckOutController is the controller for the whole checkout process.
+ * @class CheckOutController
+ *
+ * @constructor
+ *
+ */
+module.exports = function CheckOutController($scope, cartService) {
 
-function EventEmitter() {
-  this._events = this._events || {};
-  this._maxListeners = this._maxListeners || undefined;
-}
-module.exports = EventEmitter;
+	this.order = {
+		customer: {
+			email: ''
+		},
+		address: {
+			billing: {
+				name: {}
+			},
+			shipping: {
+				name: {}
+			}
+		}
+	};
 
-// Backwards-compat with node 0.10.x
-EventEmitter.EventEmitter = EventEmitter;
+	this.SHIP_TO_BILLING = false;
+	$scope.order = this.order;
 
-EventEmitter.prototype._events = undefined;
-EventEmitter.prototype._maxListeners = undefined;
+	/**
+	 * confirm is called when the user confirms the order.
+	 *
+	 * @method confirm
+	 * @return
+	 *
+	 */
+	this.confirm = function() {
 
-// By default EventEmitters will print a warning if more than 10 listeners are
-// added to it. This is a useful default which helps finding memory leaks.
-EventEmitter.defaultMaxListeners = 10;
+		if (this.SHIP_TO_BILLING)
+			this.order.address.shipping = this.order.address.billing;
+		console.log(this.order);
+		cartService.checkout(this.order).
+		then(function(res) {
+			window.location = "/checkout/success";
+			console.log(res);
 
-// Obviously not all Emitters should be limited to 10. This function allows
-// that to be increased. Set to zero for unlimited.
-EventEmitter.prototype.setMaxListeners = function(n) {
-  if (!isNumber(n) || n < 0 || isNaN(n))
-    throw TypeError('n must be a positive number');
-  this._maxListeners = n;
-  return this;
+		}).
+		then(null, function(res) {
+			//window.location = "/checkout/error";
+			console.log(res);
+
+
+		});
+	};
+
+	/**
+	 * toggleShipping
+	 *
+	 * @method toggleShipping
+	 * @return
+	 *
+	 */
+	this.toggleShipping = function() {
+
+		this.SHIP_TO_BILLING = !this.SHIP_TO_BILLING;
+
+
+	};
+
+	var self = this;
+
+	(function($scope) {
+
+		//Init code 
+		$scope.$watch(angular.bind(self, function() {
+
+				return self.SHIP_TO_BILLING;
+
+			}),
+			function(neu, alt) {
+
+				if (neu)
+					self.order.address.shipping = self.order.address.billing;
+				if (!neu)
+					self.order.address.shipping = {};
+
+
+			});
+		self.toggleShipping();
+
+
+	}($scope));
+
+
+
+
 };
-
-EventEmitter.prototype.emit = function(type) {
-  var er, handler, len, args, i, listeners;
-
-  if (!this._events)
-    this._events = {};
-
-  // If there is no 'error' event listener then throw.
-  if (type === 'error') {
-    if (!this._events.error ||
-        (isObject(this._events.error) && !this._events.error.length)) {
-      er = arguments[1];
-      if (er instanceof Error) {
-        throw er; // Unhandled 'error' event
-      } else {
-        throw TypeError('Uncaught, unspecified "error" event.');
-      }
-      return false;
-    }
-  }
-
-  handler = this._events[type];
-
-  if (isUndefined(handler))
-    return false;
-
-  if (isFunction(handler)) {
-    switch (arguments.length) {
-      // fast cases
-      case 1:
-        handler.call(this);
-        break;
-      case 2:
-        handler.call(this, arguments[1]);
-        break;
-      case 3:
-        handler.call(this, arguments[1], arguments[2]);
-        break;
-      // slower
-      default:
-        len = arguments.length;
-        args = new Array(len - 1);
-        for (i = 1; i < len; i++)
-          args[i - 1] = arguments[i];
-        handler.apply(this, args);
-    }
-  } else if (isObject(handler)) {
-    len = arguments.length;
-    args = new Array(len - 1);
-    for (i = 1; i < len; i++)
-      args[i - 1] = arguments[i];
-
-    listeners = handler.slice();
-    len = listeners.length;
-    for (i = 0; i < len; i++)
-      listeners[i].apply(this, args);
-  }
-
-  return true;
-};
-
-EventEmitter.prototype.addListener = function(type, listener) {
-  var m;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events)
-    this._events = {};
-
-  // To avoid recursion in the case that type === "newListener"! Before
-  // adding it to the listeners, first emit "newListener".
-  if (this._events.newListener)
-    this.emit('newListener', type,
-              isFunction(listener.listener) ?
-              listener.listener : listener);
-
-  if (!this._events[type])
-    // Optimize the case of one listener. Don't need the extra array object.
-    this._events[type] = listener;
-  else if (isObject(this._events[type]))
-    // If we've already got an array, just append.
-    this._events[type].push(listener);
-  else
-    // Adding the second element, need to change to array.
-    this._events[type] = [this._events[type], listener];
-
-  // Check for listener leak
-  if (isObject(this._events[type]) && !this._events[type].warned) {
-    var m;
-    if (!isUndefined(this._maxListeners)) {
-      m = this._maxListeners;
-    } else {
-      m = EventEmitter.defaultMaxListeners;
-    }
-
-    if (m && m > 0 && this._events[type].length > m) {
-      this._events[type].warned = true;
-      console.error('(node) warning: possible EventEmitter memory ' +
-                    'leak detected. %d listeners added. ' +
-                    'Use emitter.setMaxListeners() to increase limit.',
-                    this._events[type].length);
-      if (typeof console.trace === 'function') {
-        // not supported in IE 10
-        console.trace();
-      }
-    }
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-EventEmitter.prototype.once = function(type, listener) {
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  var fired = false;
-
-  function g() {
-    this.removeListener(type, g);
-
-    if (!fired) {
-      fired = true;
-      listener.apply(this, arguments);
-    }
-  }
-
-  g.listener = listener;
-  this.on(type, g);
-
-  return this;
-};
-
-// emits a 'removeListener' event iff the listener was removed
-EventEmitter.prototype.removeListener = function(type, listener) {
-  var list, position, length, i;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events || !this._events[type])
-    return this;
-
-  list = this._events[type];
-  length = list.length;
-  position = -1;
-
-  if (list === listener ||
-      (isFunction(list.listener) && list.listener === listener)) {
-    delete this._events[type];
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-
-  } else if (isObject(list)) {
-    for (i = length; i-- > 0;) {
-      if (list[i] === listener ||
-          (list[i].listener && list[i].listener === listener)) {
-        position = i;
-        break;
-      }
-    }
-
-    if (position < 0)
-      return this;
-
-    if (list.length === 1) {
-      list.length = 0;
-      delete this._events[type];
-    } else {
-      list.splice(position, 1);
-    }
-
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.removeAllListeners = function(type) {
-  var key, listeners;
-
-  if (!this._events)
-    return this;
-
-  // not listening for removeListener, no need to emit
-  if (!this._events.removeListener) {
-    if (arguments.length === 0)
-      this._events = {};
-    else if (this._events[type])
-      delete this._events[type];
-    return this;
-  }
-
-  // emit removeListener for all listeners on all events
-  if (arguments.length === 0) {
-    for (key in this._events) {
-      if (key === 'removeListener') continue;
-      this.removeAllListeners(key);
-    }
-    this.removeAllListeners('removeListener');
-    this._events = {};
-    return this;
-  }
-
-  listeners = this._events[type];
-
-  if (isFunction(listeners)) {
-    this.removeListener(type, listeners);
-  } else {
-    // LIFO order
-    while (listeners.length)
-      this.removeListener(type, listeners[listeners.length - 1]);
-  }
-  delete this._events[type];
-
-  return this;
-};
-
-EventEmitter.prototype.listeners = function(type) {
-  var ret;
-  if (!this._events || !this._events[type])
-    ret = [];
-  else if (isFunction(this._events[type]))
-    ret = [this._events[type]];
-  else
-    ret = this._events[type].slice();
-  return ret;
-};
-
-EventEmitter.listenerCount = function(emitter, type) {
-  var ret;
-  if (!emitter._events || !emitter._events[type])
-    ret = 0;
-  else if (isFunction(emitter._events[type]))
-    ret = 1;
-  else
-    ret = emitter._events[type].length;
-  return ret;
-};
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
 
 },{}],3:[function(require,module,exports){
+/**
+ * AddButton is the controller for the AddButtonDirective.
+ * @class AddButton
+ *
+ * @constructor
+ *
+ */
+module.exports = function AddButton(cart, $scope) {
+
+	var self = {
+		id: $scope.id,
+		quantity: "1",
+	};
+
+	/**
+	 * addToCart adds the item to the cart.
+	 *
+	 * @method addToCart
+	 * @return
+	 *
+	 */
+	self.addToCart = function() {
+
+		cart.add(self.id, self.quantity).
+		then(function() {
+
+			window.location = '/cart?itemAdded=' + self.id;
+
+
+		});
+
+	};
+
+
+	return self;
+
+
+};
+
+},{}],4:[function(require,module,exports){
+module.exports = '<label>Quantity:</label>+\n<input type="text" value="1" ng-model="product.quantity">\n<button ng-click="product.addToCart()" class="btn btn-fefault cart" type="button">\n  <i class="fa fa-shopping-cart"></i> Add to cart +\n</button>\n';
+},{}],5:[function(require,module,exports){
+/**
+ * AddButtonDirective is a directive for providing the
+ * add to cart button's functionality.
+ *
+ * @class AddButtonDirective
+ * @constructor
+ *
+ */
+module.exports = function AddButtonDirective() {
+	return {
+
+		scope: {
+			'id': '@'
+		},
+		restrict: 'AE',
+		controller: ['CartService', '$scope', require('./ButtonController')],
+		controllerAs: 'product',
+		template: require('./add-to-cart.html')	};
+
+};
+
+},{"./ButtonController":3,"./add-to-cart.html":4}],6:[function(require,module,exports){
+module.exports = '<div class="form-group">\n  <label class="col-md-2 control-label" for="bind.name.first">Name*</label>\n  <div class="col-md-5">\n    <input ng-disabled="disable" ng-model="bind.name.first" id="bind.name.first" name="order[customer][name][first]" placeholder="First" class="form-control input-md" required type="text">\n  </div>\n  <div class="col-md-5">\n    <input ng-disabled="disable" data-ng-model="bind.name.last" id="bind.name.last" name="order[customer][name][last]" placeholder="Last" class="form-control input-md" required type="text">\n  </div>\n</div>\n<div class="form-group">\n  <label class="col-md-2 control-label" for="bind.company">Company</label>\n  <div class="col-md-10">\n    <input ng-disabled="disable" ng-model="bind.company" id="bind.customer.company" name="bind.customer.company" placeholder="" class="form-control input-md" required="" type="text">\n  </div>\n</div>\n<div class="form-group">\n  <label class="col-md-2 control-label" for="bind.customer.address.street1">Address</label>\n  <div class="col-md-10">\n    <input ng-disabled="disable" ng-model="bind.street1" id="bind.customer.address.street1" name="bind.customer.address.street1" placeholder="" class="form-control input-md" required="" type="text">\n  </div>\n</div>\n<div class="form-group">\n  <label class="col-md-2 control-label" for="bind.customer.address.street2"></label>\n  <div class="col-md-10">\n    <input ng-disabled="disable" data-ng-model="bind.street2" id="bind.customer.address.street2" name="bind.customer.address.street2" placeholder="" class="form-control input-md" required="" type="text">\n  </div>\n</div>\n<div class="form-group">\n  <label class="col-md-2 control-label" for="bind.city">City</label>\n  <div class="col-md-10">\n    <input ng-disabled="disable" data-ng-model="bind.city" id="bind.customer.address.city" name="bind.customer.address.city" placeholder="" class="form-control input-md" required="" type="text">\n  </div>\n</div>\n<div class="form-group">\n  <label class="col-md-2 control-label" for="order[phone]">Phone*</label>\n  <div class="col-md-10">\n    <input ng-disabled="disable" data-ng-model="bind.phone" id="order[phone]" name="order[phone]" placeholder="868-777-7777" class="form-control input-md" type="text" ng-pattern="/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})?[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/" required>\n  </div>\n</div>\n';
+},{}],7:[function(require,module,exports){
+/**
+ * AddressElementDirective for checkout that explicitly requests an email address.
+ * @class AddressElementDirective
+ *
+ * @constructor
+ *
+ */
+module.exports = function AddressElementDirective() {
+
+	return {
+
+		scope: {
+			title: "@",
+			bind: "=ngModel",
+			disable: "="
+
+		},
+		require: 'ngModel',
+		restrict: 'AE',
+		template: require('./address.html'),
+	};
+
+};
+
+},{"./address.html":6}],8:[function(require,module,exports){
 /**
  * CartApplication is the main controller for the shopping cart.
  * @class CartApplication
  * @param {CartService} cart
- * @param {EventEmitter} events
  * @constructor
  *
  */
-module.exports = function CartApplication(cart, events) {
+module.exports = function CartApplication(cart) {
 
 	var self = {
 
@@ -2456,7 +2337,9 @@ module.exports = function CartApplication(cart, events) {
 
 };
 
-},{"bignumber.js":1}],4:[function(require,module,exports){
+},{"bignumber.js":1}],9:[function(require,module,exports){
+module.exports = '    <div class="table-responsive cart_info" ng-init="cart.getItems()">\n      <table class="table table-condensed">\n        <thead>\n          <tr class="cart_menu">\n            <td class="image">Item</td>\n            <td class="description"></td>\n            <td class="price">Price</td>\n            <td class="quantity">Quantity</td>\n            <td class="total">Total</td>\n            <td></td>\n          </tr>\n        </thead>\n        <tbody>\n        <tr ng-repeat="item in cart.items">\n          <td class="cart_product">\n            <a href="/store/products/{{item.slug}}"><img ng-src="{{item.image.url}}" alt="item image"></a>\n          </td>\n          <td class="cart_description">\n            <h4><a target="_blank" href="/store/products/{{item.slug}}">{{item.name }}</a></h4>\n            <p>Web ID: {{item.stock.sku}}</p>\n          </td>\n          <td class="cart_price">\n            <p>{{item.price | currency}}</p>\n          </td>\n          <td class="cart_quantity">\n            <div class="cart_quantity_button">\n              <a class="cart_quantity_up" href="" ng-click="cart.modify(item, 1)"> + </a>\n              <input class="cart_quantity_input" ng-model="item.quantity" type="text" name="quantity" value="1" autocomplete="off" size="2">\n              <a class="cart_quantity_down" href="" ng-click="cart.modify(item, -1)"> - </a>\n            </div>\n          </td>\n          <td class="cart_total">\n            <p class="cart_total_price">{{ item.price * item.quantity | currency}}</p>\n          </td>\n          <td class="cart_delete">\n            <a class="cart_quantity_delete" ng-click="cart.remove(item)" href=""><span class="glyphicon glyphicon-trash"></span></a>\n          </td>\n        </tr>\n        </tbody>\n      </table>\n    </div>\n  </div>\n\n';
+},{}],10:[function(require,module,exports){
 /**
  * CartDirective for the shopping cart.
  * @class CartDirective
@@ -2470,9 +2353,9 @@ module.exports = function CartDirective() {
 
 		scope: {},
 		restrict: 'AE',
-		controller: 'CartApplication',
+		controller: ['CartService', require('./CartController')],
 		controllerAs: 'cart',
-		templateUrl: '/assets/partials/seller/cart/cart.html'
+		template: require('./cart.html')
 
 
 	};
@@ -2480,126 +2363,9 @@ module.exports = function CartDirective() {
 
 };
 
-},{}],5:[function(require,module,exports){
-var app = angular.module('seller.cart', ['vlizer.cart', 'seller.templates']);
-
-app.controller('CartApplication', ['CartService', require('./CartApplication')]);
-app.directive('cart', require('./CartDirective'));
-
-},{"./CartApplication":3,"./CartDirective":4}],6:[function(require,module,exports){
-/**
- * AddressElementController is the controller for the address element.
- * @class AddressElementController
- * 
- * @constructor
- *
- */
-module.exports = function AddressElementController () {
-
-var self = {};
-
-
-
-return self;
-
-
-};
-
-
-},{}],7:[function(require,module,exports){
-/**
- * AddressElementDirective for checkout that explicitly requests an email address.
- * @class AddressElementDirective
- *
- * @constructor
- *
- */
-module.exports = function AddressElementDirective() {
-
-	return {
-
-		scope: {
-			title: "@",
-			bind: "=bind",
-			disable: "="
-
-		},
-                require:'ngModel',
-		restrict: 'AE',
-		templateUrl: '/assets/partials/seller/checkout/address.html',
-		controller: [
-
-			function() {
-
-
-
-
-			}
-		]
-	};
-
-};
-
-},{}],8:[function(require,module,exports){
-/**
- * CheckOutController is the controller for the whole checkout process.
- * @class CheckOutController
- *
- * @constructor
- *
- */
-module.exports = function CheckOutController($scope, cartService) {
-
-	var self = {
-
-		order: {
-			customer: {},
-			address: {
-				billing: {
-					name: {}
-				},
-				shipping: {
-					name: {}
-				}
-			}
-		}
-
-	};
-
-	self.SHIP_TO_BILLING = true;
-
-
-	$scope.order = self.order;
-
-	/**
-	 * confirm is called when the user confirms the order.
-	 *
-	 * @method confirm
-	 * @return
-	 *
-	 */
-	self.confirm = function() {
-
-		if (self.SHIP_TO_BILLING)
-			self.order.address.shipping = self.order.address.billing;
-
-		cartService.checkout(self.order).
-		then(function(res) {
-			window.location = "/checkout/success";
-
-		}).
-		then(null, function(res) {
-			window.location = "/checkout/error";
-
-		});
-	};
-
-	return self;
-
-
-};
-
-},{}],9:[function(require,module,exports){
+},{"./CartController":8,"./cart.html":9}],11:[function(require,module,exports){
+module.exports = '    <div class="form-group">\n      <label class="col-md-2 control-label" for="bind">Email*</label>\n      <div class="col-md-10">\n        <input data-ng-model="bind" id="order.email" name="order.email" placeholder="" class="form-control input-md" required="" type="email">\n      </div>\n    </div>\n';
+},{}],12:[function(require,module,exports){
 /**
  * EmailElementDirective for checkout that explicitly requests an email address.
  * @class EmailElementDirective
@@ -2617,31 +2383,218 @@ module.exports = function EmailElementDirective() {
 		restrict: 'AE',
                 require:'ngModel',
 		controllerAs: 'emailElement',
-		templateUrl: '/assets/partials/seller/checkout/email.html',
-		controller: [
+		template: require('./email.html'),
+	};
 
-			function() {
+};
+
+},{"./email.html":11}],13:[function(require,module,exports){
+/**
+ * PaymentSelectController
+ * @class PaymentSelectController
+ * @constructor
+ *
+ */
+module.exports = function PaymentSelectController(paymentService) {
+
+	var self = this;
+	this.options = {};
+
+	(function() {
+
+		paymentService.getPaymentOptions().
+		then(function(res) {
+
+			self.options = res.data;
+
+		});
+
+	}());
 
 
-			}
-		]
 
+
+
+
+
+};
+
+},{}],14:[function(require,module,exports){
+/**
+ * PaymentSelectDirective
+ * @class PaymentSelectDirective
+ * @constructor
+ *
+ */
+module.exports = function PaymentSelectDirective() {
+
+
+	return {
+
+		restrict: 'AE',
+		require: 'ngModel',
+		controller: ['PaymentService', require('./PaymentSelectController')],
+                controllerAs:'select',
+		scope: {
+			ngModel: '=bind'
+		},
+		template: require('./payment-select.html')
+
+
+	};
+
+
+
+};
+
+},{"./PaymentSelectController":13,"./payment-select.html":15}],15:[function(require,module,exports){
+module.exports = '<div class="form-group">\n  <div class="col-md-12">\n    <ul>\n<li ng-repeat="option in select.options">\n        <label>\n          <input type="radio" checked ng-model="bind" value="{{option.value}}">{{option.name}}</label>\n      </li>      \n    </ul>\n  </div>\n</div>\n';
+},{}],16:[function(require,module,exports){
+var app = angular.module('estore', []);
+
+app.factory('CartService', ['$http', require('./services/CartService')]).
+factory('PaymentService', ['$http', require('./services/PaymentService')]).
+directive('esAddress', require('./components/address')).
+directive('esCart', require('./components/cart')).
+directive('esEmail', require('./components/email')).
+directive('esPaymentSelect', require('./components/payment-select')).
+directive('esAddToCart', require('./components/add-to-cart'));
+
+},{"./components/add-to-cart":5,"./components/address":7,"./components/cart":10,"./components/email":12,"./components/payment-select":14,"./services/CartService":17,"./services/PaymentService":18}],17:[function(require,module,exports){
+/**
+ * CartService is a wrapper around the cart endpoints.
+ * @class CartService
+ *
+ * @constructor
+ *
+ */
+module.exports = function CartService($http) {
+
+
+	var self = {};
+
+
+	/**
+	 * add and item to the cart.
+	 *
+	 * If the quantity is not specified, the default of 1 is assumed.
+	 * The id should be the _id field of the product used in the database.
+	 *
+	 *
+	 * @method add
+	 * @param {String} id
+	 * @param {Number} quantity=1
+	 * @return {HttpPromise}
+	 *
+	 */
+	self.add = function(id, quantity) {
+		quantity = quantity || 1;
+
+		return $http.put('/_/cart/items/' + id, {
+			_id: id,
+			quantity: quantity
+		});
+
+
+	};
+
+	/**
+	 * remove issues a request to remove an item from the cart.
+	 *
+	 * @method remove
+	 * @param {String} id
+	 * @return {HttpPromise}
+	 *
+	 */
+	self.remove = function(id) {
+
+		return $http.delete('/_/cart/items/' + id);
+
+	};
+
+	/**
+	 * exists issues a request to determine if an item is in the cart.
+	 *
+	 * @method exists
+	 * @param {String} id
+	 * @return {HttpPromise}
+	 *
+	 */
+	self.exists = function(id) {
+
+		return $http.head('/_/cart/items/' + id);
+	};
+
+	/**
+	 * get issues a request for the items in the cart.
+	 *
+	 * @method get
+	 * @return {HttpPromise}
+	 *
+	 */
+	self.get = function() {
+
+		return $http.get('/_/cart/items');
 
 
 
 	};
 
+	/**
+	 * checkout issues a request to checkout the cart.
+	 *
+	 * @method checkout
+	 * @return {HttpPromise}
+	 *
+	 */
+	self.checkout = function(checkout) {
+
+		return $http.post('/_/checkout/transactions', checkout);
+
+	};
+
+
+	return self;
+
+
+
+
 };
 
-},{}],10:[function(require,module,exports){
-var app = angular.module('seller.checkout', ['vlizer.cart']);
+},{}],18:[function(require,module,exports){
+/**
+ * PaymentService is a wrapper for the payments endpoints.
+ * @class PaymentService
+ *
+ * @constructor
+ * @param {Object} $http
+ *
+ */
+module.exports = function PaymentService($http) {
 
-app.directive('email', [require('./EmailElementDirective')]);
-app.directive('address', [require('./AddressElementDirective')]);
-app.controller('AddressElementController', [require('./AddressElementController')]);
-app.controller('CheckOutController', ['$scope', 'CartService', require('./CheckOutController')]);
+return {
+	/**
+	 * getPaymentOptions returns a list of options for payment.
+	 *
+	 * @method getPaymentOptions
+	 * @return {HttpService}
+	 *
+	 */
+  getPaymentOptions : function() {
 
-},{"./AddressElementController":6,"./AddressElementDirective":7,"./CheckOutController":8,"./EmailElementDirective":9}],11:[function(require,module,exports){
+		return $http.get('/_/payments/options');
+
+
+	}
+};
+
+
+
+
+
+};
+
+},{}],19:[function(require,module,exports){
 /**
  * @license AngularJS v1.2.20
  * (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -24464,380 +24417,18 @@ var styleDirective = valueFn({
 })(window, document);
 
 !window.angular.$$csp() && window.angular.element(document).find('head').prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\\:form{display:block;}.ng-animate-block-transitions{transition:0s all!important;-webkit-transition:0s all!important;}.ng-hide-add-active,.ng-hide-remove{display:block!important;}</style>');
-},{}],12:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 require('../lib/angular');
-require('../vlizer');
-require('../templates');
-require('../product');
-require('../cart');
-require('../checkout');
+require('../estore-angular');
 
-var app = angular.module('seller', ['seller.product', 'seller.cart', 'seller.checkout']);
+var app = angular.module('seller', ['estore']);
 
-app.factory('EventEmitter', [require('events').EventEmitter]);
+app.controller('CheckOut', ['$scope', 'CartService', require('../controllers/CheckOut')]);
+
 angular.element(document).ready(function() {
 
 	angular.bootstrap(document, ['seller']);
 
 });
 
-},{"../cart":5,"../checkout":10,"../lib/angular":11,"../product":15,"../templates":16,"../vlizer":19,"events":2}],13:[function(require,module,exports){
-/**
- * AddButton is the controller for the AddButtonDirective.
- * @class AddButton
- *
- * @constructor
- *
- */
-module.exports = function AddButton(cart, $scope) {
-
-	var self = {
-		id: $scope.id,
-		quantity: "1",
-	};
-
-	/**
-	 * addToCart adds the item to the cart.
-	 *
-	 * @method addToCart
-	 * @return
-	 *
-	 */
-	self.addToCart = function() {
-
-		cart.add(self.id, self.quantity).
-		then(function() {
-
-			window.location = '/cart?itemAdded=' + self.id;
-
-
-		});
-
-	};
-
-
-	return self;
-
-
-};
-
-},{}],14:[function(require,module,exports){
-/**
- * AddButtonDirective is a directive for providing the
- * add to cart button's functionality.
- *
- * @class AddButtonDirective
- * @constructor
- *
- */
-module.exports = function AddButtonDirective() {
-	return {
-
-		scope: {
-			'id': '@'
-		},
-		restrict: 'AE',
-		controller: 'AddButton',
-		controllerAs: 'product',
-		template: '<label>Quantity:</label>' +
-			'<input type="text" value="1" ng-model="product.quantity">' +
-			'<button ng-click="product.addToCart()" ' +
-			'class="btn btn-fefault cart" type="button">' +
-			'<i class="fa fa-shopping-cart"></i>' +
-			' Add to cart' +
-			'</button>'
-	};
-
-};
-
-},{}],15:[function(require,module,exports){
-var app = angular.module('seller.product', ['vlizer.cart']);
-
-app.controller('AddButton', ['CartService', '$scope',  require('./AddButton')]);
-app.directive('addButton', require('./AddButtonDirective'));
-
-},{"./AddButton":13,"./AddButtonDirective":14}],16:[function(require,module,exports){
-angular.module('seller.templates', []).run(['$templateCache', function($templateCache) {
-  $templateCache.put('/assets/partials/seller/cart/cart.html',
-    '<div class="table-responsive cart_info" ng-init="cart.getItems()">\n' +
-    '      <table class="table table-condensed">\n' +
-    '        <thead>\n' +
-    '          <tr class="cart_menu">\n' +
-    '            <td class="image">Item</td>\n' +
-    '            <td class="description"></td>\n' +
-    '            <td class="price">Price</td>\n' +
-    '            <td class="quantity">Quantity</td>\n' +
-    '            <td class="total">Total</td>\n' +
-    '            <td></td>\n' +
-    '          </tr>\n' +
-    '        </thead>\n' +
-    '        <tbody>\n' +
-    '        <tr ng-repeat="item in cart.items">\n' +
-    '          <td class="cart_product">\n' +
-    '            <a href="/store/products/{{item.slug}}"><img ng-src="{{item.image.url}}" alt="item image"></a>\n' +
-    '          </td>\n' +
-    '          <td class="cart_description">\n' +
-    '            <h4><a target="_blank" href="/store/products/{{item.slug}}">{{item.name }}</a></h4>\n' +
-    '            <p>Web ID: {{item.stock.sku}}</p>\n' +
-    '          </td>\n' +
-    '          <td class="cart_price">\n' +
-    '            <p>{{item.price | currency}}</p>\n' +
-    '          </td>\n' +
-    '          <td class="cart_quantity">\n' +
-    '            <div class="cart_quantity_button">\n' +
-    '              <a class="cart_quantity_up" href="" ng-click="cart.modify(item, 1)"> + </a>\n' +
-    '              <input class="cart_quantity_input" ng-model="item.quantity" type="text" name="quantity" value="1" autocomplete="off" size="2">\n' +
-    '              <a class="cart_quantity_down" href="" ng-click="cart.modify(item, -1)"> - </a>\n' +
-    '            </div>\n' +
-    '          </td>\n' +
-    '          <td class="cart_total">\n' +
-    '            <p class="cart_total_price">{{ item.price * item.quantity | currency}}</p>\n' +
-    '          </td>\n' +
-    '          <td class="cart_delete">\n' +
-    '            <a class="cart_quantity_delete" ng-click="cart.remove(item)" href=""><span class="glyphicon glyphicon-trash"></span></a>\n' +
-    '          </td>\n' +
-    '        </tr>\n' +
-    '        </tbody>\n' +
-    '      </table>\n' +
-    '    </div>\n' +
-    '  </div>\n' +
-    '\n' +
-    '');
-  $templateCache.put('/assets/partials/seller/checkout/address.html',
-    '<div class="form-group">\n' +
-    '  <label class="col-md-2 control-label" for="bind.name.first">Name*</label>\n' +
-    '  <div class="col-md-5">\n' +
-    '    <input ng-disabled="disable" ng-model="bind.name.first" id="bind.name.first" name="order[customer][name][first]" placeholder="First" class="form-control input-md" required type="text">\n' +
-    '\n' +
-    '  </div>\n' +
-    '  <div class="col-md-5">\n' +
-    '    <input ng-disabled="disable" data-ng-model="bind.name.last" id="bind.name.last" name="order[customer][name][last]" placeholder="Last" class="form-control input-md" required type="text">\n' +
-    '  </div>\n' +
-    '</div>\n' +
-    '<div class="form-group">\n' +
-    '  <label class="col-md-2 control-label" for="bind.company">Company</label>\n' +
-    '  <div class="col-md-10">\n' +
-    '    <input ng-disabled="disable" ng-model="bind.company" id="bind.customer.company" name="bind.customer.company" placeholder="" class="form-control input-md" required="" type="text">\n' +
-    '  </div>\n' +
-    '</div>\n' +
-    '<div class="form-group">\n' +
-    '  <label class="col-md-2 control-label" for="bind.customer.address.street1">Address</label>\n' +
-    '  <div class="col-md-10">\n' +
-    '    <input ng-dis/abled="disable" ng-model="bind.street1" id="bind.customer.address.street1" name="bind.customer.address.street1" placeholder="" class="form-control input-md" required="" type="text">\n' +
-    '  </div>\n' +
-    '</div>\n' +
-    '<div class="form-group">\n' +
-    '  <label class="col-md-2 control-label" for="bind.customer.address.street2"></label>\n' +
-    '  <div class="col-md-10">\n' +
-    '    <input ng-disabled="disable" data-ng-model="bind.street2" id="bind.customer.address.street2" name="bind.customer.address.street2" placeholder="" class="form-control input-md" required="" type="text">\n' +
-    '  </div>\n' +
-    '</div>\n' +
-    '<div class="form-group">\n' +
-    '  <label class="col-md-2 control-label" for="bind.customer.address.city">City</label>\n' +
-    '  <div class="col-md-10">\n' +
-    '    <input ng-disabled="disable" data-ng-model="bind.city" id="bind.customer.address.city" name="bind.customer.address.city" placeholder="" class="form-control input-md" required="" type="text">\n' +
-    '  </div>\n' +
-    '</div>\n' +
-    '\n' +
-    '<!-- Text input-->\n' +
-    '<div class="form-group">\n' +
-    '  <label class="col-md-2 control-label" for="order[phone]">Phone*</label>\n' +
-    '  <div class="col-md-10">\n' +
-    '    <input ng-disabled="disable" data-ng-model="bind.phone" id="order[phone]" name="order[phone]" placeholder="868-777-7777" class="form-control input-md" type="text" data-ng-pattern="/^\\s*(?:\\+?(\\d{1,3}))?[-. (]*(\\d{3})?[-. )]*(\\d{3})[-. ]*(\\d{4})(?: *x(\\d+))?\\s*$/" required>\n' +
-    '\n' +
-    '  </div>\n' +
-    '</div>\n' +
-    '');
-  $templateCache.put('/assets/partials/seller/checkout/addressx.html',
-    '<div class="panel panel-default">\n' +
-    '  <div class="panel-heading">\n' +
-    '    <h4>{{title}}</h4>\n' +
-    '  </div>\n' +
-    '  <div class="panel-body">\n' +
-    '    <div class="form-group">\n' +
-    '      <label class="col-md-2 control-label" for="bind.name.first">Name*</label>\n' +
-    '      <div class="col-md-5">\n' +
-    '        <input data-ng-model="bind.name.first" id="bind.name.first" name="order[customer][name][first]" placeholder="First" class="form-control input-md" required type="text">\n' +
-    '\n' +
-    '      </div>\n' +
-    '      <div class="col-md-5">\n' +
-    '        <input data-ng-model="bind.name.last" id="bind.name.last" name="order[customer][name][last]" placeholder="Last" class="form-control input-md" required type="text">\n' +
-    '      </div>\n' +
-    '    </div>\n' +
-    '    <div class="form-group">\n' +
-    '      <label class="col-md-2 control-label" for="bind.company">Company</label>\n' +
-    '      <div class="col-md-10">\n' +
-    '        <input data-ng-model="bind.company" id="bind.customer.company" name="bind.customer.company" placeholder="" class="form-control input-md" required="" type="text">\n' +
-    '      </div>\n' +
-    '    </div>\n' +
-    '    <div class="form-group">\n' +
-    '      <label class="col-md-2 control-label" for="bind.customer.address.street1">Address</label>\n' +
-    '      <div class="col-md-10">\n' +
-    '        <input data-ng-model="bind.street1" id="bind.customer.address.street1" name="bind.customer.address.street1" placeholder="" class="form-control input-md" required="" type="text">\n' +
-    '      </div>\n' +
-    '    </div>\n' +
-    '    <div class="form-group">\n' +
-    '      <label class="col-md-2 control-label" for="bind.customer.address.street2"></label>\n' +
-    '      <div class="col-md-10">\n' +
-    '        <input data-ng-model="bind.street2" id="bind.customer.address.street2" name="bind.customer.address.street2" placeholder="" class="form-control input-md" required="" type="text">\n' +
-    '      </div>\n' +
-    '    </div>\n' +
-    '    <div class="form-group">\n' +
-    '      <label class="col-md-2 control-label" for="bind.customer.address.city">City</label>\n' +
-    '      <div class="col-md-10">\n' +
-    '        <input data-ng-model="bind.city" id="bind.customer.address.city" name="bind.customer.address.city" placeholder="" class="form-control input-md" required="" type="text">\n' +
-    '      </div>\n' +
-    '    </div>\n' +
-    '\n' +
-    '    <!-- Text input-->\n' +
-    '    <div class="form-group">\n' +
-    '      <label class="col-md-2 control-label" for="order[phone]">Phone*</label>\n' +
-    '      <div class="col-md-10">\n' +
-    '        <input data-ng-model="bind.phone" id="order[phone]" name="order[phone]" placeholder="868-777-7777" class="form-control input-md" type="text" data-ng-pattern="/^\\s*(?:\\+?(\\d{1,3}))?[-. (]*(\\d{3})?[-. )]*(\\d{3})[-. ]*(\\d{4})(?: *x(\\d+))?\\s*$/"\n' +
-    '        required>\n' +
-    '\n' +
-    '      </div>\n' +
-    '    </div>\n' +
-    '\n' +
-    '  </div>\n' +
-    '</div>\n' +
-    '');
-  $templateCache.put('/assets/partials/seller/checkout/checkout.html',
-    '<checkout-email bind="order.customer"></checkout-email>\n' +
-    '<div class="row">\n' +
-    '  <div class="col-md-6">\n' +
-    '<checkout-address title="Billing" bind="order.address.billing"></checkout-address>\n' +
-    '<div class="row">\n' +
-    '<checkout-ship-to-bill copy="order.address.billing" to="order.address.shipping"></checkout-ship-to-bill>\n' +
-    '</div>\n' +
-    '</div>\n' +
-    '<div class="col-md-6">\n' +
-    '<checkout-address title="Shipping" bind="order.address.shipping" ng-show="!shipper.hide"></checkout-address>\n' +
-    '</div>\n' +
-    '</div>\n' +
-    '<a class="btn btn-success" href="#" ng-click="checkout.confirm()"> Confirm</a>\n' +
-    '\n' +
-    '');
-  $templateCache.put('/assets/partials/seller/checkout/email.html',
-    '<div class="form-group">\n' +
-    '      <label class="col-md-2 control-label" for="bind">Email*</label>\n' +
-    '      <div class="col-md-10">\n' +
-    '        <input data-ng-model="bind" id="order.email" name="order.email" placeholder="" class="form-control input-md" required="" type="email">\n' +
-    '      </div>\n' +
-    '    </div>\n' +
-    '');
-  $templateCache.put('/assets/partials/seller/checkout/ship-to-bill.html',
-    '<p><input class="form-control" type="checkbox" data-ng-click="shipper.flip()">Ship items to the billing address.</p>\n' +
-    '');
-}]);
-
-},{}],17:[function(require,module,exports){
-/**
- * CartService is a wrapper around the cart endpoints.
- * @class CartService
- *
- * @constructor
- *
- */
-module.exports = function CartService($http) {
-
-
-	var self = {};
-
-
-	/**
-	 * add and item to the cart.
-	 *
-	 * If the quantity is not specified, the default of 1 is assumed.
-	 * The id should be the _id field of the product used in the database.
-	 *
-	 *
-	 * @method add
-	 * @param {String} id
-	 * @param {Number} quantity=1
-	 * @return {HttpPromise}
-	 *
-	 */
-	self.add = function(id, quantity) {
-		quantity = quantity || 1;
-
-		return $http.put('/_/cart/items/' + id, {
-			_id: id,
-			quantity: quantity
-		});
-
-
-	};
-
-	/**
-	 * remove issues a request to remove an item from the cart.
-	 *
-	 * @method remove
-	 * @param {String} id
-	 * @return {HttpPromise}
-	 *
-	 */
-	self.remove = function(id) {
-
-		return $http.delete('/_/cart/items/' + id);
-
-	};
-
-	/**
-	 * exists issues a request to determine if an item is in the cart.
-	 *
-	 * @method exists
-	 * @param {String} id
-	 * @return {HttpPromise}
-	 *
-	 */
-	self.exists = function(id) {
-
-		return $http.head('/_/cart/items/' + id);
-	};
-
-	/**
-	 * get issues a request for the items in the cart.
-	 *
-	 * @method get
-	 * @return {HttpPromise}
-	 *
-	 */
-	self.get = function() {
-
-		return $http.get('/_/cart/items');
-
-
-
-	};
-
-	/**
-	 * checkout issues a request to checkout the cart.
-	 *
-	 * @method checkout
-	 * @return {HttpPromise}
-	 *
-	 */
-	self.checkout = function(checkout) {
-
-		return $http.post('/_/checkout/transactions', checkout);
-
-	};
-
-
-	return self;
-
-
-
-
-};
-
-},{}],18:[function(require,module,exports){
-var app = angular.module('vlizer.cart', []);
-app.factory('CartService', ['$http', require('./CartService')]);
-
-},{"./CartService":17}],19:[function(require,module,exports){
-require('./cart');
-angular.module('vlizer', ['vlizer.cart']);
-
-},{"./cart":18}]},{},[12])
+},{"../controllers/CheckOut":2,"../estore-angular":16,"../lib/angular":19}]},{},[20])

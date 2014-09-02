@@ -22,7 +22,7 @@ module.exports = function Directory(path) {
 		if ((folder === '') || (!folder))
 			return false;
 
-		return fs.existsSync(_path + '/' + folder);
+		return fs.existsSync(this._path + '/' + folder);
 
 	};
 
@@ -31,12 +31,27 @@ module.exports = function Directory(path) {
 	 *
 	 * @method get
 	 * @param {String} folder
-	 * @return {Object}
+	 * @param {Boolean} recursive
+	 * @return {Object|Array}
 	 *
 	 */
-	this.get = function(folder) {
+	this.get = function(folder, recursive) {
 
-		return require(this._path + '/' + folder);
+		if (!recursive)
+			return require(this._path + '/' + folder);
+
+		var list = fs.readdirSync(this._path + '/' + folder);
+		var files = [];
+		list.forEach(function(file) {
+
+			if (file == '.gitkeep')
+				return;
+
+			files.push(require(this._path + '/' + folder + '/' + file));
+
+		});
+
+		return files;
 
 	};
 
@@ -49,7 +64,7 @@ module.exports = function Directory(path) {
 	 */
 	this.exists = function() {
 
-		return fs.existsSync(_path);
+		return fs.existsSync(this._path);
 
 	};
 

@@ -37,7 +37,8 @@
     "partialify": "^3.1.1",
     "time-grunt": "^0.3.2",
     "uglifyify": "^2.4.0",
-    "uglifyjs": "^2.3.6"
+    "uglifyjs": "^2.3.6",
+    "watchify": "^1.0.2"
   },
   "dependencies": {
     "angular-spinner": "^0.5.0",

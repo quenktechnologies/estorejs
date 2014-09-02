@@ -15,18 +15,7 @@ module.exports = function EmailElementDirective() {
 		restrict: 'AE',
                 require:'ngModel',
 		controllerAs: 'emailElement',
-		templateUrl: '/assets/partials/seller/checkout/email.html',
-		controller: [
-
-			function() {
-
-
-			}
-		]
-
-
-
-
+		template: require('./email.html'),
 	};
 
 };
