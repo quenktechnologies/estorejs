@@ -8,6 +8,7 @@ var System = require('./core/sys/System');
 var NunjucksMongoose = require('nunjucks-mongoose');
 var Subscription = require('./core/util/Subscription');
 var fs = require('fs');
+var CompositeExtension = require('./core/util/CompositeExtension');
 var o_O; //a nonsense variable (think /dev/null). 
 
 
@@ -144,6 +145,8 @@ module.exports = function Estore(keystone) {
 		this.subs = new Subscription(this.ebus);
 		this.theme = new Theme(process.cwd() + '/themes', process.env.THEME || 'default');
 		this.extras = new Extras(process.cwd() + '/extras');
+                this.extensions = new CompositeExtension();
+                this.Extension = require('./core/util/Extension');
 		this.nunjucksEnvironment = NFactory.getEnvironment(this.theme.getTemplatePath(), this.app);
 		//		this.plugins = fs.readdirSync('./plugins');
 		//		this.plugins.splice(this.plugins.indexOf('.gitkeep'), 1);
