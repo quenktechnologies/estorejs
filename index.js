@@ -86,14 +86,7 @@ module.exports = function Estore(keystone) {
 	 *
 	 *
 	 */
-	this.navigation = {
-		'products': ['product_categories', 'products'],
-		'sales': ['invoices'],
-		//	'clients': 'clients',
-		//	'pages': 'pages',
-		//	'posts': 'posts',
-
-	};
+	this.navigation = {};
 
 	/**
 	 * gateways is an array containing the gateway modules that are enabled.
@@ -127,12 +120,6 @@ module.exports = function Estore(keystone) {
 	 * @type {Array}
 	 */
 	this.blacklist = [];
-
-
-
-
-
-
 
 
 	/**
@@ -295,19 +282,21 @@ module.exports = function Estore(keystone) {
 
 			if (this.extras.has('routes'))
 				routes.push.apply(routes, this.get('routes', true));
+			//XXX in future routes will be grouped in a logical way
+			//so that they can be disabled by group or individually.
+			if (this.blacklist.indexOf('api') < 0) {
 
-			routes.forEach(function(Route) {
-				route = new Route(this);
-				route.main(app);
-			}.bind(this));
+				routes.forEach(function(Route) {
+					route = new Route(this);
+					route.main(app);
+				}.bind(this));
 
-			this.gateways.forEach(function(gw) {
+				this.extensions.onRouting(app);
+			}else{
 
-				gw.routes(app);
+                          system.log.warn('Disabling api!');
 
-			});
-
-			this.extensions.onRouting(app);
+                        }
 
 			var theme = this.theme.get('package.json').estore;
 
@@ -371,7 +360,6 @@ module.exports = function Estore(keystone) {
 		this.keystone.start({
 			onMount: function() {
 				system.log.info('Estore started on port ' + this.keystone.get('port'));
-				console.log(this.blacklist);
 			}.bind(this)
 		});
 
@@ -399,9 +387,11 @@ module.exports = function Estore(keystone) {
 		if (model.DEFAULT_COLUMNS)
 			list.defaultColumns = model.DEFAULT_COLUMNS;
 
+
 		list.add.apply(list, model.fields);
 
 		var O_o = model.run && model.run(list, this.keystone);
+		O_o = model.navigate && model.navigate(this.navigation);
 
 		list.register();
 

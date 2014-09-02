@@ -7,13 +7,7 @@
  */
 module.exports = function Extension(store) {
 
-	/**
-	 * blacklist
-	 *
-	 * @property blacklist
-	 * @type {Array}
-	 */
-	this.blacklist = [];
+
 
 
 	/**

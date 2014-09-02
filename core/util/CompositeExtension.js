@@ -7,6 +7,12 @@ var Composite = require('./Composite');
  */
 module.exports = function CompositeExtension() {
 
+	/**
+	 * blacklist
+	 *
+	 * @property blacklist
+	 * @type {Array}
+	 */
 	this.blacklist = [];
 
 	var add = this.add.bind(this);
@@ -20,7 +26,10 @@ module.exports = function CompositeExtension() {
 	 *
 	 */
 	this.add = function(ext) {
+
+          if(ext.blacklist)
 		this.blacklist.push.apply(this.blacklist, ext.blacklist);
+
 		add(ext);
 
 	};
