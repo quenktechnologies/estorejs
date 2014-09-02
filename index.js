@@ -145,11 +145,15 @@ module.exports = function Estore(keystone) {
 		this.subs = new Subscription(this.ebus);
 		this.theme = new Theme(process.cwd() + '/themes', process.env.THEME || 'default');
 		this.extras = new Extras(process.cwd() + '/extras');
-                this.extensions = new CompositeExtension();
-                this.Extension = require('./core/util/Extension');
+		this.extensions = new CompositeExtension();
+		this.Extension = require('./core/util/Extension');
 		this.nunjucksEnvironment = NFactory.getEnvironment(this.theme.getTemplatePath(), this.app);
-		//		this.plugins = fs.readdirSync('./plugins');
-		//		this.plugins.splice(this.plugins.indexOf('.gitkeep'), 1);
+
+		if (this.extras.has('extensions'))
+			this.extras.get('extensions', true).forEach(function(Ext) {
+				this.extensions.add(new Ext(this));
+			});
+
 		o_O = this.theme.exists() || this.theme.use('default');
 		this.keystone.connect(this.app);
 
@@ -200,7 +204,7 @@ module.exports = function Estore(keystone) {
 			this.models.push(require('./core/models/Page'));
 
 		if (this.extras.has('models'))
-			this.models.push.apply(models, this.extras.get('models', true));
+			this.models.push.apply(this.models, this.extras.get('models', true));
 
 		this.models.forEach(function(Model) {
 
@@ -208,6 +212,7 @@ module.exports = function Estore(keystone) {
 
 		}.bind(this));
 
+		this.extensions.onModels(this);
 		this.ebus.emit(this.events.MODEL_REGISTRATION, this);
 		this.keystone.set('user model', 'User');
 		this.keystone.set('nav', this.navigation);
@@ -290,6 +295,8 @@ module.exports = function Estore(keystone) {
 				gw.routes(app);
 
 			});
+
+			this.extensions.onRouting(app);
 
 			var theme = this.theme.get('package.json').estore;
 
