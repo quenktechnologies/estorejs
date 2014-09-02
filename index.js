@@ -92,7 +92,6 @@ module.exports = function Estore(keystone) {
 		//	'clients': 'clients',
 		//	'pages': 'pages',
 		//	'posts': 'posts',
-		'settings': ['general_settings', 'store_settings', 'checkout_settings', 'users']
 
 	};
 
@@ -121,6 +120,15 @@ module.exports = function Estore(keystone) {
 	 */
 	this.extras = undefined;
 
+	/**
+	 * blacklist
+	 *
+	 * @property blacklist
+	 * @type {Array}
+	 */
+	this.blacklist = [];
+
+
 
 
 
@@ -145,14 +153,17 @@ module.exports = function Estore(keystone) {
 		this.subs = new Subscription(this.ebus);
 		this.theme = new Theme(process.cwd() + '/themes', process.env.THEME || 'default');
 		this.extras = new Extras(process.cwd() + '/extras');
-		this.extensions = new CompositeExtension();
 		this.Extension = require('./core/util/Extension');
+		this.extensions = new CompositeExtension(this);
 		this.nunjucksEnvironment = NFactory.getEnvironment(this.theme.getTemplatePath(), this.app);
 
 		if (this.extras.has('extensions'))
-			this.extras.get('extensions', true).forEach(function(Ext) {
-				this.extensions.add(new Ext(this));
-			}.bind(this));
+			this.extras.get('extensions', true).forEach(
+				function(Ext) {
+					this.extensions.add(new Ext(this));
+				}.bind(this));
+
+		this.blacklist.push.apply(this.blacklist, this.extensions.blacklist);
 
 		o_O = this.theme.exists() || this.theme.use('default');
 		this.keystone.connect(this.app);
@@ -360,7 +371,7 @@ module.exports = function Estore(keystone) {
 		this.keystone.start({
 			onMount: function() {
 				system.log.info('Estore started on port ' + this.keystone.get('port'));
-
+				console.log(this.blacklist);
 			}.bind(this)
 		});
 
@@ -380,6 +391,8 @@ module.exports = function Estore(keystone) {
 	 */
 	this.onModelFound = function(model) {
 
+		if (this.blacklist.indexOf(model.NAME) > -1)
+			return system.log.warn('Model ' + model.NAME + ' has been disabled!');
 		var options = model.options || {};
 		var list = new this.keystone.List(model.NAME, options);
 

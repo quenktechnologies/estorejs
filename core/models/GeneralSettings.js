@@ -9,7 +9,7 @@ module.exports = function GeneralSettings(store) {
 		label: 'General',
 		singular: 'General Configuration',
 		plural: 'General Configurations',
-                track: true
+		track: true
 
 	};
 	this.fields = [{
@@ -25,6 +25,20 @@ module.exports = function GeneralSettings(store) {
 		}
 
 	}];
+
+	/**
+	 * navigate
+	 *
+	 * @method navigate
+	 * @param {Object} nav
+	 * @return
+	 *
+	 */
+	this.navigate = function(nav) {
+
+		nav.settings = ['general_settings', 'store_settings', 'checkout_settings', 'users'];
+
+	};
 
 	/**
 	 * run

@@ -7,6 +7,25 @@ var Composite = require('./Composite');
  */
 module.exports = function CompositeExtension() {
 
+	this.blacklist = [];
+
+	var add = this.add.bind(this);
+
+	/**
+	 * add
+	 *
+	 * @method add
+	 * @param {Extension} ext
+	 * @return
+	 *
+	 */
+	this.add = function(ext) {
+		this.blacklist.push.apply(this.blacklist, ext.blacklist);
+		add(ext);
+
+	};
+
+
 	/**
 	 * onRouting
 	 *

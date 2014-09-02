@@ -16,6 +16,19 @@ module.exports = function(store) {
 	this.fields = [require('./InvoiceFields')(t)];
 
 	/**
+	 * navigate
+	 *
+	 * @method navigate
+	 * @param {Object} nav
+	 * @return
+	 *
+	 */
+	this.navigate = function(nav) {
+		nav.sales = ['invoices'];
+
+	};
+
+	/**
 	 * run
 	 *
 	 * @method run

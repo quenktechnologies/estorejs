@@ -8,6 +8,15 @@
 module.exports = function Extension(store) {
 
 	/**
+	 * blacklist
+	 *
+	 * @property blacklist
+	 * @type {Array}
+	 */
+	this.blacklist = [];
+
+
+	/**
 	 * onRouting is called to setup routes.
 	 *
 	 * @method onRouting

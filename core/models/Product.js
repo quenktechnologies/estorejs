@@ -88,6 +88,19 @@ module.exports = function(store) {
 	];
 
 	/**
+	 * navigate
+	 *
+	 * @method navigate
+	 * @param {Object} nav
+	 * @return
+	 *
+	 */
+	this.navigate = function(nav) {
+		nav.products = ['product_categories', 'products'];
+
+	};
+
+	/**
 	 * run
 	 *
 	 * @method run
