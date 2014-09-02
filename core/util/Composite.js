@@ -40,8 +40,7 @@ module.exports = function Composite() {
 			var f = member[method];
 
 			if (!f) throw new Error("Method '" + method + "' not found!");
-
-			f.call(member, args);
+			f.apply(member, args);
 
 		});
 
