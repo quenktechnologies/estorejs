@@ -9,7 +9,8 @@ pids
 logs
 results
 node_modules
-themes/current
+!themes/default
+themes
 npm-debug.log
 .mongo
 .env
