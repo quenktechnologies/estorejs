@@ -152,7 +152,7 @@ module.exports = function Estore(keystone) {
 		if (this.extras.has('extensions'))
 			this.extras.get('extensions', true).forEach(function(Ext) {
 				this.extensions.add(new Ext(this));
-			});
+			}.bind(this));
 
 		o_O = this.theme.exists() || this.theme.use('default');
 		this.keystone.connect(this.app);

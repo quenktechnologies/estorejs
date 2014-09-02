@@ -49,7 +49,7 @@ module.exports = function Directory(path) {
 
 			files.push(require(this._path + '/' + folder + '/' + file));
 
-		});
+		}.bind(this));
 
 		return files;
 
