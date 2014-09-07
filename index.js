@@ -122,17 +122,20 @@ module.exports = function Estore(keystone) {
 	this.extras = undefined;
 
 	/**
+	 * extensions
+	 *
+	 * @property extensions
+	 * @type {Array}
+	 */
+	this.extensions = undefined;
+
+	/**
 	 * blacklist
 	 *
 	 * @property blacklist
 	 * @type {Array}
 	 */
 	this.blacklist = [];
-
-
-
-
-
 
 	/**
 	 * _init initializes the application.
@@ -183,9 +186,7 @@ module.exports = function Estore(keystone) {
 	 */
 	this._gatewayRegistration = function() {
 
-		var CashGateway = require('./core/gateways/CashGateway');
 
-		this.gateways.push(new CashGateway(this));
 
 
 	};
