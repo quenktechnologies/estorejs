@@ -6,6 +6,8 @@ var EStore = require('../../index');
 var store = new EStore(require('keystone'));
 store.start();
 var request = require('supertest')(store.app);
+var Cookie = require('../util/Cookie');
+var cookie;
 
 beforeEach(function() {
 
@@ -59,13 +61,15 @@ describe('on checking out a transaction', function(done) {
 	});
 
 	it('will checkout cash workflows', function(done) {
-
 		request.
 		get('/').
-		set('Content-Type', 'application/json').
 		end(function(err, res) {
+			cookie = new Cookie(res.headers['set-cookie']);
+			console.log(cookie.read('XSRF-TOKEN', true));
 			//should have the csrf token here.
 			request.post('/_/checkout/transactions').
+			set('X-XSRF-TOKEN', unescape(cookie.read('XSRF-TOKEN', true))).
+			set('Cookie', unescape('keystone.sid=' + cookie.read('keystone.sid'))).
 			send(invoice).
 			expect(201, done);
 		});
