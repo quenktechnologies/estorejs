@@ -103,7 +103,7 @@ module.exports = function(grunt) {
 
 				files: {
 
-					"public/assets/css/main.css": "less/main/index.less"
+					"public/assets/css/main.css": "less/index.less"
 
 				}
 
@@ -134,7 +134,7 @@ module.exports = function(grunt) {
 
 			},
 			less: {
-				files: ['less/**/*.less'],
+				files: ['less/*.less'],
 				tasks: ['less:build']
 			}
 
@@ -150,6 +150,9 @@ module.exports = function(grunt) {
 		},
 	});
 	grunt.option('stack', true);
+	grunt.loadNpmTasks('grunt-html2js');
+	grunt.loadNpmTasks('grunt-debug-task');
+	grunt.loadNpmTasks('grunt-concurrent');
 	grunt.registerTask('install', ['watch:install']);
 	grunt.registerTask('build', ['watch:build']);
 	grunt.registerTask('default', ['install']);
