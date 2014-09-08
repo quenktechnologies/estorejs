@@ -95,6 +95,21 @@ module.exports = function(grunt) {
 
 
 		},
+		less: {
+			build: {
+				options: {
+					sourceMap: '<%= config.map %>',
+				},
+
+				files: {
+
+					"public/assets/css/main.css": "less/main/index.less"
+
+				}
+
+			}
+
+		},
 
 		watch: {
 
@@ -118,6 +133,10 @@ module.exports = function(grunt) {
 				tasks: ['html2js:main'],
 
 			},
+			less: {
+				files: ['less/**/*.less'],
+				tasks: ['less:build']
+			}
 
 		},
 
@@ -131,9 +150,6 @@ module.exports = function(grunt) {
 		},
 	});
 	grunt.option('stack', true);
-	grunt.loadNpmTasks('grunt-html2js');
-	grunt.loadNpmTasks('grunt-debug-task');
-	grunt.loadNpmTasks('grunt-concurrent');
 	grunt.registerTask('install', ['watch:install']);
 	grunt.registerTask('build', ['watch:build']);
 	grunt.registerTask('default', ['install']);
