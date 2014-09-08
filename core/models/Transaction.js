@@ -26,11 +26,8 @@ module.exports = function Transaction(store) {
 		nocreate: true,
 		noedit: true,
 		hidden: true,
+                track:true
 	};
-
-	this.fields = [{
-
-	}];
 
 	/**
 	 * run
