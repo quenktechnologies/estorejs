@@ -1,3 +1,4 @@
+var Invoice = require('./Invoice');
 /**
  * Transaction represents the state of an order.
  *
@@ -28,12 +29,6 @@ module.exports = function Transaction(store) {
 	};
 
 	this.fields = [{
-		invoice: require('./InvoiceFields')(t),
-		status: {
-			type: t.Select,
-			options: 'pending,comitted,error,rollback,done',
-			default: 'pending'
-		}
 
 	}];
 
@@ -48,7 +43,11 @@ module.exports = function Transaction(store) {
 	this.run = function(list) {
 
 		list.schema.add({
-			items: Array
+			invoice: [store.keystone.list('Invoice').schema],
+			status: {
+				type: String,
+				default: 'created'
+			}
 		});
 
 		list.schema.statics.getPending = function(limit) {
