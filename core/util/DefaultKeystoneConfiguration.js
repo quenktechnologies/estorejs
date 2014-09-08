@@ -11,7 +11,7 @@ module.exports = function DefaultKeystoneConfiguration(theme) {
 
 		'name': process.env.DOMAIN || 'Estore',
 		'brand': process.env.DOMAIN || 'Estore',
-		'auto update': true,
+		'auto update': process.env.KEYSTONE_AUTO_UPDATE || true,
 		'session': true,
 		'session store': 'mongo',
 		'auth': true,
