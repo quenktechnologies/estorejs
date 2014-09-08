@@ -209,10 +209,10 @@ module.exports = function Estore(keystone) {
 			require('./core/models/StoreSettings'),
 			require('./core/models/ProductCategory'),
 			require('./core/models/Product'),
+			require('./core/models/Item'),
 			require('./core/models/Invoice'),
 			require('./core/models/Transaction'),
 			require('./core/models/Address'),
-			require('./core/models/Item')
 		]);
 
 
