@@ -251,7 +251,15 @@ module.exports = function Estore(keystone) {
 			if (req.originalUrl.match(/^\/keystone/))
 				return next();
 
-			Express.csrf()(req, res, next);
+			Express.csrf()(req, res, function(err) {
+				//This prevents 403 errors from being thrown after the csrf middleware.
+				if (err) return res.send(403);
+				next();
+
+
+
+
+			});
 
 		});
 
