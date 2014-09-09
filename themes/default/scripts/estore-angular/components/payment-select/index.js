@@ -10,11 +10,9 @@ module.exports = function PaymentSelectDirective() {
 	return {
 
 		restrict: 'AE',
-		require: 'ngModel',
-		controller: ['PaymentService', require('./PaymentSelectController')],
-                controllerAs:'select',
 		scope: {
-			ngModel: '=bind'
+			model: '=model',
+			options: '=options'
 		},
 		template: require('./payment-select.html')
 

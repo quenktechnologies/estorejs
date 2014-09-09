@@ -2019,13 +2019,13 @@
 
 },{}],2:[function(require,module,exports){
 /**
- * CheckOutController is the controller for the whole checkout process.
- * @class CheckOutController
+ * Checkout is the controller for the whole checkout process.
+ * @class Checkout
  *
  * @constructor
  *
  */
-module.exports = function CheckOutController($scope, cartService) {
+module.exports = function Checkout($scope, cartService, configService) {
 
 	this.order = {
 		customer: {
@@ -2042,6 +2042,11 @@ module.exports = function CheckOutController($scope, cartService) {
 	};
 
 	this.SHIP_TO_BILLING = false;
+	this.paymentOptions = [];
+	this.countries = [{
+		name: 'Trinidad & Tobago'
+	}];
+
 	$scope.order = this.order;
 
 	/**
@@ -2055,7 +2060,6 @@ module.exports = function CheckOutController($scope, cartService) {
 
 		if (this.SHIP_TO_BILLING)
 			this.order.address.shipping = this.order.address.billing;
-		console.log(this.order);
 		cartService.checkout(this.order).
 		then(function(res) {
 			window.location = "/checkout/success";
@@ -2108,6 +2112,28 @@ module.exports = function CheckOutController($scope, cartService) {
 
 	}($scope));
 
+	(function(configService) {
+
+		configService.getPaymentOptions().
+		then(function(res) {
+
+			self.paymentOptions = res.data;
+
+		});
+
+		configService.getCountriesSupported().
+		then(function(res) {
+
+			res.data.forEach(function(each) {
+
+				self.countries.push(each);
+
+			});
+
+		});
+
+	})(configService);
+
 
 
 
@@ -2115,71 +2141,47 @@ module.exports = function CheckOutController($scope, cartService) {
 
 },{}],3:[function(require,module,exports){
 /**
- * AddButton is the controller for the AddButtonDirective.
- * @class AddButton
- *
+ * ProductPage is the controller for the product page.
+ * @class Product
  * @constructor
  *
  */
-module.exports = function AddButton(cart, $scope) {
-
-	var self = {
-		id: $scope.id,
-		quantity: "1",
-	};
+module.exports = function ProductPage() {
 
 	/**
-	 * addToCart adds the item to the cart.
+	 * addSuccess
 	 *
-	 * @method addToCart
+	 * @method addSuccess
 	 * @return
 	 *
 	 */
-	self.addToCart = function() {
+	this.addSuccess = function() {
+		window.location = '/cart';
+	};
 
-		cart.add(self.id, self.quantity).
-		then(function() {
+	/**
+	 * addFailure
+	 *
+	 * @method addFailure
+	 * params
+	 * @return
+	 *
+	 */
+	this.addFailure = function() {
 
-			window.location = '/cart?itemAdded=' + self.id;
 
-
-		});
 
 	};
 
 
-	return self;
+
 
 
 };
 
 },{}],4:[function(require,module,exports){
-module.exports = '<label>Quantity:</label>+\n<input type="text" value="1" ng-model="product.quantity">\n<button ng-click="product.addToCart()" class="btn btn-fefault cart" type="button">\n  <i class="fa fa-shopping-cart"></i> Add to cart +\n</button>\n';
+module.exports = '<ng-form name="addressForm">\n<div class="form-group">\n  <label class="col-md-2 control-label" for="bind.name.first" >Name</label>\n  <div class="col-md-5">\n    <input ng-disabled="disable" ng-model="bind.name.first" id="bind.name.first" name="order[customer][name][first]" placeholder="First" class="form-control input-md" ng-required="required.name" type="text">\n  </div>\n  <div class="col-md-5">\n    <input ng-disabled="disable" data-ng-model="bind.name.last" id="bind.name.last" name="order[customer][name][last]" placeholder="Last" class="form-control input-md" ng-required="required.name" type="text">\n  </div>\n</div>\n<div class="form-group">\n  <label class="col-md-2 control-label" for="bind.company">Company</label>\n  <div class="col-md-10">\n    <input ng-disabled="disable" ng-model="bind.company" id="bind.customer.company" name="bind.address.company" placeholder="" class="form-control input-md" ng-required="required.company" type="text">\n  </div>\n</div>\n<div class="form-group">\n  <label class="col-md-2 control-label" for="bind.customer.address.street1">Address</label>\n  <div class="col-md-10">\n    <input ng-disabled="disable" ng-model="bind.street1" id="bind.address.street1" name="bind.address.street1"  class="form-control input-md" required="required.address" type="text">\n  </div>\n</div>\n<div class="form-group">\n  <label class="col-md-2 control-label" for="bind.customer.street2"></label>\n  <div class="col-md-10">\n    <input ng-disabled="disable" data-ng-model="bind.street2" id="bind.customer.address.street2" name="bind.customer.address.street2" placeholder="" class="form-control input-md" type="text">\n  </div>\n</div>\n<div class="form-group">\n  <label class="col-md-2 control-label" for="bind.city">City</label>\n  <div class="col-md-10">\n    <input ng-disabled="disable" data-ng-model="bind.city" id="bind.address.city" name="bind.address.city"  class="form-control input-md" required="required.city" type="text">\n  </div>\n</div>\n<div class="form-group">\n  <label class="col-md-2 control-label" for="bind.country">Country</label>\n  <div class="col-md-10">\n    <input ng-disabled="disable" data-ng-model="bind.country" id="bind.address.country" name="bind.address.country"  class="form-control input-md" required="required.country" type="text">\n  </div>\n</div>\n<div class="form-group">\n  <label class="col-md-2 control-label" for="order[phone]">Phone*</label>\n  <div class="col-md-10">\n    <input ng-disabled="disable" data-ng-model="bind.phone" id="order[phone]" name="order[phone]" placeholder="777-777-7777" class="form-control input-md" type="text" ng-pattern="/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})?[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/" required="required.phone">\n  </div>\n</div>\n</form>\n';
 },{}],5:[function(require,module,exports){
-/**
- * AddButtonDirective is a directive for providing the
- * add to cart button's functionality.
- *
- * @class AddButtonDirective
- * @constructor
- *
- */
-module.exports = function AddButtonDirective() {
-	return {
-
-		scope: {
-			'id': '@'
-		},
-		restrict: 'AE',
-		controller: ['CartService', '$scope', require('./ButtonController')],
-		controllerAs: 'product',
-		template: require('./add-to-cart.html')	};
-
-};
-
-},{"./ButtonController":3,"./add-to-cart.html":4}],6:[function(require,module,exports){
-module.exports = '<div class="form-group">\n  <label class="col-md-2 control-label" for="bind.name.first">Name*</label>\n  <div class="col-md-5">\n    <input ng-disabled="disable" ng-model="bind.name.first" id="bind.name.first" name="order[customer][name][first]" placeholder="First" class="form-control input-md" required type="text">\n  </div>\n  <div class="col-md-5">\n    <input ng-disabled="disable" data-ng-model="bind.name.last" id="bind.name.last" name="order[customer][name][last]" placeholder="Last" class="form-control input-md" required type="text">\n  </div>\n</div>\n<div class="form-group">\n  <label class="col-md-2 control-label" for="bind.company">Company</label>\n  <div class="col-md-10">\n    <input ng-disabled="disable" ng-model="bind.company" id="bind.customer.company" name="bind.customer.company" placeholder="" class="form-control input-md" required="" type="text">\n  </div>\n</div>\n<div class="form-group">\n  <label class="col-md-2 control-label" for="bind.customer.address.street1">Address</label>\n  <div class="col-md-10">\n    <input ng-disabled="disable" ng-model="bind.street1" id="bind.customer.address.street1" name="bind.customer.address.street1" placeholder="" class="form-control input-md" required="" type="text">\n  </div>\n</div>\n<div class="form-group">\n  <label class="col-md-2 control-label" for="bind.customer.address.street2"></label>\n  <div class="col-md-10">\n    <input ng-disabled="disable" data-ng-model="bind.street2" id="bind.customer.address.street2" name="bind.customer.address.street2" placeholder="" class="form-control input-md" required="" type="text">\n  </div>\n</div>\n<div class="form-group">\n  <label class="col-md-2 control-label" for="bind.city">City</label>\n  <div class="col-md-10">\n    <input ng-disabled="disable" data-ng-model="bind.city" id="bind.customer.address.city" name="bind.customer.address.city" placeholder="" class="form-control input-md" required="" type="text">\n  </div>\n</div>\n<div class="form-group">\n  <label class="col-md-2 control-label" for="order[phone]">Phone*</label>\n  <div class="col-md-10">\n    <input ng-disabled="disable" data-ng-model="bind.phone" id="order[phone]" name="order[phone]" placeholder="868-777-7777" class="form-control input-md" type="text" ng-pattern="/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})?[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/" required>\n  </div>\n</div>\n';
-},{}],7:[function(require,module,exports){
 /**
  * AddressElementDirective for checkout that explicitly requests an email address.
  * @class AddressElementDirective
@@ -2192,33 +2194,276 @@ module.exports = function AddressElementDirective() {
 	return {
 
 		scope: {
-			title: "@",
-			bind: "=ngModel",
-			disable: "="
+			title: '@',
+			bind: '=ngModel',
+			disable: '=',
+			required: {
+                          name: '@'
+
+                        }
 
 		},
 		require: 'ngModel',
 		restrict: 'AE',
 		template: require('./address.html'),
+		controller: ['$scope',
+			function($scope) {
+
+				if ($scope.required == undefined) {
+
+					$scope.required = {
+						name: true,
+						company: false,
+						city: true,
+						phone: true,
+						country: true
+					};
+
+				}
+
+
+			}
+		]
 	};
 
 };
 
-},{"./address.html":6}],8:[function(require,module,exports){
+},{"./address.html":4}],6:[function(require,module,exports){
 /**
- * CartApplication is the main controller for the shopping cart.
- * @class CartApplication
- * @param {CartService} cart
+ * CartAdderController is the controller for the CartAdderControllerDirective.
+ * @class CartAdderController
+ *
  * @constructor
  *
  */
-module.exports = function CartApplication(cart) {
+module.exports = function CartAdderController(cart, $scope) {
 
 	var self = {
-
-		items: [],
-		total: '0'
+		id: $scope.id,
+		quantity: "1",
 	};
+
+	/**
+	 * addToCart adds the item to the cart.
+	 *
+	 * @method addToCart
+	 * @return
+	 *
+	console.log('instantiated');
+	 */
+	self.addToCart = function() {
+
+		cart.add(self.id, self.quantity).
+		then(function() {
+
+			$scope.addSuccess();
+		}).
+		then(null, function() {
+
+			$scope.addFailure();
+
+		});
+
+	};
+
+
+	return self;
+
+
+};
+
+},{}],7:[function(require,module,exports){
+module.exports = '<label>Quantity:</label>\n<div class="input-group">\n<input class="form-control input-small" type="text" value="1" ng-model="product.quantity">\n      <span class="input-group-btn">\n <button ng-click="product.addToCart()" class="btn btn-fefault cart" type="button">\n  <i class="fa fa-shopping-cart"></i> Add to cart\n</button>       \n      </span>\n    </div>\n\n';
+},{}],8:[function(require,module,exports){
+/**
+ * CartAdderDirective is a directive for providing the
+ * add to cart button's functionality.
+ *
+ * @class CartAdderDirective
+ * @constructor
+ *
+ */
+module.exports = function CartAdderDirective() {
+	return {
+
+		scope: {
+                        'bounds': '&',
+			'addSuccess': '&',
+			'addFailure': '&',
+			'id': '@'
+		},
+		restrict: 'E',
+		controller: ['CartService', '$scope', require('./CartAdderController')],
+		controllerAs: 'product',
+		template: require('./cart-adder.html')
+	};
+
+};
+
+},{"./CartAdderController":6,"./cart-adder.html":7}],9:[function(require,module,exports){
+/**
+ * CheckoutCart is the main controller for the shopping cart.
+ * @class CheckoutCart
+ * @param {CartService} service
+ * @constructor
+ *
+ */
+module.exports = function CheckoutCart(service) {
+
+
+	this.items = [];
+	this.total = '0';
+	var self = this;
+
+	(function() {
+
+		service.get().
+		then(function(res) {
+			angular.forEach(res.data, function(v, k) {
+				self.items.push(v);
+			});
+
+		});
+
+
+
+	})();
+
+	/**
+	 * checkout the cart.
+	 *
+	 * @method checkout
+	 *
+	 * @return
+	 *
+	 */
+	this.checkout = function() {
+		window.location = "/checkout";
+	};
+
+
+
+};
+
+},{}],10:[function(require,module,exports){
+module.exports = '    <div class="table-responsive cart_info" ng-init="cart.getItems()">\n      <table class="table table-condensed">\n        <thead>\n          <tr class="cart_menu">\n            <td class="image">Item</td>\n            <td class="description"></td>\n            <td class="price">Price</td>\n            <td class="quantity">Quantity</td>\n            <td class="total">Total</td>\n            <td></td>\n          </tr>\n        </thead>\n        <tbody>\n        <tr ng-repeat="item in cart.items">\n          <td class="cart_product">\n            <a href="/store/products/{{item.slug}}"><img ng-src="{{item.image}}" alt="item image"></a>\n          </td>\n          <td class="cart_description">\n            <h4><a target="_blank" href="/store/products/{{item.slug}}">{{item.name }}</a></h4>\n          </td>\n          <td class="cart_price">\n            <p>{{item.price | currency}}</p>\n          </td>\n          <td class="cart_quantity">\n            {{item.quantity}}\n          </td>\n          <td class="cart_total">\n            <p class="cart_total_price">{{ item.price * item.quantity | currency}}</p>\n          </td>\n          <td class="cart_delete">\n            <a class="cart_quantity_delete" ng-click="cart.remove(item)" href=""><span class="glyphicon glyphicon-trash"></span></a>\n          </td>\n        </tr>\n        </tbody>\n      </table>\n    </div>\n  </div>\n\n';
+},{}],11:[function(require,module,exports){
+/**
+ * CheckoutCartDirective for the shopping cart.
+ * @class CheckoutCartDirective
+ *
+ * @constructor
+ *
+ */
+module.exports = function CheckoutCartDirective() {
+
+	return {
+
+		scope: {},
+		restrict: 'AE',
+		controller: ['CartService', require('./CheckoutCart')],
+		controllerAs: 'cart',
+		template: require('./cart.html')
+
+
+	};
+
+
+};
+
+},{"./CheckoutCart":9,"./cart.html":10}],12:[function(require,module,exports){
+module.exports = '<input ng-model="model" id="{{name}}" name="email" class="form-control input-md" ng-required="required" type="email">\n';
+},{}],13:[function(require,module,exports){
+/**
+ * EmailElementDirective for checkout that explicitly requests an email address.
+ * @class EmailElementDirective
+ *
+ * @constructor
+ *
+ */
+module.exports = function EmailElementDirective() {
+
+	return {
+
+		scope: {
+			name: '@',
+			model: '=',
+			required: '@'
+		},
+		restrict: 'E',
+		template: require('./email.html'),
+	};
+
+};
+
+},{"./email.html":12}],14:[function(require,module,exports){
+/**
+ * PaymentSelectDirective
+ * @class PaymentSelectDirective
+ * @constructor
+ *
+ */
+module.exports = function PaymentSelectDirective() {
+
+
+	return {
+
+		restrict: 'AE',
+		scope: {
+			model: '=model',
+			options: '=options'
+		},
+		template: require('./payment-select.html')
+
+
+	};
+
+
+
+};
+
+},{"./payment-select.html":15}],15:[function(require,module,exports){
+module.exports = '<div class="form-group">\n  <div class="col-md-12">\n    <ul class="list-unstyled list-inline">\n<li ng-repeat="option in options">\n        <label>\n          <input type="radio" checked ng-model="model" name="workflow" value="{{option.value}}">{{option.name}}</label>\n      </li>      \n    </ul>\n  </div>\n</div>\n';
+},{}],16:[function(require,module,exports){
+/**
+ * PhoneElementDirective for checkout that explicitly requests an email address.
+ * @class PhoneElementDirective
+ * @param {TextElementDirective} input
+ * @constructor
+ *
+ */
+module.exports = function PhoneElementDirective() {
+
+	return {
+
+		scope: {
+			model: '=model',
+			disable: '=',
+			required: '@',
+			placeholder: '@',
+                        name:'@'
+		},
+		replace: true,
+		restrict: 'E',
+		template: require('./phone.html')
+	};
+};
+
+},{"./phone.html":17}],17:[function(require,module,exports){
+module.exports = '<input name="{{name}}" ng-disabled="disable" ng-model="model"  placeholder="{{placeholder}}" class="input-md form-control" ng-required="required" ng-pattern="" type="text">\n';
+},{}],18:[function(require,module,exports){
+/**
+ * CartApplication is the main controller for the shopping cart.
+ * @class CartApplication
+ * @param {CartService} service
+ * @constructor
+ *
+ */
+module.exports = function CartApplication(service) {
+
+
+	this.items = [];
+	this.total = '0';
 
 	/**
 	 * recalculate the value of the items in the cart.
@@ -2227,18 +2472,18 @@ module.exports = function CartApplication(cart) {
 	 * @return
 	 *
 	 */
-	self.recalculate = function() {
+	this.recalculate = function() {
 
 		var Big = require('bignumber.js');
 
-		angular.forEach(self.items, function(item) {
+		angular.forEach(this.items, function(item) {
 
 			item.subtotal = Big(item.price).times(item.quantity);
-			self.total = Big(self.total).plus(item.subtotal).toString();
+			this.total = Big(this.total).plus(item.subtotal).toString();
 			item.subtotal = item.subtotal.toString();
 
 
-		});
+		}.bind(this));
 
 
 	};
@@ -2253,15 +2498,15 @@ module.exports = function CartApplication(cart) {
 	 * @return
 	 *
 	 */
-	self.modify = function(item, x) {
+	this.modify = function(item, x) {
 
 		item.quantity = item.quantity + (1 * x);
 		//In the future this should emit an event.
-		cart.add(item._id, item.quantity).then(function() {
+		service.add(item._id, item.quantity).then(function() {
 
-			self.recalculate();
+			this.recalculate();
 
-		});
+		}.bind(this));
 
 
 
@@ -2276,19 +2521,19 @@ module.exports = function CartApplication(cart) {
 	 * @return
 	 *
 	 */
-	self.remove = function(item) {
+	this.remove = function(item) {
 
-		cart.remove(item._id).
+		service.remove(item._id).
 		then(function() {
 
-			self.recalculate();
-			angular.forEach(self.items, function(current, position) {
+			this.recalculate();
+			angular.forEach(this.items, function(current, position) {
 
 				if (current._id === item._id)
-					self.items.splice(position, 1);
+					this.items.splice(position, 1);
 
-			});
-		});
+			}.bind(this));
+		}.bind(this));
 
 
 
@@ -2303,18 +2548,18 @@ module.exports = function CartApplication(cart) {
 	 * @return
 	 *
 	 */
-	self.getItems = function() {
+	this.getItems = function() {
 
-		cart.get().
+		service.get().
 		then(function(res) {
 
 			angular.forEach(res.data, function(v, k) {
 
-				self.items.push(v);
+				this.items.push(v);
 
-			});
+			}.bind(this));
 
-		});
+		}.bind(this));
 
 
 	};
@@ -2328,18 +2573,15 @@ module.exports = function CartApplication(cart) {
 	 * @return
 	 *
 	 */
-	self.checkout = function() {
+	this.checkout = function() {
 		window.location = "/checkout";
 	};
 
-	return self;
 
 
 };
 
-},{"bignumber.js":1}],9:[function(require,module,exports){
-module.exports = '    <div class="table-responsive cart_info" ng-init="cart.getItems()">\n      <table class="table table-condensed">\n        <thead>\n          <tr class="cart_menu">\n            <td class="image">Item</td>\n            <td class="description"></td>\n            <td class="price">Price</td>\n            <td class="quantity">Quantity</td>\n            <td class="total">Total</td>\n            <td></td>\n          </tr>\n        </thead>\n        <tbody>\n        <tr ng-repeat="item in cart.items">\n          <td class="cart_product">\n            <a href="/store/products/{{item.slug}}"><img ng-src="{{item.image.url}}" alt="item image"></a>\n          </td>\n          <td class="cart_description">\n            <h4><a target="_blank" href="/store/products/{{item.slug}}">{{item.name }}</a></h4>\n            <p>Web ID: {{item.stock.sku}}</p>\n          </td>\n          <td class="cart_price">\n            <p>{{item.price | currency}}</p>\n          </td>\n          <td class="cart_quantity">\n            <div class="cart_quantity_button">\n              <a class="cart_quantity_up" href="" ng-click="cart.modify(item, 1)"> + </a>\n              <input class="cart_quantity_input" ng-model="item.quantity" type="text" name="quantity" value="1" autocomplete="off" size="2">\n              <a class="cart_quantity_down" href="" ng-click="cart.modify(item, -1)"> - </a>\n            </div>\n          </td>\n          <td class="cart_total">\n            <p class="cart_total_price">{{ item.price * item.quantity | currency}}</p>\n          </td>\n          <td class="cart_delete">\n            <a class="cart_quantity_delete" ng-click="cart.remove(item)" href=""><span class="glyphicon glyphicon-trash"></span></a>\n          </td>\n        </tr>\n        </tbody>\n      </table>\n    </div>\n  </div>\n\n';
-},{}],10:[function(require,module,exports){
+},{"bignumber.js":1}],19:[function(require,module,exports){
 /**
  * CartDirective for the shopping cart.
  * @class CartDirective
@@ -2353,9 +2595,9 @@ module.exports = function CartDirective() {
 
 		scope: {},
 		restrict: 'AE',
-		controller: ['CartService', require('./CartController')],
+		controller: ['CartService', require('./ShoppingCartController')],
 		controllerAs: 'cart',
-		template: require('./cart.html')
+		template: require('./shopping-cart.html')
 
 
 	};
@@ -2363,104 +2605,53 @@ module.exports = function CartDirective() {
 
 };
 
-},{"./CartController":8,"./cart.html":9}],11:[function(require,module,exports){
-module.exports = '    <div class="form-group">\n      <label class="col-md-2 control-label" for="bind">Email*</label>\n      <div class="col-md-10">\n        <input data-ng-model="bind" id="order.email" name="order.email" placeholder="" class="form-control input-md" required="" type="email">\n      </div>\n    </div>\n';
-},{}],12:[function(require,module,exports){
+},{"./ShoppingCartController":18,"./shopping-cart.html":20}],20:[function(require,module,exports){
+module.exports = '    <div class="table-responsive" ng-init="cart.getItems()">\n      <table class="table table-condensed">\n        <thead>\n          <tr class="cart_menu">\n            <td class="image">Item</td>\n            <td class="description"></td>\n            <td class="price">Price</td>\n            <td class="quantity">Quantity</td>\n            <td class="total">Total</td>\n            <td></td>\n          </tr>\n        </thead>\n        <tbody>\n        <tr ng-repeat="item in cart.items">\n          <td class="cart_product">\n            <a href="/store/products/{{item.slug}}"><img ng-src="{{item.image}}" alt="item image"></a>\n          </td>\n          <td class="cart_description">\n            <h4><a target="_blank" href="/store/products/{{item.slug}}">{{item.name }}</a></h4>\n          </td>\n          <td class="cart_price">\n            <p>{{item.price | currency}}</p>\n          </td>\n          <td class="cart_quantity">\n            <div class="cart_quantity_button">\n              <a class="cart_quantity_up" href="" ng-click="cart.modify(item, 1)"> + </a>\n              <input class="cart_quantity_input" ng-model="item.quantity" type="text" name="quantity" value="1" autocomplete="off" size="2">\n              <a class="cart_quantity_down" href="" ng-click="cart.modify(item, -1)"> - </a>\n            </div>\n          </td>\n          <td class="cart_total">\n            <p class="cart_total_price">{{ item.price * item.quantity | currency}}</p>\n          </td>\n          <td class="cart_delete">\n            <a class="cart_quantity_delete" ng-click="cart.remove(item)" href=""><span class="glyphicon glyphicon-trash"></span></a>\n          </td>\n        </tr>\n        </tbody>\n      </table>\n    </div>\n  </div>\n\n';
+},{}],21:[function(require,module,exports){
 /**
- * EmailElementDirective for checkout that explicitly requests an email address.
- * @class EmailElementDirective
+ * TextElementDirective for checkout that explicitly requests an email address.
+ * @class TextElementDirective
  *
  * @constructor
  *
  */
-module.exports = function EmailElementDirective() {
+module.exports = function TextElementDirective() {
 
 	return {
 
 		scope: {
-			ngModel: '=bind'
+			title: '@',
+			model: '=model',
+			disable: '=',
+			required: '@',
+			placeholder: '@',
+			esClass: '@class',
+			pattern: '@',
+                        name: '@'
 		},
-		restrict: 'AE',
-                require:'ngModel',
-		controllerAs: 'emailElement',
-		template: require('./email.html'),
+		replace: true,
+		restrict: 'E',
+		template: require('./text.html')
 	};
 
 };
 
-},{"./email.html":11}],13:[function(require,module,exports){
-/**
- * PaymentSelectController
- * @class PaymentSelectController
- * @constructor
- *
- */
-module.exports = function PaymentSelectController(paymentService) {
-
-	var self = this;
-	this.options = {};
-
-	(function() {
-
-		paymentService.getPaymentOptions().
-		then(function(res) {
-
-			self.options = res.data;
-
-		});
-
-	}());
-
-
-
-
-
-
-
-};
-
-},{}],14:[function(require,module,exports){
-/**
- * PaymentSelectDirective
- * @class PaymentSelectDirective
- * @constructor
- *
- */
-module.exports = function PaymentSelectDirective() {
-
-
-	return {
-
-		restrict: 'AE',
-		require: 'ngModel',
-		controller: ['PaymentService', require('./PaymentSelectController')],
-                controllerAs:'select',
-		scope: {
-			ngModel: '=bind'
-		},
-		template: require('./payment-select.html')
-
-
-	};
-
-
-
-};
-
-},{"./PaymentSelectController":13,"./payment-select.html":15}],15:[function(require,module,exports){
-module.exports = '<div class="form-group">\n  <div class="col-md-12">\n    <ul>\n<li ng-repeat="option in select.options">\n        <label>\n          <input type="radio" checked ng-model="bind" value="{{option.value}}">{{option.name}}</label>\n      </li>      \n    </ul>\n  </div>\n</div>\n';
-},{}],16:[function(require,module,exports){
+},{"./text.html":22}],22:[function(require,module,exports){
+module.exports = '<input ng-disabled="disable" ng-model="model"  name="{{name}}" placeholder="{{placeholder}}" class="input-md form-control" ng-required="required" type="text">\n';
+},{}],23:[function(require,module,exports){
 var app = angular.module('estore', []);
-
 app.factory('CartService', ['$http', require('./services/CartService')]).
-factory('PaymentService', ['$http', require('./services/PaymentService')]).
+factory('ConfigService', ['$http', require('./services/ConfigService')]).
 directive('esAddress', require('./components/address')).
-directive('esCart', require('./components/cart')).
+directive('esText', require('./components/text')).
+directive('esPhone', require('./components/phone')).
+directive('esShoppingCart', require('./components/shopping-cart')).
+directive('esCheckoutCart', require('./components/checkout-cart')).
 directive('esEmail', require('./components/email')).
 directive('esPaymentSelect', require('./components/payment-select')).
-directive('esAddToCart', require('./components/add-to-cart'));
+directive('esCartAdder', require('./components/cart-adder'));
 
-},{"./components/add-to-cart":5,"./components/address":7,"./components/cart":10,"./components/email":12,"./components/payment-select":14,"./services/CartService":17,"./services/PaymentService":18}],17:[function(require,module,exports){
+},{"./components/address":5,"./components/cart-adder":8,"./components/checkout-cart":11,"./components/email":13,"./components/payment-select":14,"./components/phone":16,"./components/shopping-cart":19,"./components/text":21,"./services/CartService":24,"./services/ConfigService":25}],24:[function(require,module,exports){
 /**
  * CartService is a wrapper around the cart endpoints.
  * @class CartService
@@ -2561,18 +2752,17 @@ module.exports = function CartService($http) {
 
 };
 
-},{}],18:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /**
- * PaymentService is a wrapper for the payments endpoints.
- * @class PaymentService
+ * ConfigService is a wrapper for the various config endpoints.
+ * @class ConfigService
  *
  * @constructor
  * @param {Object} $http
  *
  */
-module.exports = function PaymentService($http) {
+module.exports = function ConfigService($http) {
 
-return {
 	/**
 	 * getPaymentOptions returns a list of options for payment.
 	 *
@@ -2580,13 +2770,31 @@ return {
 	 * @return {HttpService}
 	 *
 	 */
-  getPaymentOptions : function() {
+	this.getPaymentOptions = function() {
 
 		return $http.get('/_/payments/options');
 
 
-	}
-};
+	};
+
+
+	/**
+	 * getCountriesSupported fetches a list of countries supported by the
+	 * store.
+	 *
+	 * @method getCountriesSupported
+	 * @return
+	 *
+	 */
+	this.getCountriesSupported = function() {
+
+		return $http.get('/_/countries');
+
+
+	};
+
+
+        return this;
 
 
 
@@ -2594,7 +2802,7 @@ return {
 
 };
 
-},{}],19:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /**
  * @license AngularJS v1.2.20
  * (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -24417,18 +24625,18 @@ var styleDirective = valueFn({
 })(window, document);
 
 !window.angular.$$csp() && window.angular.element(document).find('head').prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\\:form{display:block;}.ng-animate-block-transitions{transition:0s all!important;-webkit-transition:0s all!important;}.ng-hide-add-active,.ng-hide-remove{display:block!important;}</style>');
-},{}],20:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 require('../lib/angular');
 require('../estore-angular');
 
 var app = angular.module('seller', ['estore']);
 
-app.controller('CheckOut', ['$scope', 'CartService', require('../controllers/CheckOut')]);
-
+app.controller('Checkout', ['$scope', 'CartService', 'ConfigService', require('../controllers/Checkout')]);
+app.controller('ProductPage', [require('../controllers/ProductPage')]);
 angular.element(document).ready(function() {
 
 	angular.bootstrap(document, ['seller']);
 
 });
 
-},{"../controllers/CheckOut":2,"../estore-angular":16,"../lib/angular":19}]},{},[20])
+},{"../controllers/Checkout":2,"../controllers/ProductPage":3,"../estore-angular":23,"../lib/angular":26}]},{},[27])

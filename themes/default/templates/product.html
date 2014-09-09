@@ -1,0 +1,41 @@
+{% extends "base.html" %} {% provide model='Product', bind='product',chain=[{m:'findOne'},{m:'where', a:{slug:params[0]}}] %} {% provide model='Category', bind='categories',chain=[{m:'find'},{m:'limit', a:6}] %} {% block body %}
+<section>
+  <div class="container" ng-controller="ProductPage as pctrl">
+    <div class="col-md-8 col-md-offset-2">
+      <div class="col-md-4">
+        <img alt="<$ product.name $>" src="<$ product.image $>" class="img center-block img-responsive">
+      </div>
+      <div class="col-md-5">
+        <div class="row">
+          <h2><$ product.name $></h2>
+          {% if product.vendor %}
+          <p>by <$ product.vendor $></p>
+          {% endif %}
+          <p>Price: <$ product._.price.format('$0,00.00') $></p>
+          {% if product.stock.balance  > 0 %}
+           {% if product.stock.balance < 11 %}
+           <p><$ product.stock.balance $> left</p>
+           {% else %}
+           <p>In stock</p>
+           {% endif %}
+           {% else %}
+           <p class="text-danger">Out of Stock</p>
+           {% endif %}
+           {% if product.stock.balance > 0 %}
+           <div class="row">
+           <div class="col-md-6">
+             <es-cart-adder id="<$ product._id $>" add-success="pctrl.addSuccess()" add-failure="pctrl.addFailure()"></es-cart-adder>
+         </div>
+         </div>
+           {% endif %}
+         <hr>
+       </div>
+       <div class="row">
+         <$ product.description.html | safe $>
+       </div>
+     </div>
+   </div>
+ </div>
+</section>
+
+{% endblock %}

@@ -77,11 +77,9 @@ module.exports = function(store) {
 		}, 'Description', {
 			description: {
 
-				html: {
-					type: t.Html,
-					label: 'Html',
+					type: t.Markdown,
+					label: 'Description',
 					wysiwyg: true
-				}
 
 			}
 		}

@@ -10,11 +10,11 @@ module.exports = function EmailElementDirective() {
 	return {
 
 		scope: {
-			ngModel: '=bind'
+			name: '@',
+			model: '=',
+			required: '@'
 		},
-		restrict: 'AE',
-                require:'ngModel',
-		controllerAs: 'emailElement',
+		restrict: 'E',
 		template: require('./email.html'),
 	};
 

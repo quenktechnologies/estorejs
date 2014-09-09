@@ -65,11 +65,9 @@ describe('on checking out a transaction', function(done) {
 		get('/').
 		end(function(err, res) {
 			cookie = new Cookie(res.headers['set-cookie']);
-			console.log(cookie.read('XSRF-TOKEN', true));
 			//should have the csrf token here.
 			request.post('/_/checkout/transactions').
 			set('X-XSRF-TOKEN', unescape(cookie.read('XSRF-TOKEN', true))).
-			set('Cookie', unescape('keystone.sid=' + cookie.read('keystone.sid'))).
 			send(invoice).
 			expect(201, done);
 		});

@@ -25,6 +25,12 @@ module.exports = function(store) {
 			noedit: true,
 			default: -1
 		},
+                  customer: {
+		email: {
+			type: t.Email
+		}
+                  },
+
 		date: {
 
 			type: Date,

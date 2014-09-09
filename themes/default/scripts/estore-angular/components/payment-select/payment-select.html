@@ -1,9 +1,9 @@
 <div class="form-group">
   <div class="col-md-12">
-    <ul>
-<li ng-repeat="option in select.options">
+    <ul class="list-unstyled list-inline">
+<li ng-repeat="option in options">
         <label>
-          <input type="radio" checked ng-model="bind" value="{{option.value}}">{{option.name}}</label>
+          <input type="radio" checked ng-model="model" name="workflow" value="{{option.value}}">{{option.name}}</label>
       </li>      
     </ul>
   </div>

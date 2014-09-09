@@ -1,0 +1,22 @@
+{% extends "base.html" %} {% block body %}
+<div class="container" style="margin-top:120px">
+  <section id="cart_items">
+    <div class="col-md-8 col-md-offset-2">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <es-shopping-cart></es-shopping-cart>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="do_action">
+    <div class="col-md-8 col-md-offset-2">
+      <div class="heading">
+        <h3>What would you like to do next?</h3>
+        <p><a class="btn btn-default check_out" href="/checkout">Check Out</a>  <a class="btn btn-fefault" href="/">Continue Shopping</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

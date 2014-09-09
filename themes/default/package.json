@@ -7,14 +7,15 @@
   "estore": {
     "serve": {
       "static": {
-        "/": "index/index.html",
-        "/cart": "cart/index.html",
-        "/checkout": "checkout/index.html",
-        "/store/categories": "store/category.html"
+        "/": "index.html",
+        "/cart": "cart.html",
+        "/checkout": "checkout.html",
+        "/checkout/success" : "checkout-success.html",
+        "checkout/error": "checkout-error.html"
       },
       "pattern": {
         "^/store/categories/([-\\w]{1,128})$": "store/category.html",
-        "^/store/products/([-\\w]{1,128})$": "store/product.html"
+        "^/products/([-\\w]{1,128})$": "product.html"
       }
     }
   },
@@ -27,11 +28,13 @@
     "grunt-angular-templates": "^0.5.5",
     "grunt-browserify": "^2.1.0",
     "grunt-concurrent": "^0.5.0",
+    "grunt-contrib-less": "^0.11.4",
     "grunt-contrib-uglify": "^0.4.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-html2js": "^0.2.8",
     "gulp": "^3.6.2",
     "html2js": "0.0.3",
+    "less": "^1.7.5",
     "load-grunt-tasks": "^0.6.0",
     "minifyify": "^3.0.10",
     "partialify": "^3.1.1",

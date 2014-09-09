@@ -44,8 +44,7 @@ module.exports = function CheckoutBindings(store) {
 		if ((!req.body.workflow) || ('string' !== typeof req.body.workflow))
 			return res.send(409, 'No workflow specified!') && console.log(req.body);
 
-		var trn = new Transaction();
-		trn.invoice = new Invoice(req.body);
+		var trn = new Transaction({invoice: new Invoice(req.body)});
 
 		trn.invoice.validate(function(err) {
 			if (err) return system.log.warn(err) && res.send(409, "There were validation errors!");

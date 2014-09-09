@@ -1,0 +1,44 @@
+{% extends "base.html" %} {% provide model='Category', bind='categories',chain=[{m:'find'},{m:'limit', a:20}] %} {% provide model='Product', bind='products',chain=[{m:'find'},{m:'limit', a:8}] %} {% set PAGE_IS_HOME=true %} {% block body %}
+<section>
+  <!--slider-->
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2">
+        <div class="carousel slide" data-ride="carousel">
+          <div class="carousel-inner">
+            <div class="item active">
+              <div class="col-sm-6">
+                <h1>Your Store</h1>
+                <p>This a default install of Vendorlize EStore. Create your own theme and get your sell on.</p>
+              </div>
+              <div class="col-sm-6">
+                <img src="assets/images/woman-bag.jpg" class="girl img-responsive" alt="Image of a woman with shopping bags." />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<hr>
+<section>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="text-center">Our Products</h1>
+          {% for product in products %}
+          <div class="col-md-3">
+            <div class="thumbnail">
+              <img alt="<$ product.name $>" src="<$ product.image $>">
+              <div class="caption">
+                <h4 class="pull-right">$<$ product.price $></h4>
+                <h4><a href="/products/<$ product.slug $>"><$ product.name $></a></h4>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+      </div>
+    </div>
+</section>
+{% endblock %}

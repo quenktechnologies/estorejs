@@ -9,7 +9,7 @@ module.exports = function Item(store) {
 
 	var t = store.keystone.Field.Types;
 
-	this.NAME = 'Items';
+	this.NAME = 'Item';
 	this.options = {
 		hidden: true,
 		nocreate: true
