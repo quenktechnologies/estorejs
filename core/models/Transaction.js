@@ -23,8 +23,6 @@ module.exports = function Transaction(store) {
 	this.NAME = 'Transaction';
 
 	this.options = {
-		nocreate: true,
-		noedit: true,
 		hidden: true,
                 track:true
 	};

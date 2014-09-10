@@ -27,8 +27,8 @@ module.exports = function CompositeExtension() {
 	 */
 	this.add = function(ext) {
 
-          if(ext.blacklist)
-		this.blacklist.push.apply(this.blacklist, ext.blacklist);
+		if (ext.blacklist)
+			this.blacklist.push.apply(this.blacklist, ext.blacklist);
 
 		add(ext);
 
@@ -47,6 +47,24 @@ module.exports = function CompositeExtension() {
 		this._callEach('onRouting', app);
 		return this;
 	};
+
+	/**
+	 * onGateways
+	 *
+	 * @method onGateways
+	 * @param {Array} gateways
+	 * @return
+	 *
+	 */
+	this.onGateways = function(gateways) {
+
+		this._callEach('onGateways', gateways);
+		return this;
+
+
+
+	};
+
 
 
 	/**
