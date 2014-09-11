@@ -3,7 +3,6 @@ var Address = require('./Address');
 module.exports = function(store) {
 
 	var t = store.keystone.Field.Types;
-	var noedit = (process.env.NODE_ENV == 'production');
 	this.DEFAULT_COLUMNS = 'number, customer.name, total, status, createdOn';
 	this.NAME = 'Invoice';
 	var address = (new Address(store)).fields[0];
@@ -11,7 +10,6 @@ module.exports = function(store) {
 	this.options = {
 		autoindex: true,
 		track: true,
-		nocreate: noedit,
 		map: {
 			name: 'number'
 		}
@@ -25,11 +23,11 @@ module.exports = function(store) {
 			noedit: true,
 			default: -1
 		},
-                  customer: {
-		email: {
-			type: t.Email
-		}
-                  },
+		customer: {
+			email: {
+				type: t.Email
+			}
+		},
 
 		date: {
 
@@ -64,6 +62,9 @@ module.exports = function(store) {
 			},
 
 		},
+		workflow: {
+			type: String
+		}
 
 
 	}];

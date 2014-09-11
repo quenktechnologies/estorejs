@@ -12,7 +12,8 @@ module.exports = function PaymentSelectDirective() {
 		restrict: 'AE',
 		scope: {
 			model: '=model',
-			options: '=options'
+			options: '=options',
+                          required: '@'
 		},
 		template: require('./payment-select.html')
 

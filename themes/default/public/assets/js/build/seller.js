@@ -2038,7 +2038,8 @@ module.exports = function Checkout($scope, cartService, configService) {
 			shipping: {
 				name: {}
 			}
-		}
+		},
+		workflow: ''
 	};
 
 	this.SHIP_TO_BILLING = false;
@@ -2060,6 +2061,8 @@ module.exports = function Checkout($scope, cartService, configService) {
 
 		if (this.SHIP_TO_BILLING)
 			this.order.address.shipping = this.order.address.billing;
+
+                console.log(this.order);
 		cartService.checkout(this.order).
 		then(function(res) {
 			window.location = "/checkout/success";
@@ -2411,7 +2414,8 @@ module.exports = function PaymentSelectDirective() {
 		restrict: 'AE',
 		scope: {
 			model: '=model',
-			options: '=options'
+			options: '=options',
+                          required: '@'
 		},
 		template: require('./payment-select.html')
 
@@ -2423,7 +2427,7 @@ module.exports = function PaymentSelectDirective() {
 };
 
 },{"./payment-select.html":15}],15:[function(require,module,exports){
-module.exports = '<div class="form-group">\n  <div class="col-md-12">\n    <ul class="list-unstyled list-inline">\n<li ng-repeat="option in options">\n        <label>\n          <input type="radio" checked ng-model="model" name="workflow" value="{{option.value}}">{{option.name}}</label>\n      </li>      \n    </ul>\n  </div>\n</div>\n';
+module.exports = '<div class="form-group">\n  <div class="col-md-12">\n    <ul class="list-unstyled list-inline">\n<li ng-repeat="option in options">\n        <label>\n          <input ng-required="required" type="radio" checked ng-model="model" name="workflow" value="{{option.value}}">{{option.name}}</label>\n      </li>      \n    </ul>\n  </div>\n</div>\n';
 },{}],16:[function(require,module,exports){
 /**
  * PhoneElementDirective for checkout that explicitly requests an email address.

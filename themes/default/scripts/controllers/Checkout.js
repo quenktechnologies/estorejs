@@ -18,7 +18,8 @@ module.exports = function Checkout($scope, cartService, configService) {
 			shipping: {
 				name: {}
 			}
-		}
+		},
+		workflow: ''
 	};
 
 	this.SHIP_TO_BILLING = false;
@@ -40,6 +41,8 @@ module.exports = function Checkout($scope, cartService, configService) {
 
 		if (this.SHIP_TO_BILLING)
 			this.order.address.shipping = this.order.address.billing;
+
+                console.log(this.order);
 		cartService.checkout(this.order).
 		then(function(res) {
 			window.location = "/checkout/success";

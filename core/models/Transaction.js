@@ -24,7 +24,7 @@ module.exports = function Transaction(store) {
 
 	this.options = {
 		hidden: true,
-                track:true
+		track: true
 	};
 
 	/**
@@ -37,8 +37,10 @@ module.exports = function Transaction(store) {
 	 */
 	this.run = function(list) {
 
+		var Invoice = require('./NestedInvoice');
+
 		list.schema.add({
-			invoice: [store.keystone.list('Invoice').schema],
+			invoice: new Invoice(),
 			status: {
 				type: String,
 				default: 'created'

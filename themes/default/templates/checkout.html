@@ -17,7 +17,7 @@
                     <label class="col-md-2 control-label" for="bind">Email</label>
                     <div class="col-md-10">
                       <ng-form name="emailForm">
-                        <es-email name="email" model="checkout.order.email" required="true"></es-email>
+                        <es-email name="email" model="checkout.order.customer.email" required="true"></es-email>
                       </ng-form>
                     </div>
                   </div>
@@ -41,10 +41,10 @@
                       <div class="form-group">
                         <label class="col-md-2 control-label" for="bind.name.first">Name</label>
                         <div class="col-md-5">
-                          <es-text name="firstName" model="checkout.order.billing.name.first" placeholder="First" required="true"></es-text>
+                          <es-text name="firstName" model="checkout.order.address.billing.name.first" placeholder="First" required="true"></es-text>
                         </div>
                         <div class="col-md-5">
-                          <es-text name="lastName" model="checkout.order.billing.name.last" placeholder="Last" required="true"></es-text>
+                          <es-text name="lastName" model="checkout.order.address.billing.name.last" placeholder="Last" required="true"></es-text>
                         </div>
                       </div>
                       <div class="form-group">
@@ -69,7 +69,7 @@
                       <div class="form-group">
                         <label class="col-md-2 control-label" for="company">Company</label>
                         <div class="col-md-10">
-                          <es-text name="company" model="checkout.order.address.billing.company" required="true"></es-text>
+                          <es-text name="company" model="checkout.order.address.billing.company" ></es-text>
                         </div>
                       </div>
                       <div class="form-group">
@@ -81,7 +81,7 @@
                       <div class="form-group">
                         <label class="col-md-2 control-label" for="company">Country</label>
                         <div class="col-md-10">
-                          <select name="country" class="form-control" ng-options="country.name for country in checkout.countries" ng-model="checkout.order.address.shipping.country" required="true">
+                          <select name="country" class="form-control" ng-options="country['name'] for country in checkout.countries" ng-model="checkout.order.address.shipping.country" required="true">
                           <option value="">-- Select One --</option>
                         </select>
                         </div>
@@ -100,10 +100,10 @@
                     <div class="form-group">
                       <label class="col-md-2 control-label" for="bind.name.first">Name</label>
                       <div class="col-md-5">
-                        <es-text name="firstName" disabled="checkout.SHIP_TO_BILLING" model="checkout.order.shipping.name.first" placeholder="First" required="true"></es-text>
+                        <es-text name="firstName" disabled="checkout.SHIP_TO_BILLING" model="checkout.order.address.shipping.name.first" placeholder="First" required="true"></es-text>
                       </div>
                       <div class="col-md-5">
-                        <es-text name="lastName" disabled="checkout.SHIP_TO_BILLING" title="Last" model="checkout.order.shipping.name.last" placeholder="Last" required="true"></es-text>
+                        <es-text name="lastName" disabled="checkout.SHIP_TO_BILLING" title="Last" model="checkout.order.address.shipping.name.last" placeholder="Last" required="true"></es-text>
                       </div>
                     </div>
                     <div class="form-group">
@@ -128,7 +128,7 @@
                     <div class="form-group">
                       <label class="col-md-2 control-label" for="company">Company</label>
                       <div class="col-md-10">
-                        <es-text name="company" disabled="checkout.SHIP_TO_BILLING" model="checkout.order.address.shipping.company" required="true"></es-text>
+                        <es-text name="company" disabled="checkout.SHIP_TO_BILLING" model="checkout.order.address.shipping.company"></es-text>
                       </div>
                     </div>
                     <div class="form-group">
@@ -140,7 +140,7 @@
                     <div class="form-group">
                       <label class="col-md-2 control-label" for="company">Country</label>
                       <div class="col-md-10">
-                        <select name="country" class="form-control" ng-options="country.name for country in checkout.countries" ng-model="checkout.order.address.shipping.country" required="true">
+                        <select name="country" class="form-control" ng-options="country.name as country.name for country in checkout.countries" ng-model="checkout.order.address.shipping.country" required="true">
                           <option value="">-- Select One --</option>
                         </select>
                       </div>
@@ -160,7 +160,7 @@
               <div class="panel panel-default">
                 <div class="panel-body">
                   <ng-form name="paymentForm">
-                  <es-payment-select options="checkout.paymentOptions" model="checkout.order.workflow"></es-payment-select>
+                  <select required="true" ng-options="workflow.value as workflow.name for workflow in checkout.paymentOptions" ng-model="checkout.order.workflow"><option value="">--Select One</option></select>
                   </ng-form>
                 </div>
               </div>

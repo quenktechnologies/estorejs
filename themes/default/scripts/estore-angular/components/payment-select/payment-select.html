@@ -3,7 +3,7 @@
     <ul class="list-unstyled list-inline">
 <li ng-repeat="option in options">
         <label>
-          <input type="radio" checked ng-model="model" name="workflow" value="{{option.value}}">{{option.name}}</label>
+          <input ng-required="required" type="radio" checked ng-model="model" name="workflow" value="{{option.value}}">{{option.name}}</label>
       </li>      
     </ul>
   </div>

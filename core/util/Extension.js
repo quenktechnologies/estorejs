@@ -39,6 +39,20 @@ module.exports = function Extension(store) {
 
 	};
 
+        /**
+         * onGateways 
+         *
+         * @method onGateways
+         * @return 
+         *
+         */
+        this.onGateways = function () {
+
+
+
+        };
+
+
 
 
 

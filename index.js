@@ -8,7 +8,10 @@ var System = require('./core/sys/System');
 var NunjucksMongoose = require('nunjucks-mongoose');
 var Subscription = require('./core/util/Subscription');
 var fs = require('fs');
+var Extension = require('./core/util/Extension');
 var CompositeExtension = require('./core/util/CompositeExtension');
+var Gateway = require('./core/gateway/Gateway');
+var Gateways = require('./core/gateway/Gateways');
 var o_O; //a nonsense variable (think /dev/null). 
 
 
@@ -89,12 +92,12 @@ module.exports = function Estore(keystone) {
 	this.navigation = {};
 
 	/**
-	 * gateways is an array containing the gateway modules that are enabled.
+	 * gateways is an object containing the gateway modules that are enabled.
 	 *
 	 * @property gateways
-	 * @type {Array}
+	 * @type {Gateways}
 	 */
-	this.gateways = [];
+	this.gateways = undefined;
 
 	/**
 	 * themePackage
@@ -137,6 +140,7 @@ module.exports = function Estore(keystone) {
 	 */
 	this.blacklist = [];
 
+
 	/**
 	 * _init initializes the application.
 	 *
@@ -149,6 +153,9 @@ module.exports = function Estore(keystone) {
 		this.title = process.env.DOMAIN || 'estore-' + process.env.id;
 		process.title = this.title;
 		global.system = new System();
+		global.estore = {};
+		global.estore.Gateway = new Gateway();
+		global.estore.Extension = new Extension();
 
 		this.ebus = new EventEmitter();
 		this.app = new Express();
@@ -159,10 +166,31 @@ module.exports = function Estore(keystone) {
 		if (this.themePackage.estore.blacklist)
 			this.blacklist.push.apply(this.blacklist, this.themePackage.estore.blacklist);
 
+		this.gateways = new Gateways();
 		this.extras = new Extras(process.cwd() + '/extras');
 		this.Extension = require('./core/util/Extension');
 		this.extensions = new CompositeExtension(this);
 		this.nunjucksEnvironment = NFactory.getEnvironment(this.theme.getTemplatePath(), this.app);
+
+		o_O = this.theme.exists() || this.theme.use('default');
+		this.keystone.connect(this.app);
+
+	};
+
+	/**
+	 * _extenstionRegistration
+	 *
+	 * @method _extenstionRegistration
+	 * @return
+	 *
+	 */
+	this._extenstionRegistration = function() {
+
+		var CheckoutBindings = require('./core/api/checkout/CheckoutBindings');
+		var DefaultGateways = require('./core/gateway/DefaultGateways');
+
+		this.extensions.add(new CheckoutBindings(this));
+		this.extensions.add(new DefaultGateways(this));
 
 		if (this.extras.has('extensions'))
 			this.extras.get('extensions', true).forEach(
@@ -172,10 +200,9 @@ module.exports = function Estore(keystone) {
 
 		this.blacklist.push.apply(this.blacklist, this.extensions.blacklist);
 
-		o_O = this.theme.exists() || this.theme.use('default');
-		this.keystone.connect(this.app);
 
 	};
+
 
 	/**
 	 * _gatewayRegistration will register the enabled payment gateway(s).
@@ -186,8 +213,7 @@ module.exports = function Estore(keystone) {
 	 */
 	this._gatewayRegistration = function() {
 
-
-
+		this.extensions.onGateways(this.gateways);
 
 	};
 
@@ -301,9 +327,7 @@ module.exports = function Estore(keystone) {
 			var route;
 			var routes = [
 				require('./core/api/cart'),
-				require('./core/api/checkout'),
 				require('./core/api/products'),
-				require('./core/api/payments')
 			];
 
 			if (this.extras.has('routes'))
@@ -379,6 +403,7 @@ module.exports = function Estore(keystone) {
 	this.start = function() {
 
 		this._init();
+		this._extenstionRegistration();
 		this._gatewayRegistration();
 		this._engineConfiguration();
 		this._modelRegistration();
