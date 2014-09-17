@@ -77,9 +77,9 @@ module.exports = function(store) {
 		}, 'Description', {
 			description: {
 
-					type: t.Markdown,
-					label: 'Description',
-					wysiwyg: true
+				type: t.Markdown,
+				label: 'Description',
+				wysiwyg: true
 
 			}
 		}
@@ -152,6 +152,7 @@ module.exports = function(store) {
 
 		list.schema.statics.applyTransaction = function(id, item) {
 
+			system.log.info('Applying Transaction ' + id + ' to ' + this.name + '.');
 			return this.model('Product').findOneAndUpdate({
 
 				_id: item._id,

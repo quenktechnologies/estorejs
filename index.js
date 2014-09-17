@@ -12,6 +12,7 @@ var Extension = require('./core/util/Extension');
 var CompositeExtension = require('./core/util/CompositeExtension');
 var Gateway = require('./core/gateway/Gateway');
 var Gateways = require('./core/gateway/Gateways');
+var TransactionDaemon = require('./core/daemon/TransactionDaemon');
 var o_O; //a nonsense variable (think /dev/null). 
 
 
@@ -24,6 +25,8 @@ var o_O; //a nonsense variable (think /dev/null).
  */
 module.exports = function Estore(keystone) {
 
+	this.MAX_TRANSACTIONS_PROCESSED = 10;
+	this.TRANSACTION_DAEMON_TIME = 10000;
 
 	/**
 	 *
@@ -393,6 +396,21 @@ module.exports = function Estore(keystone) {
 	};
 
 	/**
+	 * _startDaemons starts the daemons.
+	 *
+	 * @method _startDaemons
+	 * @return
+	 *
+	 */
+	this._startDaemons = function() {
+
+		new TransactionDaemon(this);
+
+
+	};
+
+
+	/**
 	 * start will start the server
 	 *
 	 * @method start
@@ -410,6 +428,7 @@ module.exports = function Estore(keystone) {
 		this._routeRegistration();
 		this.keystone.start({
 			onMount: function() {
+				this._startDaemons();
 				system.log.info('Estore started on port ' + this.keystone.get('port'));
 			}.bind(this)
 		});

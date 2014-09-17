@@ -47,18 +47,43 @@ module.exports = function Transaction(store) {
 			}
 		});
 
-		list.schema.statics.getPending = function(limit) {
+		list.schema.statics.getApproved = function(limit) {
 
 			var that = this.model('Transaction').find({
-				status: 'pending'
+				status: 'approved'
 			}).limit(limit);
 
 			return require('q').ninvoke(that, 'exec').
-			catch (function(err) {
+			then(function(result) {
 
-				system.log.error(err);
+				system.log.info('Handling ' + result.length + ' transactions.');
+				return result;
 
 			});
+
+		};
+
+
+		list.schema.methods.commit = function() {
+
+			var q = require('q');
+			var tasks = [];
+
+			this.invoice.items.forEach(function(item) {
+
+				var f = store.keystone.list('Product').model.applyTransaction(this._id, item);
+
+				tasks.push(function() {
+
+					return q.ninvoke(f, 'exec').
+					then(function(product) {
+						if (product)
+							store.ebus.emit(store.events.PRODUCT_UPDATED, product, this);
+					});
+				}());
+			}.bind(this));
+
+			return q.all(tasks);
 
 
 		};

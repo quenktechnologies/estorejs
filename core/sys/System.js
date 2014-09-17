@@ -8,12 +8,15 @@
 module.exports = function System() {
 
 
-	return {
+	var sys = {
 
 		log: require('winston'),
 		settings: require('./Settings')(),
 
 	};
+
+	sys.log.error = console.error;
+	return sys;
 
 
 
