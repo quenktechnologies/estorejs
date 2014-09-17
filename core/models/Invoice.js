@@ -20,7 +20,6 @@ module.exports = function(store) {
 		number: {
 			type: Number,
 			unique: true,
-			noedit: true,
 			default: -1
 		},
 		customer: {
@@ -97,7 +96,6 @@ module.exports = function(store) {
 		});
 
 		list.schema.pre('save', function(next) {
-
 			var Big = require('bignumber.js');
 			var total = Big(0);
 			this.items.forEach(function(item) {
@@ -109,6 +107,8 @@ module.exports = function(store) {
 			});
 
 			this.total = total.toString();
+
+			next();
 
 
 		});

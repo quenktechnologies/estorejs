@@ -26,7 +26,8 @@ var o_O; //a nonsense variable (think /dev/null).
 module.exports = function Estore(keystone) {
 
 	this.MAX_TRANSACTIONS_PROCESSED = 10;
-	this.TRANSACTION_DAEMON_TIME = 10000;
+	this.TRANSACTION_DAEMON_INTERVAL = 10000;
+	this.INVOICE_DAEMON_INTERVAL = 5000;
 
 	/**
 	 *

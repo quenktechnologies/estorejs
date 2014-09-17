@@ -53,16 +53,19 @@ module.exports = function Transaction(store) {
 				status: 'approved'
 			}).limit(limit);
 
-			return require('q').ninvoke(that, 'exec').
-			then(function(result) {
-
-				system.log.info('Handling ' + result.length + ' transactions.');
-				return result;
-
-			});
+			return require('q').ninvoke(that, 'exec');
 
 		};
 
+		list.schema.statics.getCommitted = function(limit) {
+
+			var that = this.model('Transaction').find({
+				status: 'commited'
+			}).limit(limit);
+
+			return require('q').ninvoke(that, 'exec');
+
+		};
 
 		list.schema.methods.commit = function() {
 
@@ -88,24 +91,32 @@ module.exports = function Transaction(store) {
 
 		};
 
-		list.schema.methods.promiseInvoice = function() {
+		list.schema.methods.generateInvoiceNumber = function() {
 
-			var invoice = this.model('Invoice').create(this.invoice);
-			return invoice.onReject(function(err) {
-				system.log.error('Error occured while starting transaction:', err);
+			return require('q').ninvoke(store.keystone.list('Counter').model(),
+				'increase', 'invoices', 1).
+			then(null, function(err) {
+
+				system.log.error('generateInvoiceNumber: ', err);
 
 			});
+
+
 
 		};
 
+		list.schema.methods.generateInvoice = function() {
 
-		list.schema.methods.start = function() {
+			var Invoice = store.keystone.list('Invoice');
+			var newInvoice = new Invoice.model(this.invoice.toObject(), {_id:false});
+                        newInvoice.set('_id', this._id);
 
-			return this.model('Transaction').create(this).
-			onReject(function(err) {
-				system.log.error('Error occured while starting transaction: ', err);
+			return require('q').ninvoke(newInvoice, 'save').
+			then(null, function(err) {
+
+				system.log.error('generateInvoice: ', err);
+
 			});
-
 
 		};
 
