@@ -17,17 +17,20 @@ var o_O; //a nonsense variable (think /dev/null).
 
 
 /**
- * Estore is the main entry point for Estore
- * @class Estore
+ * EStore is the main entry point for EStore
+ * @class EStore
  * @param {Object} nunjucks
  * @constructor
  *
  */
-module.exports = function Estore(keystone) {
+module.exports = function EStore() {
 
+	//Fields
 	this.MAX_TRANSACTIONS_PROCESSED = 10;
 	this.TRANSACTION_DAEMON_INTERVAL = 10000;
 	this.INVOICE_DAEMON_INTERVAL = 5000;
+	this.ROUTE_REGISTRATION = 'Route Registration';
+
 
 	/**
 	 *
@@ -48,10 +51,11 @@ module.exports = function Estore(keystone) {
 	/**
 	 *
 	 * @property {Object} events
+	 * TODO: Remove and convert to fields on EStore.
+	 *
 	 *
 	 */
 	this.events = {
-		ROUTE_REGISTRATION: 0xf,
 		model_REGISTRATION: 0x3e,
 		CHECKOUT_REQUEST: 0x14,
 		TRANSACTION_APPROVED: 0x01,
@@ -70,7 +74,7 @@ module.exports = function Estore(keystone) {
 	 *
 	 *
 	 */
-	this.keystone = keystone;
+	this.keystone = undefined;
 
 	/**
 	 *
@@ -157,10 +161,14 @@ module.exports = function Estore(keystone) {
 		this.title = process.env.DOMAIN || 'estore-' + process.env.id;
 		process.title = this.title;
 		global.system = new System();
-		global.estore = {};
-		global.estore.Gateway = new Gateway();
-		global.estore.Extension = new Extension();
 
+		global.estore = {
+			Gateway: new Gateway(),
+			Extension: new Extension()
+
+		};
+
+		this.keystone = require('keystone');
 		this.ebus = new EventEmitter();
 		this.app = new Express();
 		this.subs = new Subscription(this.ebus);
@@ -182,13 +190,14 @@ module.exports = function Estore(keystone) {
 	};
 
 	/**
-	 * _extenstionRegistration
+	 * _extensionRegistration registers the extensions (plugins) contained
+	 * in the extras/extensions folder.
 	 *
-	 * @method _extenstionRegistration
+	 * @method _extensionRegistration
 	 * @return
 	 *
 	 */
-	this._extenstionRegistration = function() {
+	this._extensionRegistration = function() {
 
 		var CheckoutBindings = require('./core/api/checkout/CheckoutBindings');
 		var DefaultGateways = require('./core/gateway/DefaultGateways');
@@ -209,7 +218,7 @@ module.exports = function Estore(keystone) {
 
 
 	/**
-	 * _gatewayRegistration will register the enabled payment gateway(s).
+	 * _gatewayRegistration will register any  payment gateway extensions.
 	 *
 	 * @method _gatewayRegistration
 	 * @return
@@ -275,7 +284,7 @@ module.exports = function Estore(keystone) {
 	 */
 	this._engineConfiguration = function() {
 
-		/** Temporary hack to ensure CSRF protection for Estore routes **/
+		/** Temporary hack to ensure CSRF protection for EStore routes **/
 		this.keystone.pre('routes', function(req, res, next) {
 
 			if (req.originalUrl.match(/^\/keystone/))
@@ -310,8 +319,8 @@ module.exports = function Estore(keystone) {
 		this.keystone.init(defaults);
 
 		this.nunjucksEnvironment.
-		addExtension('provide',
-			new NunjucksMongoose('provide', this.keystone.mongoose));
+		addExtension('NunjucksMongoose',
+			new NunjucksMongoose('get', this.keystone.mongoose));
 
 
 
@@ -390,7 +399,7 @@ module.exports = function Estore(keystone) {
 
 
 			}
-			this.ebus.emit(this.events.ROUTE_REGISTRATION, app);
+			this.ebus.emit(this.ROUTE_REGISTRATION, app);
 
 		}.bind(this));
 
@@ -422,7 +431,7 @@ module.exports = function Estore(keystone) {
 	this.start = function() {
 
 		this._init();
-		this._extenstionRegistration();
+		this._extensionRegistration();
 		this._gatewayRegistration();
 		this._engineConfiguration();
 		this._modelRegistration();
@@ -430,7 +439,7 @@ module.exports = function Estore(keystone) {
 		this.keystone.start({
 			onMount: function() {
 				this._startDaemons();
-				system.log.info('Estore started on port ' + this.keystone.get('port'));
+				system.log.info('EStore started on port ' + this.keystone.get('port'));
 			}.bind(this)
 		});
 
@@ -461,7 +470,7 @@ module.exports = function Estore(keystone) {
 
 		list.add.apply(list, model.fields);
 
-		var O_o = model.run && model.run(list, this.keystone);
+		O_o = model.run && model.run(list, this.keystone);
 		O_o = model.navigate && model.navigate(this.navigation);
 
 		list.register();
