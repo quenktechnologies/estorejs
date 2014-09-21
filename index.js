@@ -3,6 +3,7 @@ var Theme = require('./core/util/Theme');
 var Extras = require('./core/util/Extras');
 var NFactory = require('./core/util/NunjucksEnvironmentFactory')();
 var DefaultKeystoneConfiguration = require('./core/util/DefaultKeystoneConfiguration');
+var Endpoints = require('./core/api/Endpoints');
 var Express = require('express');
 var System = require('./core/sys/System');
 var NunjucksMongoose = require('nunjucks-mongoose');
@@ -116,6 +117,15 @@ module.exports = function EStore() {
 	this.themePackage = undefined;
 
 	/**
+	 * endpoints is an object with the api endpoints for the app.
+	 * TODO: In the future, this may be an external package so it can be reused onGateways
+	 * the client side.
+	 * @property endpoints
+	 * @type {Object}
+	 */
+	this.endpoints = new Endpoints();
+
+	/**
 	 * subs are the event subscriptions currently active.
 	 * @property subs
 	 * @type {Subscription}
@@ -148,6 +158,16 @@ module.exports = function EStore() {
 	 */
 	this.blacklist = [];
 
+	/**
+	 * util methods that are commonly used.
+	 *
+	 * @property util
+	 * @type {Object}
+	 */
+	this.util = undefined;
+
+
+
 
 	/**
 	 * _init initializes the application.
@@ -171,6 +191,7 @@ module.exports = function EStore() {
 		this.keystone = require('keystone');
 		this.ebus = new EventEmitter();
 		this.app = new Express();
+		this.util = require('lodash');
 		this.subs = new Subscription(this.ebus);
 		this.theme = new Theme(process.cwd() + '/themes', process.env.THEME || 'default');
 
@@ -363,7 +384,7 @@ module.exports = function EStore() {
 
 			var theme = this.themePackage.estore;
 
-			var _ = require('lodash');
+			var _ = this.util;
 
 			var render = function(value) {
 
