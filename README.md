@@ -1,5 +1,6 @@
 
 #EStore
+**Note: This version will break apps based on prior versions.**
 
 EStore is an ecommerce platform built to run in the 'cloud'. The main goal behind it is a platform that is easy to deploy as well as integrate with other other systems.
 
