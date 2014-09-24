@@ -9,6 +9,7 @@ pids
 logs
 results
 node_modules
+themes/default/node_modules
 !themes/default
 extras
 themes
