@@ -137,9 +137,9 @@ module.exports = function CartBindings(store) {
 		var _ = store.util;
 		req.session.cart = req.session.cart || [];
 
-		store.keystone.list('Product').
-		getProductForCart().
-		then(null, this.systemError(res, err)).
+		store.keystone.list('Product').model.
+		getProductForCart(req.params[0]).
+		then(null, self.systemError(res)).
 		then(function(product) {
 
 			if (!product)
@@ -177,22 +177,6 @@ module.exports = function CartBindings(store) {
 		});
 
 
-
-
-
-
-
-		//Adjust what was actually created.
-		Models(store.keystone).get('Product').findOne({
-			_id: req.body._id
-		}).
-		select('_id name price stock.sku image').exec(function(err, product) {
-
-			if (err) return log.warn(err) && res.send(409);
-
-
-
-		});
 
 
 	};

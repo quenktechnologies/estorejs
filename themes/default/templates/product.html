@@ -1,4 +1,8 @@
-{% extends "base.html" %} {% provide model='Product', bind='product',chain=[{m:'findOne'},{m:'where', a:{slug:params[0]}}] %} {% provide model='Category', bind='categories',chain=[{m:'find'},{m:'limit', a:6}] %} {% block body %}
+{% extends "base.html" %} 
+{% get 'product' from 'Product' using 'findOne' %}
+{% then 'where' with {slug:params[0]} %}
+{% done %} 
+{% block body %}
 <section>
   <div class="container" ng-controller="ProductPage as pctrl">
     <div class="col-md-8 col-md-offset-2">

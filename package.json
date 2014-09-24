@@ -28,7 +28,7 @@
     "lodash": "2.4.x",
     "mpromise": "^0.5.1",
     "nunjucks": "1.0.x",
-    "nunjucks-mongoose": "^0.1.1",
+    "nunjucks-mongoose": "0.2.x",
     "passport": "0.2.x",
     "q": "1.0.x",
     "winston": "0.7.x"

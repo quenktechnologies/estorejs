@@ -26,12 +26,18 @@ var o_O; //a nonsense variable (think /dev/null).
  */
 module.exports = function EStore() {
 
-	//Fields
+	//Settings
 	this.MAX_TRANSACTIONS_PROCESSED = 10;
 	this.TRANSACTION_DAEMON_INTERVAL = 10000;
 	this.INVOICE_DAEMON_INTERVAL = 5000;
+
+	//Events
 	this.ROUTE_REGISTRATION = 'Route Registration';
 
+	//Constants
+	this.STATUS_SYSTEM_ERROR = 503;
+	this.STATUS_CLIENT_ERROR = 409;
+	this.STATUS_OPERATION_COMPLETE = 201;
 
 	/**
 	 *
@@ -220,9 +226,13 @@ module.exports = function EStore() {
 	 */
 	this._extensionRegistration = function() {
 
+		var ProductsBindings = require('./core/api/products/ProductBindings');
+		var CartBindings = require('./core/api/cart/CartBindings');
 		var CheckoutBindings = require('./core/api/checkout/CheckoutBindings');
 		var DefaultGateways = require('./core/gateway/DefaultGateways');
 
+		this.extensions.add(new ProductsBindings(this));
+		this.extensions.add(new CartBindings(this));
 		this.extensions.add(new CheckoutBindings(this));
 		this.extensions.add(new DefaultGateways(this));
 
@@ -341,7 +351,7 @@ module.exports = function EStore() {
 
 		this.nunjucksEnvironment.
 		addExtension('NunjucksMongoose',
-			new NunjucksMongoose('get', this.keystone.mongoose));
+			new NunjucksMongoose(this.keystone.mongoose, 'get'));
 
 
 
@@ -355,14 +365,12 @@ module.exports = function EStore() {
 	 *
 	 */
 	this._routeRegistration = function() {
-
+		//TODO: Routes should follow the syntax of the Extensions
 		this.keystone.set('routes', function(app) {
 
 			var route;
-			var routes = [
-				require('./core/api/cart'),
-				require('./core/api/products'),
-			];
+			var routes = [];
+
 
 			if (this.extras.has('routes'))
 				routes.push.apply(routes, this.get('routes', true));

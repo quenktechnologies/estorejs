@@ -1,4 +1,10 @@
-{% extends "base.html" %} {% provide model='Category', bind='categories',chain=[{m:'find'},{m:'limit', a:20}] %} {% provide model='Product', bind='products',chain=[{m:'find'},{m:'limit', a:8}] %} {% set PAGE_IS_HOME=true %} {% block body %}
+{% extends "base.html" %} 
+{% get 'products' from 'Product' using 'find' %}{% done %}
+{% get 'orders' from 'Transaction' using 'find' %}
+{% then 'where' with 'status' %}
+{% then 'equals' with 'approved' %}
+{% done %} 
+{% set PAGE_IS_HOME=true %} {% block body %}
 <section>
   <!--slider-->
   <div class="container">
@@ -8,7 +14,8 @@
           <div class="carousel-inner">
             <div class="item active">
               <div class="col-sm-6">
-                <h1>Your Store</h1>
+                <h1>Your Store   <$ product $>
+</h1>
                 <p>This a default install of Vendorlize EStore. Create your own theme and get your sell on.</p>
               </div>
               <div class="col-sm-6">

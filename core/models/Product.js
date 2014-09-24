@@ -107,7 +107,7 @@ module.exports = function(store) {
 	 *
 	 */
 	this.run = function(list) {
-
+		//TODO: Convert the methods to use promises.
 		list.schema.add({
 			transactions: Array,
 		});
@@ -117,6 +117,18 @@ module.exports = function(store) {
 			path: "categories",
 			refPath: "products"
 		});
+
+		list.schema.statics.getProductForCart = function(id) {
+
+			return require('q').ninvoke(this.model('Product').findOne({
+				_id: id
+			}).select('_id name price stock, image'), 'exec').
+			then(null, function(err) {
+				system.log.error('getProductForCart: ', err);
+
+			});
+
+		};
 
 		list.schema.statics.getManyByIds = function(_ids, cb) {
 
