@@ -1,0 +1,17 @@
+lib-cov
+*.seed
+*.log
+*.dat
+*.out
+*.pid
+*.gz
+pids
+logs
+results
+node_modules
+themes/current
+npm-debug.log
+.mongo
+.env
+tmp
+.DS_Store
