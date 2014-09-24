@@ -11,6 +11,7 @@ results
 node_modules
 themes/default/node_modules
 !themes/default
+updates
 extras
 themes
 npm-debug.log
