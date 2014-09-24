@@ -1,13 +1,11 @@
 {
   "name": "estore",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Run an e-store in the cloud using mongodb, keystone and nunjucks.",
   "keywords": [
     "ecommerce",
-    "keystone",
-    "retail",
-    "nunjucks",
-    "mongoose"
+    "mongodb",
+    "keystone"
   ],
   "main": "run",
   "author": {
@@ -15,8 +13,7 @@
     "email": "dev@quenk.com"
   },
   "scripts": {
-    "start": "node run.js",
-    "stop": "node -e \"require('dotenv')().load();require('child_process').exec('pkill --signal SIGTERM '+process.env.DOMAIN);\""
+    "start": "node run.js"
   },
   "dependencies": {
     "bignumber.js": "1.4.x",
