@@ -342,6 +342,20 @@ module.exports = function EStore() {
 		});
 		/** end hack **/
 
+		this.keystone.pre('routes', function(req, res, next) {
+
+			//Set some useful variables.
+			res.locals._csrf = req.csrfToken();
+			res.locals.BRAND = process.env.BRAND;
+			res.locals.user = req.session.user;
+			res.locals.DOMAIN = process.env.DOMAIN;
+			req.session.cart = req.session.cart || [];
+			res.locals.cart = req.session.cart;
+			next();
+
+		});
+
+
 
 
 		var defaults = new DefaultKeystoneConfiguration(this.theme);
@@ -371,7 +385,6 @@ module.exports = function EStore() {
 			var route;
 			var routes = [];
 
-
 			if (this.extras.has('routes'))
 				routes.push.apply(routes, this.get('routes', true));
 			//XXX in future routes will be grouped in a logical way
@@ -397,13 +410,7 @@ module.exports = function EStore() {
 			var render = function(value) {
 
 				return function(req, res) {
-					res.locals._csrf = req.csrfToken();
-					res.locals.BRAND = process.env.BRAND;
-					res.locals.user = req.session.user;
-					res.locals.cart = req.session.cart || [];
-					res.locals.params = req.params;
-					res.locals.DOMAIN = process.env.DOMAIN;
-					res.locals.CART_COUNT = _.unique(req.session.cart).length;
+				res.locals.params = req.params;
 					res.render(value);
 				};
 
