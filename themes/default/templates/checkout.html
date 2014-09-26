@@ -1,21 +1,25 @@
-{% extends "base.html" %} {% block body %}
+{% extends "base.html" %} {% set DISABLE_NAV=true %} {% block body %}
 <div class="container main" ng-controller="Checkout as checkout">
   <div class="col-md-10 col-md-offset-1">
-    <div class="panel panel-default">
-      <div class="panel-body" style="box-shadow: 3px 3px 2px #888888;">
+    <div class="row text-center" style="margin-bottom:50px">
+      <h2>Your Store</h2>
+      <h4>Checkout</h4>
+      <hr>
+    </div>
+    <div class="col-md-5">
+      <h2>Summary</h2>
+      <es-checkout-cart></es-checkout-cart>
+    </div>
+    <div class="col-md-7">
+      <div class="panel-body">
         <div class="form-horizontal">
           <div class="col-md-12">
             <div class="row">
-              <div class="">
-                <h2 class="heading">Step 1: Contact Email</h2>
-              </div>
-            </div>
-            <div class="row">
               <div class="panel panel-default">
                 <div class="panel-body">
+                  <h3>Contact Email</h3>
                   <div class="form-group">
-                    <label class="col-md-2 control-label" for="bind">Email</label>
-                    <div class="col-md-10">
+                    <div class="col-md-12">
                       <ng-form name="emailForm">
                         <es-email name="email" model="checkout.order.customer.email" required="true"></es-email>
                       </ng-form>
@@ -24,153 +28,22 @@
                 </div>
               </div>
             </div>
-            <div class="row">
-              <div class="">
-                <h2 class="heading">Step 2: Billing and Shipping</h2>
-              </div>
-            </div>
+            {% include "checkout/billing-form.html" %}
+            {% include "checkout/shipping-form.html" %}
             <div class="row">
               <div class="panel panel-default">
                 <div class="panel-body">
-                  <div class="col-md-6">
-                    <div class="row form-group">
-                      <label>Billing Address</label>
-                      <hr/>
-                    </div>
-                    <ng-form name="billingForm">
-                      <div class="form-group">
-                        <label class="col-md-2 control-label" for="bind.name.first">Name</label>
-                        <div class="col-md-5">
-                          <es-text name="firstName" model="checkout.order.address.billing.name.first" placeholder="First" required="true"></es-text>
-                        </div>
-                        <div class="col-md-5">
-                          <es-text name="lastName" model="checkout.order.address.billing.name.last" placeholder="Last" required="true"></es-text>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-md-2 control-label" for="phone">Phone</label>
-                        <div class="col-md-10">
-                          <es-phone name="phone" model="checkout.order.address.billing.phone" placeholder="777-777-7777" required="true">
-                          </es-phone>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-md-2 control-label" for="address">Address</label>
-                        <div class="col-md-10">
-                          <es-text name="street1" model="checkout.order.address.billing.street1" required="true"></es-text>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-md-2 control-label" for="address"></label>
-                        <div class="col-md-10">
-                          <es-text name="street2" model="checkout.order.address.billing.street2"></es-text>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-md-2 control-label" for="company">Company</label>
-                        <div class="col-md-10">
-                          <es-text name="company" model="checkout.order.address.billing.company" ></es-text>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-md-2 control-label" for="region">Region</label>
-                        <div class="col-md-10">
-                          <es-text name="region" model="checkout.order.address.billing.region" required="false"></es-text>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-md-2 control-label" for="company">Country</label>
-                        <div class="col-md-10">
-                          <select name="country" class="form-control" ng-options="country['name'] for country in checkout.countries" ng-model="checkout.order.address.shipping.country" required="true">
-                          <option value="">-- Select One --</option>
-                        </select>
-                        </div>
-                      </div>
-                    </ng-form>
-                    <input ng-click="checkout.toggleShipping()" id="ship-to-billing-address" type="checkbox" data-ng-model="checkout.SHIP_TO_BILLING">
-                    <label class="" for="ship-to-billing-address">Ship items to the address above?</label>
-                  </div>
-                  <div class="col-md-6">
-                    <span ng-if="!checkout.SHIP_TO_BILLING" class="animate-if">
-                    <div class="row form-group">
-                      <label>Shipping Address</label>
-                      <hr/>
-                    </div>
-                    <ng-form name="shippingForm">
-                    <div class="form-group">
-                      <label class="col-md-2 control-label" for="bind.name.first">Name</label>
-                      <div class="col-md-5">
-                        <es-text name="firstName" disabled="checkout.SHIP_TO_BILLING" model="checkout.order.address.shipping.name.first" placeholder="First" required="true"></es-text>
-                      </div>
-                      <div class="col-md-5">
-                        <es-text name="lastName" disabled="checkout.SHIP_TO_BILLING" title="Last" model="checkout.order.address.shipping.name.last" placeholder="Last" required="true"></es-text>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-md-2 control-label" for="phone">Phone</label>
-                      <div class="col-md-10">
-                        <es-phone name="phone" disabled="checkout.SHIP_TO_BILLING" model="checkout.order.address.shipping.phone" placeholder="777-777-7777" required="true">
-                        </es-phone>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-md-2 control-label" for="address">Address</label>
-                      <div class="col-md-10">
-                        <es-text name="street1" disabled="checkout.SHIP_TO_BILLING" model="checkout.order.address.shipping.street1" required="true"></es-text>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-md-2 control-label" for="address"></label>
-                      <div class="col-md-10">
-                        <es-text name="street2" disabled="checkout.SHIP_TO_BILLING" model="checkout.order.address.shipping.street2" ></es-text>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-md-2 control-label" for="company">Company</label>
-                      <div class="col-md-10">
-                        <es-text name="company" disabled="checkout.SHIP_TO_BILLING" model="checkout.order.address.shipping.company"></es-text>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-md-2 control-label" for="region">Region</label>
-                      <div class="col-md-10">
-                        <es-text name="region" disabled="checkout.SHIP_TO_BILLING" model="checkout.order.address.shipping.region" required="false"></es-text>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-md-2 control-label" for="company">Country</label>
-                      <div class="col-md-10">
-                        <select name="country" class="form-control" ng-options="country.name as country.name for country in checkout.countries" ng-model="checkout.order.address.shipping.country" required="true">
-                          <option value="">-- Select One --</option>
-                        </select>
-                      </div>
-                    </div>
-                  </ng-form>
-                </span>
-                </div>
-              </div>
-            </div>
-          </div>
-            <div class="row">
-              <div class="">
-                <h2 class="heading">Step 3: Payment Method</h2>
-              </div>
-            </div>
-            <div class="row">
-              <div class="panel panel-default">
-                <div class="panel-body">
+                  <h3>Payment Method</h3>
                   <ng-form name="paymentForm">
-                  <select required="true" ng-options="workflow.value as workflow.name for workflow in checkout.paymentOptions" ng-model="checkout.order.workflow"><option value="">--Select One</option></select>
+                    <select class="form-control" required="true" ng-options="workflow.value as workflow.name for workflow in checkout.paymentOptions" ng-model="checkout.order.workflow">
+                      <option value="">--Select One--</option>
+                    </select>
                   </ng-form>
                 </div>
               </div>
             </div>
             <div class="row">
-              <div class="">
-                <h2 class="heading">Step 4: Review and Confirm</h2>
-              </div>
-              <es-checkout-cart></es-checkout-cart>
-              <button ng-disabled="!billingForm.$valid || (!shippingForm.$valid && !checkout.SHIP_TO_BILLING) || !emailForm.$valid || !paymentForm.$valid" ng-click="checkout.confirm()" class="btn btn-primary btn-lg pull-right" style="margin-bottom:100px;">Place Order</button>
+              <button ng-disabled="!billingForm.$valid || !shippingForm.$valid || !emailForm.$valid || !paymentForm.$valid" ng-click="checkout.confirm()" class="btn btn-danger btn-lg btn-block" style="margin-bottom:100px;">Place Order</button>
             </div>
           </div>
         </div>

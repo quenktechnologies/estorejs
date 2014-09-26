@@ -107,7 +107,13 @@ module.exports = function(store) {
 	 *
 	 */
 	this.run = function(list) {
-		//TODO: Convert the methods to use promises.
+
+		list.schema.add({
+
+			tags: [String]
+
+		});
+
 		list.schema.add({
 			transactions: Array,
 		});
@@ -117,6 +123,8 @@ module.exports = function(store) {
 			path: "categories",
 			refPath: "products"
 		});
+
+		//TODO: Convert the methods to use promises.
 
 		list.schema.statics.getProductForCart = function(id) {
 
@@ -183,6 +191,16 @@ module.exports = function(store) {
 
 
 
+		};
+
+		list.schema.statics.findProductsByTag = function(tag, limit) {
+
+			limit = limit || 35;
+
+			return this.model('Product').find({
+				tags: tag
+			}).
+			limit(limit);
 		};
 
 

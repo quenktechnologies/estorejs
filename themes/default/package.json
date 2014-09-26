@@ -8,6 +8,7 @@
     "serve": {
       "static": {
         "/": "index.html",
+        "/search": "search.html",
         "/cart": "cart.html",
         "/checkout": "checkout.html",
         "/checkout/success" : "checkout-success.html",

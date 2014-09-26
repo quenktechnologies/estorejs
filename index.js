@@ -410,7 +410,8 @@ module.exports = function EStore() {
 			var render = function(value) {
 
 				return function(req, res) {
-				res.locals.params = req.params;
+					res.locals.params = req.params;
+					res.locals.query = req.query;
 					res.render(value);
 				};
 
