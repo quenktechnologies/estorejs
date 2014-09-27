@@ -3,7 +3,7 @@ var Address = require('./Address');
 module.exports = function(store) {
 
 	var t = store.keystone.Field.Types;
-	this.DEFAULT_COLUMNS = 'number, customer.name, total, status, createdOn';
+	this.DEFAULT_COLUMNS = 'number, customer.email, payment.type, payment.status, total, createdAt';
 	this.NAME = 'Invoice';
 	var address = (new Address(store)).fields[0];
 
@@ -77,7 +77,7 @@ module.exports = function(store) {
 	 *
 	 */
 	this.navigate = function(nav) {
-		nav.sales = ['invoices'];
+		nav.invoices = ['invoices'];
 
 	};
 
