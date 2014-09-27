@@ -33,6 +33,7 @@ module.exports = function EStore() {
 
 	//Events
 	this.ROUTE_REGISTRATION = 'Route Registration';
+	this.SETTINGS_CHANGED = 'Settings Changed';
 
 	//Constants
 	this.STATUS_SYSTEM_ERROR = 503;
@@ -54,6 +55,16 @@ module.exports = function EStore() {
 	 *
 	 */
 	this.ebus = undefined;
+
+	/**
+	 * config contains the settings
+	 *
+	 * @property config
+	 * @type {Object}
+	 */
+	this.config = {};
+
+
 
 	/**
 	 *
@@ -217,6 +228,23 @@ module.exports = function EStore() {
 	};
 
 	/**
+	 * _configureEvents sets up event listening.
+	 *
+	 * @method _configureEvents
+	 * @return
+	 *
+	 */
+	this._eventConfiguration = function() {
+
+		this.ebus.on(this.SETTINGS_CHANGED, this.settingsChanged);
+
+
+
+
+	};
+
+
+	/**
 	 * _extensionRegistration registers the extensions (plugins) contained
 	 * in the extras/extensions folder.
 	 *
@@ -274,15 +302,14 @@ module.exports = function EStore() {
 		this.models.push.apply(this.models, [
 			require('./core/models/User'),
 			require('./core/models/Counter'),
-			require('./core/models/CheckoutSettings'),
-			require('./core/models/GeneralSettings'),
-			require('./core/models/StoreSettings'),
 			require('./core/models/ProductCategory'),
 			require('./core/models/Product'),
 			require('./core/models/Item'),
 			require('./core/models/Invoice'),
 			require('./core/models/Transaction'),
 			require('./core/models/Address'),
+			require('./core/models/Settings'),
+
 		]);
 
 
@@ -304,6 +331,33 @@ module.exports = function EStore() {
 		this.keystone.set('nav', this.navigation);
 
 	};
+
+	/**
+	 * _loadSettings
+	 *
+	 * @method _loadSettings
+	 * @return {Promise}
+	 *
+	 */
+	this._loadSettings = function() {
+
+		var self = this;
+
+		return self.keystone.list('Settings').model.getSettings().
+		then(function(settings) {
+
+			self.ebus.emit(self.SETTINGS_CHANGED, settings);
+
+		}).
+		then(null, function(err) {
+
+			system.log.error(err);
+
+		});
+
+
+	};
+
 
 
 	/**
@@ -345,7 +399,6 @@ module.exports = function EStore() {
 		this.keystone.pre('routes', function(req, res, next) {
 
 			//Set some useful variables.
-			res.locals._csrf = req.csrfToken();
 			res.locals.BRAND = process.env.BRAND;
 			res.locals.user = req.session.user;
 			res.locals.DOMAIN = process.env.DOMAIN;
@@ -379,6 +432,9 @@ module.exports = function EStore() {
 	 *
 	 */
 	this._routeRegistration = function() {
+
+          var self;
+
 		//TODO: Routes should follow the syntax of the Extensions
 		this.keystone.set('routes', function(app) {
 
@@ -410,8 +466,9 @@ module.exports = function EStore() {
 			var render = function(value) {
 
 				return function(req, res) {
-					res.locals.params = req.params;
-					res.locals.query = req.query;
+					res.locals.$params = req.params;
+					res.locals.$query = req.query;
+					res.locals.$config = self.config;
 					res.render(value);
 				};
 
@@ -468,18 +525,20 @@ module.exports = function EStore() {
 	this.start = function() {
 
 		this._init();
+		this._eventConfiguration();
 		this._extensionRegistration();
 		this._gatewayRegistration();
 		this._engineConfiguration();
 		this._modelRegistration();
 		this._routeRegistration();
+		//XXX Potential for a race condition, for some reason I can't continue setup in a then block.
+		this._loadSettings().done();
 		this.keystone.start({
 			onMount: function() {
 				this._startDaemons();
 				system.log.info('EStore started on port ' + this.keystone.get('port'));
 			}.bind(this)
 		});
-
 
 	};
 
@@ -514,6 +573,23 @@ module.exports = function EStore() {
 
 		system.log.info('Registered List ' + model.NAME + '.');
 
+
+	};
+
+	/**
+	 * settingsChanged is called when the settings have changed.
+	 *
+	 * @method settingsChanged
+	 * @param {Object} settings
+	 * @return
+	 *
+	 */
+	this.settingsChanged = function(settings) {
+
+		if (!settings)
+			throw new Error('No settings found in the database! Bailing!!!');
+
+		this.config = settings.toObject();
 
 	};
 
