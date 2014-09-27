@@ -238,9 +238,6 @@ module.exports = function EStore() {
 
 		this.ebus.on(this.SETTINGS_CHANGED, this.settingsChanged);
 
-
-
-
 	};
 
 
@@ -329,6 +326,8 @@ module.exports = function EStore() {
 		this.ebus.emit(this.events.MODEL_REGISTRATION, this);
 		this.keystone.set('user model', 'User');
 		this.keystone.set('nav', this.navigation);
+		this.keystone.mongoose.connection.on('error', this.mongooseError);
+
 
 	};
 
@@ -433,7 +432,7 @@ module.exports = function EStore() {
 	 */
 	this._routeRegistration = function() {
 
-          var self =  this;
+		var self = this;
 
 		//TODO: Routes should follow the syntax of the Extensions
 		this.keystone.set('routes', function(app) {
@@ -592,6 +591,30 @@ module.exports = function EStore() {
 		this.config = settings.toObject();
 
 	};
+
+
+	/**
+	 * mongooseError is called when uncaught errors are detected.
+	 *
+	 * @method mongooseError
+	 *  @param {Error} err
+	 * @return
+	 *
+	 */
+	this.mongooseError = function(err) {
+
+
+		system.log.error('Uncaught mongoose error detected!', err);
+		process.exit(-1);
+
+
+
+
+
+
+
+	};
+
 
 
 
