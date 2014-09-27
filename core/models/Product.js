@@ -36,7 +36,7 @@ module.exports = function(store) {
 			stock: {
 
 				sku: {
-					type: t.Key,
+					type: String,
 					label: "SKU",
 					width: 'short',
 					initial: true,
@@ -77,9 +77,15 @@ module.exports = function(store) {
 		}, 'Description', {
 			description: {
 
-				type: t.Markdown,
-				label: 'Description',
-				wysiwyg: true
+				short: {
+					type: t.Text,
+					wysiwyg: true
+				},
+
+				long: {
+					type: t.Markdown,
+					wysiwyg: true
+				}
 
 			}
 		}
@@ -110,7 +116,7 @@ module.exports = function(store) {
 
 		list.schema.add({
 
-			tags: [String]
+			keywords: [String]
 
 		});
 
@@ -193,12 +199,18 @@ module.exports = function(store) {
 
 		};
 
-		list.schema.statics.findProductsByTag = function(tag, limit) {
+		list.schema.statics.findProductsByKeywords = function(keywords, limit) {
 
 			limit = limit || 35;
 
+                        keywords = keywords.toLowerCase();
+			keywords = keywords.split(' ');
+
+
 			return this.model('Product').find({
-				tags: tag
+				keywords: {
+					$in: keywords
+				}
 			}).
 			limit(limit);
 		};

@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% get 'product' from 'Product' using 'findOne' with {slug:params[0]} %} {% done %} {% block body %}
+{% extends "base.html" %} {% get 'product' from 'Product' using 'findOne' with {slug:$params[0]} %} {% done %} {% block body %}
 <section>
   <div class="container" ng-controller="ProductPage as pctrl">
     <div class="col-md-8 col-md-offset-2">
@@ -56,7 +56,7 @@
         <div class="row">
           <h3>Description</h3>
           <hr>
-          <$ product.description.html | safe $>
+          <$ product.description.long.html | safe $>
         </div>
       </div>
     </div>
