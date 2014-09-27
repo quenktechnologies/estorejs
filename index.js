@@ -433,7 +433,7 @@ module.exports = function EStore() {
 	 */
 	this._routeRegistration = function() {
 
-          var self;
+          var self =  this;
 
 		//TODO: Routes should follow the syntax of the Extensions
 		this.keystone.set('routes', function(app) {
