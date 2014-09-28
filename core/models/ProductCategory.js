@@ -10,7 +10,7 @@ module.exports = function(store) {
 			from: 'name',
 			unique: true
 		},
-                track:true,
+		track: true,
 		drilldown: 'products'
 	};
 
@@ -38,7 +38,7 @@ module.exports = function(store) {
 
 		},
 		image: {
-			type: t.CloudinaryImage
+			type: t.Url
 		},
 		products: {
 
