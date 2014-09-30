@@ -346,6 +346,7 @@ module.exports = function EStore() {
 		then(function(settings) {
 
 			self.ebus.emit(self.SETTINGS_CHANGED, settings);
+                        return settings;                
 
 		}).
 		then(null, function(err) {
@@ -478,7 +479,7 @@ module.exports = function EStore() {
 				_.forIn(theme.serve.static,
 					function(value, key) {
 
-						if ('index' == key)
+						if ('index' === key)
 							return app.get('/', render(value));
 						app.get(key, render(value));
 
@@ -523,6 +524,7 @@ module.exports = function EStore() {
 	 */
 	this.start = function() {
 
+		var self = this;
 		this._init();
 		this._eventConfiguration();
 		this._extensionRegistration();
@@ -530,13 +532,27 @@ module.exports = function EStore() {
 		this._engineConfiguration();
 		this._modelRegistration();
 		this._routeRegistration();
-		//XXX Potential for a race condition, for some reason I can't continue setup in a then block.
-		this._loadSettings().done();
-		this.keystone.start({
+		this.keystone.mount({
+
+			//Hack to allow model loading before the http server is started.
 			onMount: function() {
-				this._startDaemons();
-				system.log.info('EStore started on port ' + this.keystone.get('port'));
-			}.bind(this)
+
+
+				self._loadSettings().
+				then(function(settings) {
+					self.settingsChanged(settings);
+					self.keystone.mount = function(evt) {
+						evt.onMount && evt.onMount();
+					};
+					self.keystone.start();
+
+
+
+				}).done();
+
+
+			}
+
 		});
 
 	};
@@ -565,8 +581,8 @@ module.exports = function EStore() {
 
 		list.add.apply(list, model.fields);
 
-		O_o = model.run && model.run(list, this.keystone);
-		O_o = model.navigate && model.navigate(this.navigation);
+		model.run && model.run(list, this.keystone);
+		model.navigate && model.navigate(this.navigation);
 
 		list.register();
 
@@ -584,7 +600,6 @@ module.exports = function EStore() {
 	 *
 	 */
 	this.settingsChanged = function(settings) {
-
 		if (!settings)
 			throw new Error('No settings found in the database! Bailing!!!');
 
