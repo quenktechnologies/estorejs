@@ -12,7 +12,7 @@
     </div>
     <div class="col-md-7">
       <div class="panel-body">
-        <div class="form-horizontal">
+        <form name="checkoutForm" class="form-horizontal">
           <div class="col-md-12">
             <div class="row">
               <div class="panel panel-default">
@@ -20,33 +20,33 @@
                   <h3>Contact Email</h3>
                   <div class="form-group">
                     <div class="col-md-12">
-                      <ng-form name="emailForm">
-                        <es-email name="email" model="checkout.order.customer.email" required="true"></es-email>
-                      </ng-form>
+                      <input type="email" class="form-control input-md" name="email" ng-model="checkout.order.customer.email" required>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             {% include "checkout/billing-form.html" %}
+            <input ng-click="checkout.togglebilling()" id="ship-to-billing-address" type="checkbox" data-ng-model="checkout.SHIP_TO_BILLING">
+            <label class="" for="ship-to-billing-address">Ship items to the address above?</label>
+  <span ng-if="!checkout.SHIP_TO_BILLING" class="animate-if">
             {% include "checkout/shipping-form.html" %}
+          </span>
             <div class="row">
               <div class="panel panel-default">
                 <div class="panel-body">
                   <h3>Payment Method</h3>
-                  <ng-form name="paymentForm">
-                    <select class="form-control" required="true" ng-options="workflow.value as workflow.name for workflow in checkout.paymentOptions" ng-model="checkout.order.workflow">
-                      <option value="">--Select One--</option>
-                    </select>
-                  </ng-form>
+                  <select class="form-control" required ng-options="workflow.value as workflow.name for workflow in checkout.paymentOptions" ng-model="checkout.order.workflow">
+                    <option value="">--Select One--</option>
+                  </select>
                 </div>
               </div>
             </div>
             <div class="row">
-              <button ng-disabled="!billingForm.$valid || !shippingForm.$valid || !emailForm.$valid || !paymentForm.$valid" ng-click="checkout.confirm()" class="btn btn-danger btn-lg btn-block" style="margin-bottom:100px;">Place Order</button>
+              <button ng-disabled="!checkoutForm.$valid" ng-click="checkout.confirm()" class="btn btn-danger btn-lg btn-block" style="margin-bottom:100px;">Place Order</button>
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   </div>
