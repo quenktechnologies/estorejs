@@ -4,7 +4,6 @@ module.exports = function(store) {
 	this.defaultColumns = 'name, createdOn';
 	var t = store.keystone.Field.Types;
 	this.options = {
-		path: 'product_categories',
 		autokey: {
 			path: 'slug',
 			from: 'name',

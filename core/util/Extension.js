@@ -17,8 +17,16 @@
  *
  *     name:       // <String|Required>    The name/title of the extension. (example: 'Awesome Checkout')
  *
+ *     key:        // <String|Required>    The key name to be used in objects internally.
+ *
  *     settings:   // <Function|Optional>  A function that is called to include the extensions's config in the
  *                                         Settings model. The function signature is function(settingsArray, fieldTypes).
+ *
+ *     optional:   // <Boolean|Optional>   If specified, the extension will only be activated if switched on via the
+ *                                         admin ui.
+ *
+ *     default:    // <Boolean|Optional>   If optional is specified, this option will be the default status of the
+ *                                         extension.
  *
  *     controller: // <Function|Required> This function is the actual extension. It will have it's prototype forced to
  *                                        the Extension object. All extensions are instantiated with a reference to
@@ -38,14 +46,14 @@
 module.exports = function Extension(store) {
 
 	/**
-	 * onRouting is called to setup routes.
+	 * routeRegistration is called to setup routes.
 	 *
-	 * @method onRouting
+	 * @method routeRegistration
 	 * @param {Object} app
 	 * @return
 	 *
 	 */
-	this.onRouting = function(app) {
+	this.routeRegistration = function(app) {
 
 
 
@@ -53,27 +61,27 @@ module.exports = function Extension(store) {
 
 
 	/**
-	 * onModels is called to setup models.
+	 * modelRegistration is called to setup models.
 	 *
-	 * @method onModels
+	 * @method modelRegistration
 	 * @param {keystone} keystone
 	 * @return
 	 *
 	 */
-	this.onModels = function(keystone) {
+	this.modelRegistration = function(keystone) {
 
 
 
 	};
 
 	/**
-	 * onGatewayRegistration
+	 * gatewayRegistration
 	 *
-	 * @method onGatewayRegistration
+	 * @method gatewayRegistration
 	 * @return
 	 *
 	 */
-	this.onGatewayRegistration = function() {
+	this.gatewayRegistration = function() {
 
 
 

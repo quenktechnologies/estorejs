@@ -7,18 +7,13 @@ var Composite = require('./Composite');
  */
 module.exports = function CompositeExtension() {
 
-	/**
-	 * blacklist
-	 *
-	 * @property blacklist
-	 * @type {Array}
-	 */
-	this.blacklist = [];
-
 	var add = this.add.bind(this);
 
 	/**
-	 * add
+	 * add an extension to the system.
+	 *
+	 * Before an extension is added, information about is taken an added to the
+	 * settings model.
 	 *
 	 * @method add
 	 * @param {Extension} ext
@@ -26,39 +21,35 @@ module.exports = function CompositeExtension() {
 	 *
 	 */
 	this.add = function(ext) {
-
-		if (ext.blacklist)
-			this.blacklist.push.apply(this.blacklist, ext.blacklist);
-
 		add(ext);
 
 	};
 
 
 	/**
-	 * onRouting
+	 * routeRegistration
 	 *
-	 * @method onRouting
+	 * @method routeRegistration
 	 * @param {Object} app
 	 * @return CompositeExtension
 	 *
 	 */
-	this.onRouting = function(app) {
-		this._callEach('onRouting', app);
+	this.routeRegistration = function(app) {
+		this._callEach('routeRegistration', app);
 		return this;
 	};
 
 	/**
-	 * onGateways
+	 * gatewayRegistration
 	 *
-	 * @method onGateways
+	 * @method gatewayRegistration
 	 * @param {Array} gateways
 	 * @return
 	 *
 	 */
-	this.onGateways = function(gateways) {
+	this.gatewayRegistration = function(gateways) {
 
-		this._callEach('onGateways', gateways);
+		this._callEach('gatewayRegistration', gateways);
 		return this;
 
 
@@ -68,15 +59,15 @@ module.exports = function CompositeExtension() {
 
 
 	/**
-	 * onModels
+	 * modelRegistration
 	 *
-	 * @method onModels
+	 * @method modelRegistration
 	 * @param {ModelRegistrar} reg
 	 * @return CompositeExtension
 	 *
 	 */
-	this.onModels = function(reg) {
-		this._callEach('onModels', reg);
+	this.modelRegistration = function(reg) {
+		this._callEach('modelRegistration', reg);
 		return this;
 	};
 

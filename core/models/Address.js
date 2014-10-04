@@ -52,6 +52,12 @@ module.exports = function Address(store) {
 				label: 'City',
 				match: /\w{2,32}/,
 			},
+                        state: {
+                          type: t.Text,
+                          label: 'State',
+				match: /\w{2,32}/,
+
+                        },
 			country: {
 				type: t.Text,
 				label: 'Country',

@@ -15,13 +15,14 @@ module.exports = function Settings(store) {
 		nodelete: true,
 
 	};
-	this.fields = [{
-
+	this.fields = ['Store Information', {
 		owner: {
 			name: {
 				type: types.Name
 			},
-                          email: {type: types.Email}
+			email: {
+				type: types.Email
+			}
 		},
 		company: {
 			name: {
@@ -46,21 +47,9 @@ module.exports = function Settings(store) {
 
 
 			},
-			extensions: {
 
-				shim: {
-					type: String,
-					hidden: true,
-					default: ''
-				}
-
-
-			}
-
-		},
-
-
-	}];
+		}
+	} ];
 
 
 	/**
@@ -73,7 +62,6 @@ module.exports = function Settings(store) {
 	this.navigate = function(nav) {
 
 
-		nav.settings = 'settings';
 
 
 

@@ -7,24 +7,47 @@
  */
 module.exports = function CheckoutBindings(store) {
 
-	this.NAME = "checkout-api";
+	this.NAME = 'checkout';
 	var self = this;
+
+	/**
+	 * meta
+	 *
+	 * @property meta
+	 * @type {Object}
+	 */
+	this.meta = {
+
+		name: 'Checkout API',
+		key: 'checkoutAPI',
+		settings: {
+			enabled: {
+				type: Boolean,
+				default: true
+			}
+		}
+
+
+
+
+	};
+
 
 
 	/**
-	 * onRouting is the onRouting method.
+	 * routeRegistration is the routeRegistration method.
 	 *
-	 * @method onRouting
+	 * @method routeRegistration
 	 * @param {Object} app
 	 * @return
 	 *
 	 */
-	this.onRouting = function(app) {
+	this.routeRegistration = function(app) {
 
-		if (this === global)
-			throw new Error('???');
 		app.post('/_/checkout/transactions', this.onCheckoutTransactionRequest);
 		app.get('/_/payments/options', this.onPaymentOptionsRequest);
+
+		store.ebus.on(store.TRANSACTION_APPROVED, this.transactionApproved);
 
 
 	};
@@ -46,12 +69,12 @@ module.exports = function CheckoutBindings(store) {
 		var that = this;
 
 		if ((!req.session.cart) || (req.session.cart.length < 1))
-			return res.send(400, "The cart is empty!");
+			return res.send(400, 'The cart is empty!');
 
 		if ((!req.body.workflow) || ('string' !== typeof req.body.workflow))
 			return res.send(400, 'No workflow specified!') && console.log(req.body);
 
-		var invoice = Invoice(req.body);
+		var invoice = new Invoice(req.body);
 		invoice.set({
 			items: req.session.cart,
 			payment: {
@@ -61,12 +84,13 @@ module.exports = function CheckoutBindings(store) {
 			}
 		});
 
+		invoice.calculateTotals();
 
 		invoice.validate(function(err) {
 
 			//create transaction and save it, then seek approval.
 
-			if (err) return system.log.warn(err) && res.send(400, "There were validation errors!");
+			if (err) return system.log.warn(err) && res.send(400, 'There were validation errors!');
 
 			if (!store.gateways.has(req.body.workflow))
 				return res.send(400, 'Gateway not found!');
@@ -78,8 +102,14 @@ module.exports = function CheckoutBindings(store) {
 			transaction.
 			save(function(err, saved) {
 
-				if (err) return res.send(500) && system.log.error(err);
-				gateway.onCheckout(new Context(saved, self, req, res));
+
+				if (err) return system.log.error(err) && res.send(500);
+				gateway.onCheckout({
+					transaction: saved,
+					controller: self,
+					request: req,
+					response: res
+				});
 
 
 			});
@@ -108,7 +138,7 @@ module.exports = function CheckoutBindings(store) {
 	 *
 	 * @method transactionApproved
 	 *
-	 * @return
+	 * @return {Promise} q style
 	 *
 	 */
 	this.transactionApproved = function(ctx) {
@@ -117,7 +147,7 @@ module.exports = function CheckoutBindings(store) {
 		var SaveTransactionPromise = require('./SaveTransactionPromise');
 		var Counter = store.keystone.list('Counter').model;
 
-		InvoiceNumberPromise(new Counter()).
+		return new InvoiceNumberPromise(new Counter()).
 		then(function(number) {
 
 			ctx.transaction.set({
@@ -127,22 +157,21 @@ module.exports = function CheckoutBindings(store) {
 				}
 			});
 
-			return SaveTransactionPromise(ctx.transaction);
+			return new SaveTransactionPromise(ctx.transaction);
 
 		}).
 		then(function(transaction) {
 
-                  ctx.request.session.cart.length = 0;
-			ctx.response.send(204);
+			ctx.request.session.cart.length = 0;
+			ctx.request.session.pendingTransactions.length = 0;
 		}).
-		catch (function(err) {
+		then(null, function(err) {
 
-			ctx.response.send(500);
 			system.log.error(err);
 
 
-		}).
-		done();
+		});
+
 
 
 	};
@@ -152,7 +181,7 @@ module.exports = function CheckoutBindings(store) {
 	 *
 	 * @method transactionDeclined
 	 *
-	 * @return
+	 * @return {Promise} q style.
 	 *
 	 */
 	this.transactionDeclined = function(ctx) {
@@ -161,12 +190,10 @@ module.exports = function CheckoutBindings(store) {
 			status: 'declined'
 		});
 
-		ctx.transaction.save(function(err) {
+		return require('q').ninvoke(ctx.transaction, 'save').
+		then(null, function(err) {
 
-			if (err) return ctx.res.send(500) && system.log.error(err);
-			ctx.response.send(404);
-
-
+			system.log.error(err);
 
 		});
 
@@ -180,5 +207,3 @@ module.exports = function CheckoutBindings(store) {
 
 
 };
-
-module.exports.prototype = estore.Extension;

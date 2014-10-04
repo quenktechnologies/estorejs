@@ -100,7 +100,7 @@ module.exports = function(store) {
 	 *
 	 */
 	this.navigate = function(nav) {
-		nav.products = ['product_categories', 'products'];
+		nav.products = ['categories', 'products'];
 
 	};
 

@@ -38,7 +38,7 @@ module.exports = function(store) {
 		total: {
 
 			type: t.Money,
-			default: "0.00",
+			default: '0.00',
 			label: 'Total'
 		},
 		address: {
@@ -56,7 +56,7 @@ module.exports = function(store) {
 			},
 			status: {
 				type: t.Select,
-				options: 'outstanding,paid,cancelled',
+				options: 'outstanding,paid,cancelled,pending,created',
 				default: 'outstanding'
 			},
 
@@ -95,12 +95,13 @@ module.exports = function(store) {
 			items: [store.keystone.list('Item').schema]
 		});
 
-		list.schema.pre('save', function(next) {
+		list.schema.methods.calculateTotals = function() {
+
 			var Big = require('bignumber.js');
-			var total = Big(0);
+			var total = new Big(0);
 			this.items.forEach(function(item) {
 
-				item.subtotal = Big(item.price).times(item.quantity).toString();
+				item.subtotal = new Big(item.price).times(item.quantity).toString();
 				total = total.plus(item.subtotal);
 
 
@@ -108,6 +109,14 @@ module.exports = function(store) {
 
 			this.total = total.toString();
 
+
+
+
+
+		};
+
+		list.schema.pre('save', function(next) {
+			this.calculateTotals();
 			next();
 
 

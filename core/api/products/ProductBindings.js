@@ -18,7 +18,7 @@ module.exports = function ProductsBindings(store) {
 	 * @return
 	 *
 	 */
-	this.onRouting = function(app) {
+	this.routeRegistration = function(app) {
 		app.get(store.endpoints.PRODUCTS, this.onGetProductListRequest);
 		app.get(store.endpoints.PRODUCT, this.onGetProductRequest);
 	};
@@ -77,5 +77,3 @@ module.exports = function ProductsBindings(store) {
 
 
 };
-
-module.exports.prototype = estore.Extension;

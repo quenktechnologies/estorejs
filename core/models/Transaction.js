@@ -76,14 +76,14 @@ module.exports = function Transaction(store) {
 
 				var f = store.keystone.list('Product').model.applyTransaction(this._id, item);
 
-				tasks.push(function() {
+				tasks.push((function() {
 
 					return q.ninvoke(f, 'exec').
 					then(function(product) {
 						if (product)
-							store.ebus.emit(store.events.PRODUCT_UPDATED, product, this);
+							store.ebus.emit(store.PRODUCT_UPDATED_EVENT, product, this);
 					});
-				}());
+				}()));
 			}.bind(this));
 
 			return q.all(tasks);
