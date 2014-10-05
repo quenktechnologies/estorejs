@@ -23,9 +23,27 @@ module.exports = function Transaction(store) {
 	this.NAME = 'Transaction';
 
 	this.options = {
-		hidden: true,
-		track: true
+		nocreate: true,
+		track: true,
+		noedit: true
 	};
+
+	this.DEFAULT_COLUMNS = '_id, invoice.customer.email, status, timestamp, invoice.total';
+
+	this.fields = [{
+		status: {
+			type: String,
+			default: 'created',
+			noedit: true,
+
+		},
+		timestamp: {
+			type: t.Datetime,
+			default: Date.now,
+			noedit: true,
+
+		}
+	}];
 
 	/**
 	 * run
@@ -41,10 +59,6 @@ module.exports = function Transaction(store) {
 
 		list.schema.add({
 			invoice: new Invoice(),
-			status: {
-				type: String,
-				default: 'created'
-			}
 		});
 
 		list.schema.statics.getApproved = function(limit) {
@@ -108,8 +122,10 @@ module.exports = function Transaction(store) {
 		list.schema.methods.generateInvoice = function() {
 
 			var Invoice = store.keystone.list('Invoice');
-			var newInvoice = new Invoice.model(this.invoice.toObject(), {_id:false});
-                        newInvoice.set('_id', this._id);
+			var newInvoice = new Invoice.model(this.invoice.toObject(), {
+				_id: false
+			});
+			newInvoice.set('_id', this._id);
 
 			return require('q').ninvoke(newInvoice, 'save').
 			then(null, function(err) {

@@ -82,7 +82,7 @@ module.exports = function(store) {
 	 *
 	 */
 	this.navigate = function(nav) {
-		nav.invoices = ['invoices'];
+		nav.sales = ['invoices','transactions'];
 
 	};
 
