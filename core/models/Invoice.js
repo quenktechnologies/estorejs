@@ -1,4 +1,5 @@
 var Address = require('./Address');
+var Table = require('easy-table');
 
 module.exports = function(store) {
 
@@ -34,6 +35,10 @@ module.exports = function(store) {
 			noedit: true,
 			default: Date.now
 
+		},
+		_items: {
+			type: t.Textarea,
+			label: 'items'
 		},
 		total: {
 
@@ -121,6 +126,39 @@ module.exports = function(store) {
 
 
 		});
+
+		list.schema.pre('save', function(next) {
+
+
+			if (this.items) {
+
+				var t = new Table();
+
+				this.items.forEach(function(item, key) {
+
+					t.cell('#', '[' + key + ']');
+					t.cell('id', item._id);
+					t.cell('name', item.name);
+					t.cell('price', item.price);
+					t.cell('quantity', item.quantity);
+					t.cell('total', item.subtotal);
+					t.newRow();
+
+				});
+
+				this._items = t.toString();
+
+
+			}
+
+
+
+			next();
+
+
+
+		});
+
 
 	};
 };

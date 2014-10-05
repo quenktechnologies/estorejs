@@ -28,6 +28,12 @@ module.exports = function(store) {
 			},
 			image: {
 				type: t.Url
+			},
+			_keywords: {
+
+				type: t.Textarea,
+				label: 'keywords'
+
 			}
 		},
 
@@ -37,7 +43,7 @@ module.exports = function(store) {
 
 				sku: {
 					type: String,
-					label: "SKU",
+					label: 'SKU',
 					width: 'short',
 					initial: true,
 
@@ -45,7 +51,7 @@ module.exports = function(store) {
 				balance: {
 
 					type: Number,
-					label: "Balance",
+					label: 'Balance',
 					default: 0,
 					min: 0,
 					collapse: true
@@ -125,10 +131,21 @@ module.exports = function(store) {
 		});
 
 		list.relationship({
-			ref: "Category",
-			path: "categories",
-			refPath: "products"
+			ref: 'Category',
+			path: 'categories',
+			refPath: 'products'
 		});
+
+
+		list.schema.pre('save', function(next) {
+
+			if (this._keywords)
+				this.set('keywords', this._keywords.toLowerCase().split(','));
+
+			next();
+
+		});
+
 
 		//TODO: Convert the methods to use promises.
 
@@ -199,19 +216,19 @@ module.exports = function(store) {
 
 		};
 
-		list.schema.statics.findProductsByKeywords = function(keywords, limit) {
+		list.schema.statics.findProductsByKeywords = function(keywords, limit, skip) {
 
-			limit = limit || 35;
+			skip = skip || 0;
+			limit = limit || 50;
 
-                        keywords = keywords.toLowerCase();
-			keywords = keywords.split(' ');
-
+			keywords = keywords.toLowerCase().split(',');
 
 			return this.model('Product').find({
 				keywords: {
 					$in: keywords
 				}
 			}).
+			skip(skip).
 			limit(limit);
 		};
 
