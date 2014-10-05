@@ -15,42 +15,57 @@ module.exports = function(store) {
 
 	this.fields = [{
 
-		name: {
-			type: String,
-			required: true,
-			initial: true
+			name: {
+				type: String,
+				required: true,
+				initial: true
+			}
 		},
-		description: {
-
-			text: {
-
-				type: t.Textarea,
-				label: 'Text description',
-				collapse: true
-			},
-			html: {
-				type: t.Html,
-				wysiwyg: true,
-				label: 'HTML description',
+		'Details', {
+			image: {
+				type: t.Url,
 				collapse: true
 			}
 
 		},
-		image: {
-			type: t.Url
-		},
-		products: {
 
-			type: t.Relationship,
-			ref: "Product",
-			many: true,
-			collapse: true
+		'Description', {
+			description: {
+
+				short: {
+					type: t.Text,
+					label: 'Short',
+					width: 'long',
+					collapse: true
+				},
+
+				long: {
+					type: t.Markdown,
+					label: 'Long',
+					width: 'long',
+					height: 10,
+					collapse: true
+				}
+
+			}
+		}, 'Products', {
+			products: {
+
+				type: t.Relationship,
+				ref: 'Product',
+				many: true,
+				label: 'member',
+				width: 'medium',
+				collapse: true
 
 
+			}
 		}
 
 
-	}];
+	];
+
+        
 
 
 };

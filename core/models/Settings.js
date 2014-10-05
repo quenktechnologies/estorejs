@@ -13,43 +13,56 @@ module.exports = function Settings(store) {
 	this.options = {
 		nocreate: true,
 		nodelete: true,
+		map: {
+			name: '_id'
+		}
 
 	};
-	this.fields = ['Store Information', {
+	this.fields = ['Owner Information', {
 		owner: {
-			name: {
-				type: types.Name
+			brand: {
+				type: String,
+				label: 'Brand',
+				width: 'medium'
 			},
+			contact: {
+				type: types.Name,
+				label: 'Name'
+			},
+			company: {
+				type: String,
+				width: 'medium',
+				label: 'Company Name'
+			},
+
 			email: {
-				type: types.Email
-			}
-		},
-		company: {
-			name: {
-				type: String
+				type: types.Email,
+				width: 'medium',
+				label: 'Email',
 			},
 			phone: {
-				type: types.Text
-			},
-			brand: {
-
 				type: String,
-
+				label: 'Phone',
+				width: 'medium'
 			},
-			description: {
 
-				short: {
-					type: String
-				},
-				long: {
-					type: types.Markdown
-				}
-
-
-			},
 
 		}
-	} ];
+	}, 'Site', {
+
+		about: {
+			short: {
+				type: String,
+				label: 'Short'
+			},
+			long: {
+				type: types.Markdown,
+				label: 'Long'
+			}
+		}
+
+
+	}];
 
 
 	/**

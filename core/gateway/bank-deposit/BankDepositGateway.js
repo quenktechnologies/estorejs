@@ -51,7 +51,7 @@ module.exports = function BankDepositGateway() {
 			then(function() {
 
 				//ctx.response.redirect('/checkout/success');
-                                ctx.send(204);
+                                ctx.response.send(204);
 
 			}).
 			done();

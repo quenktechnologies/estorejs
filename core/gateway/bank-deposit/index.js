@@ -12,6 +12,7 @@ module.exports = {
 			dependsOn: {
 				'extensions.bankDepositGateway.enabled': true
 			},
+                        width:'medium',
 			label: 'Bank account number'
 
 

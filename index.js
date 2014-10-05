@@ -250,7 +250,7 @@ module.exports = function EStore() {
 		if (this.extras.has('extensions'))
 			list.push.apply(list, this.extras.get('extensions', true));
 
-                list.push(			require('./core/themes'));
+		list.push(require('./core/themes'));
 
 
 		list.forEach(function(ext) {
@@ -362,7 +362,7 @@ module.exports = function EStore() {
 		}.bind(this));
 
 		this.extensions.composite.modelRegistration(this);
-		this.navigation.settings = 'settings';
+		this.navigation.settings = ['settings', 'users', 'counters'];
 		this.keystone.set('nav', this.navigation);
 
 

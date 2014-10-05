@@ -10,65 +10,91 @@ module.exports = function(store) {
 
 	this.options = {
 		autoindex: true,
+		nocreate: true,
+		nodelete: true,
 		track: true,
 		map: {
-			name: 'number'
+			name: '_id'
 		}
 	};
 
-	this.fields = [{
+	this.fields = ['Invoice', {
 
 		number: {
 			type: Number,
 			unique: true,
+			noedit: true,
 			default: -1
 		},
-		customer: {
-			email: {
-				type: t.Email
-			}
-		},
-
 		date: {
 
 			type: Date,
 			noedit: true,
+			width: 'short',
 			default: Date.now
 
 		},
-		_items: {
-			type: t.Textarea,
-			label: 'items'
-		},
+
 		total: {
 
 			type: t.Money,
 			default: '0.00',
-			label: 'Total'
+			noedit: true,
+			width: 'short'
+		}
+
+	}, 'Customer', {
+		customer: {
+			email: {
+				type: t.Email,
+				label: 'Email',
+				noedit: true,
+				width: 'short'
+			}
 		},
+	}, 'Billing Address', {
 		address: {
 			billing: address,
+		}
+	}, 'Shipping Address', {
+		address: {
 			shipping: address
+		}
+	}, 'Details', {
+		_items: {
+			type: t.Textarea,
+			label: 'Items'
 		},
+	}, 'Payment', {
 		payment: {
+			id: {
+				type: String,
+				width: 'short',
+                                label:'ID'
+
+			},
 
 			type: {
 				type: String,
-				options: 'cash',
+				noedit: true,
+                                label:'Type',
+				width: 'short'
+
 			},
-			id: {
+			workflow: {
 				type: String,
+                                hidden:true,
+				width: 'short',
+				noedit: 'true'
 			},
+
 			status: {
 				type: t.Select,
-				options: 'outstanding,paid,cancelled,pending,created',
+				options: 'outstanding,paid,cancelled',
 				default: 'outstanding'
 			},
 
 		},
-		workflow: {
-			type: String
-		}
 
 
 	}];
@@ -82,7 +108,7 @@ module.exports = function(store) {
 	 *
 	 */
 	this.navigate = function(nav) {
-		nav.sales = ['invoices','transactions'];
+		nav.sales = ['invoices', 'transactions'];
 
 	};
 

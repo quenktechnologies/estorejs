@@ -13,7 +13,7 @@ exports.create = {
 				min: 1,
 				max: 3
 			},
-                        keywords:['samsung', 'galaxy', 'android', 'cellphone', 'test'],
+			_keywords: 'samsung,galaxy,android,cellphone,phone,smartphone,test',
 			description: {
 				short: 'This product was created as a test.',
 				long: {
@@ -36,7 +36,7 @@ exports.create = {
 				min: 1,
 				max: 3
 			},
-                        keywords:['nokia', 'cellphone', 'test'],
+			_keywords: 'nokia,cellphone,phone,smartphone,test',
 
 			description: {
 				short: 'This product was created as a test.',
@@ -56,7 +56,7 @@ exports.create = {
 				sku: 'gc1',
 				balance: '100'
 			},
-                        keywords:['case', 'phones', 'cellphone', 'test'],
+			_keywords: 'case,phones,cellphone,test',
 			order: {
 				min: 1,
 				max: 30
@@ -81,7 +81,7 @@ exports.create = {
 				sku: 'spr',
 				balance: 200
 			},
-                        keywords:['sony', 'cellphone', 'test'],
+			_keywords: 'sony,cellphone,test',
 			order: {
 				min: 1,
 				max: 3

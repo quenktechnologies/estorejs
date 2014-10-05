@@ -1,7 +1,7 @@
 module.exports = function(store) {
 
 	var t = store.keystone.Field.Types;
-	this.DEFAULT_COLUMNS = 'name,price,stock.sku,stock.balance,createdOn';
+	this.DEFAULT_COLUMNS = 'name,stock.balance,price,createdAt';
 	this.NAME = 'Product';
 	this.options = {
 
@@ -18,7 +18,7 @@ module.exports = function(store) {
 			name: {
 				type: String,
 				required: true,
-				width: 'medium',
+				width: 'short',
 				initial: true
 			},
 			price: {
@@ -27,12 +27,40 @@ module.exports = function(store) {
 				initial: true
 			},
 			image: {
-				type: t.Url
+				type: t.Url,
+				width: 'medium',
+                                label:'Image URL',
+				default: require('../util/DefaultImage'),
+				collapse: true
 			},
 			_keywords: {
 
 				type: t.Textarea,
-				label: 'keywords'
+				label: 'Keywords',
+				note: 'Seperate each term with a comma.',
+				height: 5,
+				collapse: true,
+				width: 'medium'
+
+			}
+		},
+		'Description', {
+			description: {
+
+				short: {
+					type: t.Text,
+					label: 'Short',
+					width: 'long',
+					collapse: true
+				},
+
+				long: {
+					type: t.Markdown,
+					label: 'Long',
+					width: 'long',
+					height: 10,
+					collapse: true
+				}
 
 			}
 		},
@@ -45,7 +73,7 @@ module.exports = function(store) {
 					type: String,
 					label: 'SKU',
 					width: 'short',
-					initial: true,
+					collapse: true,
 
 				},
 				balance: {
@@ -54,44 +82,29 @@ module.exports = function(store) {
 					label: 'Balance',
 					default: 0,
 					min: 0,
-					collapse: true
+					collapse: true,
+					initial: true
+
 
 				},
-
-
-
 			}
 
-		}, {
-			order: {
+		}, 'Orders', {
+			orders: {
 				min: {
 					type: Number,
 					min: 1,
 					default: 1,
 					collapse: true,
-					label: 'Minimum Order'
+					label: 'Minimum'
 				},
 				max: {
 					type: Number,
-					default: 9999,
+					default: 9999999999,
 					min: 1,
 					collapse: true,
-					label: 'Maximum Order'
+					label: 'Maximum'
 				},
-
-			}
-		}, 'Description', {
-			description: {
-
-				short: {
-					type: t.Text,
-					wysiwyg: true
-				},
-
-				long: {
-					type: t.Markdown,
-					wysiwyg: true
-				}
 
 			}
 		}
@@ -106,8 +119,7 @@ module.exports = function(store) {
 	 *
 	 */
 	this.navigate = function(nav) {
-		nav.products = ['categories', 'products'];
-
+		nav.products = ['products', 'categories'];
 	};
 
 	/**
