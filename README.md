@@ -17,9 +17,10 @@ EStore uses MongoDB for database, Mongoose for ODM and KeystoneJS for a default 
 ##Setup and Deployments
 
 1. Download or clone the latest version of this repository.
-2. Run npm install.
-3. Configure your .env file or environment. At the very least, set your `MONGO_URI`.
-4. Run `npm start`.
+2. Create a `0.1.0-settings.js` with basic information in the updates folder. A template exists in the docs folder.
+3. Run npm install.
+4. Configure your .env file or environment. At the very least, set your `MONGO_URI`.
+5. Run `npm start`.
 
 ##Documentation
 

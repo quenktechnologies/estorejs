@@ -18,6 +18,7 @@ module.exports = function Address(store) {
 
 			name: {
 				type: t.Name,
+                                  label:'Name'
 
 			},
 				phone: {
@@ -28,30 +29,37 @@ module.exports = function Address(store) {
 			},
 			company: {
 				type: String,
+                                label:'Company'
 			},
 			street1: {
 				type: t.Text,
-				label: 'Address Line1',
+				label: 'Street Line1',
 				match: /.{1,128}/,
 			},
 			street2: {
 				type: t.Text,
-				label: 'Address Line2',
+				label: 'Street Line2',
 				match: /.{0,128}/,
 
 			},
 			code: {
 
 				type: t.Text,
-				label: 'Postal/Zip Code',
+				label: 'Postal Code',
 				match: /\w{2,8}/,
 
 			},
 			city: {
 				type: t.Text,
-				label: 'City',
+				label: 'City/Region',
 				match: /\w{2,32}/,
 			},
+                        state: {
+                          type: t.Text,
+                          label: 'State',
+				match: /\w{2,32}/,
+
+                        },
 			country: {
 				type: t.Text,
 				label: 'Country',

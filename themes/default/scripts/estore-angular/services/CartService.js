@@ -7,9 +7,7 @@
  */
 module.exports = function CartService($http) {
 
-
 	var self = {};
-
 
 	/**
 	 * add and item to the cart.
@@ -91,8 +89,21 @@ module.exports = function CartService($http) {
 	};
 
 
-	return self;
+	/**
+	 * count issues a request for the current count of the cart.
+	 *
+	 * @method count
+	 * @return
+	 *
+	 */
+	self.count = function() {
 
+		return $http.get('/_/cart/items/count');
+
+
+	};
+
+	return self;
 
 
 

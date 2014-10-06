@@ -1,7 +1,7 @@
 module.exports = function(store) {
 
 	var t = store.keystone.Field.Types;
-	this.DEFAULT_COLUMNS = 'name,price,stock.sku,stock.balance,createdOn';
+	this.DEFAULT_COLUMNS = 'name,stock.balance,price,createdAt';
 	this.NAME = 'Product';
 	this.options = {
 
@@ -18,7 +18,7 @@ module.exports = function(store) {
 			name: {
 				type: String,
 				required: true,
-				width: 'medium',
+				width: 'short',
 				initial: true
 			},
 			price: {
@@ -27,7 +27,41 @@ module.exports = function(store) {
 				initial: true
 			},
 			image: {
-				type: t.Url
+				type: t.Url,
+				width: 'medium',
+                                label:'Image URL',
+				default: require('../util/DefaultImage'),
+				collapse: true
+			},
+			_keywords: {
+
+				type: t.Textarea,
+				label: 'Keywords',
+				note: 'Seperate each term with a comma.',
+				height: 5,
+				collapse: true,
+				width: 'medium'
+
+			}
+		},
+		'Description', {
+			description: {
+
+				short: {
+					type: t.Text,
+					label: 'Short',
+					width: 'long',
+					collapse: true
+				},
+
+				long: {
+					type: t.Markdown,
+					label: 'Long',
+					width: 'long',
+					height: 10,
+					collapse: true
+				}
+
 			}
 		},
 
@@ -36,50 +70,41 @@ module.exports = function(store) {
 			stock: {
 
 				sku: {
-					type: t.Key,
-					label: "SKU",
+					type: String,
+					label: 'SKU',
 					width: 'short',
-					initial: true,
+					collapse: true,
 
 				},
 				balance: {
 
 					type: Number,
-					label: "Balance",
+					label: 'Balance',
 					default: 0,
 					min: 0,
-					collapse: true
+					collapse: true,
+					initial: true
+
 
 				},
-
-
-
 			}
 
-		}, {
-			order: {
+		}, 'Orders', {
+			orders: {
 				min: {
 					type: Number,
 					min: 1,
 					default: 1,
 					collapse: true,
-					label: 'Minimum Order'
+					label: 'Minimum'
 				},
 				max: {
 					type: Number,
-					default: 9999,
+					default: 9999999999,
 					min: 1,
 					collapse: true,
-					label: 'Maximum Order'
+					label: 'Maximum'
 				},
-
-			}
-		}, 'Description', {
-			description: {
-
-				type: t.Markdown,
-				label: 'Description',
-				wysiwyg: true
 
 			}
 		}
@@ -94,8 +119,7 @@ module.exports = function(store) {
 	 *
 	 */
 	this.navigate = function(nav) {
-		nav.products = ['product_categories', 'products'];
-
+		nav.products = ['products', 'categories'];
 	};
 
 	/**
@@ -107,16 +131,35 @@ module.exports = function(store) {
 	 *
 	 */
 	this.run = function(list) {
-		//TODO: Convert the methods to use promises.
+
+		list.schema.add({
+
+			keywords: [String]
+
+		});
+
 		list.schema.add({
 			transactions: Array,
 		});
 
 		list.relationship({
-			ref: "Category",
-			path: "categories",
-			refPath: "products"
+			ref: 'Category',
+			path: 'categories',
+			refPath: 'products'
 		});
+
+
+		list.schema.pre('save', function(next) {
+
+			if (this._keywords)
+				this.set('keywords', this._keywords.toLowerCase().split(','));
+
+			next();
+
+		});
+
+
+		//TODO: Convert the methods to use promises.
 
 		list.schema.statics.getProductForCart = function(id) {
 
@@ -183,6 +226,24 @@ module.exports = function(store) {
 
 
 
+		};
+
+		list.schema.statics.findProductsByKeywords = function(keywords, limit, skip) {
+
+                  keywords = keywords || '';
+
+			skip = skip || 0;
+			limit = limit || 50;
+
+			keywords = keywords.toLowerCase().split(',');
+
+			return this.model('Product').find({
+				keywords: {
+					$in: keywords
+				}
+			}).
+			skip(skip).
+			limit(limit);
 		};
 
 

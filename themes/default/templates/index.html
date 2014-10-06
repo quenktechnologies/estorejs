@@ -1,51 +1,40 @@
-{% extends "base.html" %} 
-{% get 'products' from 'Product' using 'find' %}{% done %}
-{% get 'orders' from 'Transaction' using 'find' %}
-{% then 'where' with 'status' %}
-{% then 'equals' with 'approved' %}
-{% done %} 
-{% set PAGE_IS_HOME=true %} {% block body %}
-<section>
-  <!--slider-->
-  <div class="container">
+{% extends "base.html" %} {% set PAGE_IS_HOME=true %} {% get 'products' from 'Product' using 'find' %} {% then 'limit' with 4 %} {% done %} {% block body %}
+<div class="container">
+  <div class="col-md-8 col-md-offset-2">
     <div class="row">
-      <div class="col-md-8 col-md-offset-2">
-        <div class="carousel slide" data-ride="carousel">
-          <div class="carousel-inner">
-            <div class="item active">
-              <div class="col-sm-6">
-                <h1>Your Store   <$ product $>
-</h1>
-                <p>This a default install of Vendorlize EStore. Create your own theme and get your sell on.</p>
-              </div>
-              <div class="col-sm-6">
-                <img src="assets/images/woman-bag.jpg" class="girl img-responsive" alt="Image of a woman with shopping bags." />
-              </div>
+      <div class="col-sm-6">
+        <h1><$ $settings.site.brand $></h1>
+        <p><$ $settings.site.about.html | safe $></p>
+      </div>
+      <div class="col-sm-6">
+        <img src="assets/images/woman-bag.jpg" class="girl img-responsive" alt="Image of a woman with shopping bags." />
+      </div>
+    </div>
+    <div class="row" style="padding-top:35px;">
+      {% for product in products %}
+      <div class="col-md-3">
+        <div class="thumbnail no-border">
+          <img alt="<$ product.name $>" src="<$ product.image $>">
+          <div class="caption">
+            <div class="col-md-12">
+              <h6 class="product-title"><a style="color:#555; font-weight:900" href="/products/<$ product.slug $>"><$ product.name | truncate(128) $></a></h6>
+            </div>
+            <div class="col-md-12">
+              <span class="product-price" style="font-weight:900;color:#807777">
+              $<$ product.price $>
+            </span>
+            </div>
+            <div class="col-md-12">
+              {% if product.stock.balance < 1 %}
+              <span class="text-danger">Out of Stock</span>
+                {% endif %}
+
             </div>
           </div>
         </div>
       </div>
+      {% endfor %}
     </div>
   </div>
-</section>
-<hr>
-<section>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12">
-        <h1 class="text-center">Our Products</h1>
-          {% for product in products %}
-          <div class="col-md-3">
-            <div class="thumbnail">
-              <img alt="<$ product.name $>" src="<$ product.image $>">
-              <div class="caption">
-                <h4 class="pull-right">$<$ product.price $></h4>
-                <h4><a href="/products/<$ product.slug $>"><$ product.name $></a></h4>
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-      </div>
-    </div>
-</section>
+</div>
 {% endblock %}

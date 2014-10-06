@@ -1,7 +1,7 @@
 exports.create = {
 
 	Counter: [{
-		_id: 'invoices',
+		name: 'invoices',
 		next: 1
 
 	}]

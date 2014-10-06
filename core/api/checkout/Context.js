@@ -4,7 +4,7 @@
  * @param {Transaction} transaction
  * @param {TransactionMediator} mediator
  * @param {Request} request
-* @param {Response} response
+ * @param {Response} response
  * @constructor
  *
  */

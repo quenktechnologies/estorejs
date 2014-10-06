@@ -8,4 +8,5 @@ directive('esShoppingCart', require('./components/shopping-cart')).
 directive('esCheckoutCart', require('./components/checkout-cart')).
 directive('esEmail', require('./components/email')).
 directive('esPaymentSelect', require('./components/payment-select')).
-directive('esCartAdder', require('./components/cart-adder'));
+directive('esCartAdder', require('./components/cart-adder')).
+directive('esCartCount', require('./components/cart-count'));

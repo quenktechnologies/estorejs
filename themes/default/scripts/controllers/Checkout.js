@@ -5,7 +5,7 @@
  * @constructor
  *
  */
-module.exports = function Checkout($scope, cartService, configService) {
+module.exports = function Checkout($scope, cartService, configService, $window) {
 
 	this.order = {
 		customer: {
@@ -25,7 +25,7 @@ module.exports = function Checkout($scope, cartService, configService) {
 	this.SHIP_TO_BILLING = false;
 	this.paymentOptions = [];
 	this.countries = [{
-		name: 'Trinidad & Tobago'
+		name: 'Trinidad and Tobago'
 	}];
 
 	$scope.order = this.order;
@@ -42,17 +42,17 @@ module.exports = function Checkout($scope, cartService, configService) {
 		if (this.SHIP_TO_BILLING)
 			this.order.address.shipping = this.order.address.billing;
 
-                console.log(this.order);
 		cartService.checkout(this.order).
 		then(function(res) {
-			window.location = "/checkout/success";
-			console.log(res);
+
+			if (res.data.paymentUrl)
+			return $window.location.href = res.data.paymentUrl;
+
+				window.location = '/checkout/success';
 
 		}).
 		then(null, function(res) {
-			//window.location = "/checkout/error";
-			console.log(res);
-
+			window.location = '/checkout/error';
 
 		});
 	};

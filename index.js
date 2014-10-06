@@ -8,13 +8,11 @@ var Express = require('express');
 var System = require('./core/sys/System');
 var NunjucksMongoose = require('nunjucks-mongoose');
 var Subscription = require('./core/util/Subscription');
-var fs = require('fs');
 var Extension = require('./core/util/Extension');
 var CompositeExtension = require('./core/util/CompositeExtension');
-var Gateway = require('./core/gateway/Gateway');
 var Gateways = require('./core/gateway/Gateways');
 var TransactionDaemon = require('./core/daemon/TransactionDaemon');
-var o_O; //a nonsense variable (think /dev/null). 
+var Extension = require('./core/util/Extension');
 
 
 /**
@@ -33,6 +31,9 @@ module.exports = function EStore() {
 
 	//Events
 	this.ROUTE_REGISTRATION = 'Route Registration';
+	this.SETTINGS_CHANGED = 'Settings Changed';
+	this.TRANSACTION_APPROVED = 'TRANSACTION_APPROVED';
+	this.TRANSACTION_DECLINED = 'TRANSACTION_DECLINED';
 
 	//Constants
 	this.STATUS_SYSTEM_ERROR = 503;
@@ -56,17 +57,12 @@ module.exports = function EStore() {
 	this.ebus = undefined;
 
 	/**
+	 * settings contains the settings
 	 *
-	 * @property {Object} events
-	 * TODO: Remove and convert to fields on EStore.
-	 *
-	 *
+	 * @property config
+	 * @type {Object}
 	 */
-	this.events = {
-		model_REGISTRATION: 0x3e,
-		CHECKOUT_REQUEST: 0x14,
-		TRANSACTION_APPROVED: 0x01,
-	};
+	this.settings = {};
 
 	/**
 	 *
@@ -89,13 +85,6 @@ module.exports = function EStore() {
 	 *
 	 */
 	this.nunjucksEnvironment = undefined;
-
-
-	/**
-	 *
-	 * @property {Array} models
-	 */
-	this.models = [];
 
 	/**
 	 *
@@ -152,17 +141,15 @@ module.exports = function EStore() {
 	 * extensions
 	 *
 	 * @property extensions
-	 * @type {Array}
+	 * @type {Object}
 	 */
-	this.extensions = undefined;
+	this.extensions = {
+		names: {},
+		controllers: {},
+		settings: {},
+		composite: new CompositeExtension(this)
+	};
 
-	/**
-	 * blacklist
-	 *
-	 * @property blacklist
-	 * @type {Array}
-	 */
-	this.blacklist = [];
 
 	/**
 	 * util methods that are commonly used.
@@ -170,10 +157,7 @@ module.exports = function EStore() {
 	 * @property util
 	 * @type {Object}
 	 */
-	this.util = undefined;
-
-
-
+	this.util = require('lodash');
 
 	/**
 	 * _init initializes the application.
@@ -188,33 +172,121 @@ module.exports = function EStore() {
 		process.title = this.title;
 		global.system = new System();
 
-		global.estore = {
-			Gateway: new Gateway(),
-			Extension: new Extension()
-
-		};
 
 		this.keystone = require('keystone');
 		this.ebus = new EventEmitter();
 		this.app = new Express();
-		this.util = require('lodash');
 		this.subs = new Subscription(this.ebus);
 		this.theme = new Theme(process.cwd() + '/themes', process.env.THEME || 'default');
 
 		this.themePackage = this.theme.get('package.json');
-		if (this.themePackage.estore.blacklist)
-			this.blacklist.push.apply(this.blacklist, this.themePackage.estore.blacklist);
 
 		this.gateways = new Gateways();
 		this.extras = new Extras(process.cwd() + '/extras');
-		this.Extension = require('./core/util/Extension');
-		this.extensions = new CompositeExtension(this);
 		this.nunjucksEnvironment = NFactory.getEnvironment(this.theme.getTemplatePath(), this.app);
+		var defaults = new DefaultKeystoneConfiguration(this.theme);
+		defaults['custom engine'] = this.nunjucksEnvironment.render;
 
-		o_O = this.theme.exists() || this.theme.use('default');
+		this.keystone.init(defaults);
+		this.keystone.mongoose.connection.on('error', this.mongooseError);
+
+		this.theme.exists() || this.theme.use('default');
 		this.keystone.connect(this.app);
 
+
 	};
+
+
+	/**
+	 * _preloadSettings
+	 *
+	 * @method _preloadSettings
+	 * @param {Function} cb
+	 * @return  {Promise}
+	 *
+	 */
+	this._preloadSettings = function(cb) {
+
+		var db = require('mongojs')(this.keystone.get('mongo'), ['settings']);
+
+		db.settings.findOne(function(err, settings) {
+
+			if (err) throw err;
+
+			if (!settings)
+				settings = {};
+
+			this.settings = settings;
+
+			cb();
+
+
+		}.bind(this));
+
+
+
+	};
+
+	/**
+	 * _scanExtensions loops over all extensions and collects them.
+	 *
+	 * @method _scanExtensions
+	 * @return
+	 *
+	 */
+	this._scanExtensions = function() {
+
+		var list = [];
+
+		list.push(
+			require('./core/api/products'),
+			require('./core/api/cart'),
+			require('./core/api/checkout'),
+			require('./core/gateway/bank-deposit'),
+			require('./core/gateway/2checkout-hosted')
+
+		);
+
+		if (this.extras.has('extensions'))
+			list.push.apply(list, this.extras.get('extensions', true));
+
+		list.push(require('./core/themes'));
+
+
+		list.forEach(function(ext) {
+
+			this.installExtension(ext);
+
+		}.bind(this));
+
+	};
+
+	/**
+	 * _coreModelRegistration
+	 *
+	 * @method _coreModelRegistration
+	 * @return
+	 *
+	 */
+	this._coreModelRegistration = function() {
+
+		var Settings = require('./core/models/Settings');
+		var User = require('./core/models/User');
+		var settings = new Settings(this);
+		var user = new User(this);
+
+		settings.fields.push({
+			extensions: this.extensions.settings
+		});
+
+		this.installModel(settings);
+		this.installModel(user);
+		this.settings = this.keystone.list('Settings').model(this.settings).toObject();
+		this.keystone.set('user model', 'User');
+
+
+	};
+
 
 	/**
 	 * _extensionRegistration registers the extensions (plugins) contained
@@ -226,23 +298,84 @@ module.exports = function EStore() {
 	 */
 	this._extensionRegistration = function() {
 
-		var ProductsBindings = require('./core/api/products/ProductBindings');
-		var CartBindings = require('./core/api/cart/CartBindings');
-		var CheckoutBindings = require('./core/api/checkout/CheckoutBindings');
-		var DefaultGateways = require('./core/gateway/DefaultGateways');
+		var base = new Extension();
+		var Ctrl;
 
-		this.extensions.add(new ProductsBindings(this));
-		this.extensions.add(new CartBindings(this));
-		this.extensions.add(new CheckoutBindings(this));
-		this.extensions.add(new DefaultGateways(this));
+		for (var key in this.extensions.controllers) {
 
-		if (this.extras.has('extensions'))
-			this.extras.get('extensions', true).forEach(
-				function(Ext) {
-					this.extensions.add(new Ext(this));
-				}.bind(this));
+			if (this.extensions.controllers.hasOwnProperty(key)) {
 
-		this.blacklist.push.apply(this.blacklist, this.extensions.blacklist);
+				Ctrl = this.extensions.controllers[key];
+				Ctrl.prototype = base;
+
+				if (this.settings.extensions.hasOwnProperty(key))
+					if (this.settings.extensions[key].hasOwnProperty('enabled'))
+						if (this.settings.extensions[key].enabled !== true) {
+
+							Ctrl = null;
+
+							system.log.info('Not registering extension: "' +
+								this.extensions.names[key] + '"');
+
+						}
+				if (Ctrl) {
+					this.extensions.composite.add(new Ctrl(this));
+					system.log.info('Registered extension ' +
+						this.extensions.names[key] + '.');
+				}
+
+
+			}
+
+
+
+		}
+
+
+
+	};
+
+	/**
+	 * _modelRegistration registers the keystone models.
+	 *
+	 * @method _modelRegistration
+	 * @return
+	 *
+	 */
+	this._modelRegistration = function() {
+
+		var models = [];
+
+		models.push.apply(models, [
+			require('./core/models/Counter'),
+			require('./core/models/ProductCategory'),
+			require('./core/models/Product'),
+			require('./core/models/Item'),
+			require('./core/models/Invoice'),
+			require('./core/models/Transaction'),
+			require('./core/models/Address'),
+		]);
+
+		models.forEach(function(Model) {
+			this.installModel(new Model(this));
+
+		}.bind(this));
+
+		this.extensions.composite.modelRegistration(this);
+		this.navigation.settings = ['settings', 'users', 'counters'];
+		this.keystone.set('nav', this.navigation);
+
+
+	};
+
+	/**
+	 * _configureEvents sets up event listening.
+	 *
+	 * @method _configureEvents
+	 * @return
+	 *
+	 */
+	this._eventConfiguration = function() {
 
 
 	};
@@ -257,54 +390,9 @@ module.exports = function EStore() {
 	 */
 	this._gatewayRegistration = function() {
 
-		this.extensions.onGateways(this.gateways);
+		this.extensions.composite.gatewayRegistration(this.gateways);
 
 	};
-
-	/**
-	 * _modelRegistration registers the keystone models.
-	 *
-	 * @method _modelRegistration
-	 * @return
-	 *
-	 */
-	this._modelRegistration = function() {
-
-
-		this.models.push.apply(this.models, [
-			require('./core/models/User'),
-			require('./core/models/Counter'),
-			require('./core/models/CheckoutSettings'),
-			require('./core/models/GeneralSettings'),
-			require('./core/models/StoreSettings'),
-			require('./core/models/ProductCategory'),
-			require('./core/models/Product'),
-			require('./core/models/Item'),
-			require('./core/models/Invoice'),
-			require('./core/models/Transaction'),
-			require('./core/models/Address'),
-		]);
-
-
-		if (this.theme.has('pages'))
-			this.models.push(require('./core/models/Page'));
-
-		if (this.extras.has('models'))
-			this.models.push.apply(this.models, this.extras.get('models', true));
-
-		this.models.forEach(function(Model) {
-
-			this.onModelFound(new Model(this));
-
-		}.bind(this));
-
-		this.extensions.onModels(this);
-		this.ebus.emit(this.events.MODEL_REGISTRATION, this);
-		this.keystone.set('user model', 'User');
-		this.keystone.set('nav', this.navigation);
-
-	};
-
 
 	/**
 	 * _engineConfiguration configures the 3rd party engines.
@@ -315,9 +403,9 @@ module.exports = function EStore() {
 	 */
 	this._engineConfiguration = function() {
 
+
 		/** Temporary hack to ensure CSRF protection for EStore routes **/
 		this.keystone.pre('routes', function(req, res, next) {
-
 			if (req.originalUrl.match(/^\/keystone/))
 				return next();
 
@@ -342,12 +430,22 @@ module.exports = function EStore() {
 		});
 		/** end hack **/
 
+		this.keystone.pre('routes', function(req, res, next) {
 
+			//Set some useful variables.
+			res.locals.BRAND = process.env.BRAND;
+			res.locals.user = req.session.user;
+			res.locals.$settings = this.settings;
+			res.locals.$query = req.query;
+			res.locals.DOMAIN = process.env.DOMAIN;
+			req.session.cart = req.session.cart || [];
+			res.locals.cart = req.session.cart;
+			res.locals.CART_COUNT = req.session.cart.length;
+			req.session.pendingTransactions = req.session.pendingTransactions || [];
 
-		var defaults = new DefaultKeystoneConfiguration(this.theme);
-		defaults['custom engine'] = this.nunjucksEnvironment.render;
+			next();
 
-		this.keystone.init(defaults);
+		});
 
 		this.nunjucksEnvironment.
 		addExtension('NunjucksMongoose',
@@ -357,6 +455,7 @@ module.exports = function EStore() {
 
 	};
 
+
 	/**
 	 * _routeRegistration registers the routes.
 	 *
@@ -365,70 +464,12 @@ module.exports = function EStore() {
 	 *
 	 */
 	this._routeRegistration = function() {
-		//TODO: Routes should follow the syntax of the Extensions
+
+		var self = this;
+
 		this.keystone.set('routes', function(app) {
 
-			var route;
-			var routes = [];
-
-
-			if (this.extras.has('routes'))
-				routes.push.apply(routes, this.get('routes', true));
-			//XXX in future routes will be grouped in a logical way
-			//so that they can be disabled by group or individually.
-			if (this.blacklist.indexOf('api') < 0) {
-
-				routes.forEach(function(Route) {
-					route = new Route(this);
-					route.main(app);
-				}.bind(this));
-
-				this.extensions.onRouting(app);
-			} else {
-
-				system.log.warn('Disabling api!');
-
-			}
-
-			var theme = this.themePackage.estore;
-
-			var _ = this.util;
-
-			var render = function(value) {
-
-				return function(req, res) {
-					res.locals._csrf = req.csrfToken();
-					res.locals.BRAND = process.env.BRAND;
-					res.locals.user = req.session.user;
-					res.locals.cart = req.session.cart;
-					res.locals.params = req.params;
-					res.locals.DOMAIN = process.env.DOMAIN;
-					res.locals.CART_COUNT = _.unique(req.session.cart).length;
-					res.render(value);
-				};
-
-			};
-
-			if (theme.serve) {
-
-				_.forIn(theme.serve.static,
-					function(value, key) {
-
-						if ('index' == key)
-							return app.get('/', render(value));
-						app.get(key, render(value));
-
-					});
-
-				_.forIn(theme.serve.pattern, function(file, key) {
-					app.get(new RegExp(key), render(file));
-
-				});
-
-
-
-			}
-			this.ebus.emit(this.ROUTE_REGISTRATION, app);
+			this.extensions.composite.routeRegistration(app);
 
 		}.bind(this));
 
@@ -442,12 +483,99 @@ module.exports = function EStore() {
 	 *
 	 */
 	this._startDaemons = function() {
-
+		system.log.info('Starting application daemons.');
 		new TransactionDaemon(this);
 
 
 	};
 
+
+
+
+	/**
+	 * installModel sets up model registration with keystone.
+	 *
+	 * A model should be an object like the following:
+	 *  { NAME: 'MyModel', COLLECTION: 'models', fields: []}
+	 *
+	 * @method installModel
+	 * @param {Model} model
+	 * @return
+	 *
+	 */
+	this.installModel = function(model) {
+
+		var options = model.options || {};
+		var list = new this.keystone.List(model.NAME, options);
+		if (model.DEFAULT_COLUMNS)
+			list.defaultColumns = model.DEFAULT_COLUMNS;
+
+		list.add.apply(list, model.fields);
+
+		model.run && model.run(list, this.keystone);
+		model.navigate && model.navigate(this.navigation);
+
+		list.register();
+
+		system.log.info('Registered List ' + model.NAME + '.');
+
+
+	};
+
+
+	/**
+	 * mongooseError is called when uncaught errors are detected.
+	 *
+	 * @method mongooseError
+	 *  @param {Error} err
+	 * @return
+	 *
+	 */
+	this.mongooseError = function(err) {
+
+		system.log.error('Uncaught mongoose error detected!', err);
+		process.exit(-1);
+
+	};
+
+	/**
+	 * installExtension installs an extension.
+	 *
+	 * @param {Object} ext
+	 * @return {EStore}
+	 *
+	 */
+	this.installExtension = function(ext) {
+
+		var settings = {};
+		if (ext.optional) {
+
+			settings.enabled = {
+				type: Boolean,
+				label: ext.name,
+				default: ext.
+				default
+			};
+
+			if (ext.settings) {
+				ext.settings(settings, this.keystone.Field.Types);
+			}
+
+			this.extensions.settings[ext.key] = settings;
+
+
+		}
+
+
+		this.extensions.controllers[ext.key] = ext.controller;
+		this.extensions.names[ext.key] = ext.name;
+
+		return this;
+
+
+
+
+	};
 
 	/**
 	 * start will start the server
@@ -460,56 +588,20 @@ module.exports = function EStore() {
 	this.start = function() {
 
 		this._init();
-		this._extensionRegistration();
-		this._gatewayRegistration();
-		this._engineConfiguration();
-		this._modelRegistration();
-		this._routeRegistration();
-		this.keystone.start({
-			onMount: function() {
-				this._startDaemons();
-				system.log.info('EStore started on port ' + this.keystone.get('port'));
-			}.bind(this)
-		});
-
-
-	};
-
-	/**
-	 * onModelFound sets up model registration with keystone.
-	 *
-	 * A model should be an object like the following:
-	 *  { NAME: 'MyModel', COLLECTION: 'models', fields: []}
-	 *
-	 * @method onModelFound
-	 * @param {Model} model
-	 * @return
-	 *
-	 */
-	this.onModelFound = function(model) {
-
-		if (this.blacklist.indexOf(model.NAME) > -1)
-			return system.log.warn('Model ' + model.NAME + ' has been disabled!');
-		var options = model.options || {};
-		var list = new this.keystone.List(model.NAME, options);
-
-		if (model.DEFAULT_COLUMNS)
-			list.defaultColumns = model.DEFAULT_COLUMNS;
-
-
-		list.add.apply(list, model.fields);
-
-		O_o = model.run && model.run(list, this.keystone);
-		O_o = model.navigate && model.navigate(this.navigation);
-
-		list.register();
-
-		system.log.info('Registered List ' + model.NAME + '.');
-
+		this._preloadSettings(function() {
+			this._scanExtensions();
+			this._coreModelRegistration();
+			this._extensionRegistration();
+			this._modelRegistration();
+			this._eventConfiguration();
+			this._gatewayRegistration();
+			this._engineConfiguration();
+			this._routeRegistration();
+			this._startDaemons();
+			this.keystone.start();
+		}.bind(this));
 
 	};
-
-
 
 
 };

@@ -12,13 +12,13 @@ module.exports = function CartBindings(store) {
 	var self = this;
 
 	/**
-	 * onRouting will setup the cart bindings.
-	 * @method onRouting
+	 * routeRegistration will setup the cart bindings.
+	 * @method routeRegistration
 	 * @param {Object} app
 	 * @return
 	 *
 	 */
-	this.onRouting = function(app) {
+	this.routeRegistration = function(app) {
 
 		app.get(store.endpoints.CART_ITEMS, this.onGetItemsInCartRequest);
 		app.get(store.endpoints.CART_ITEMS_COUNT, this.onGetCartItemsCountRequest);
@@ -169,7 +169,7 @@ module.exports = function CartBindings(store) {
 				stock: product.stock,
 				image: product.image,
 				quantity: req.body.quantity,
-				subtotal: Big(product.price).times(req.body.quantity).toString()
+				subtotal: new Big(product.price).times(req.body.quantity).toString()
 
 			});
 			res.send(store.OPERATION_COMPLETE);
@@ -295,7 +295,7 @@ module.exports = function CartBindings(store) {
 
 		store.util.each(req.session.cart, function(v, k) {
 
-			if (v._id == req.params[0]) {
+			if (v._id === req.params[0]) {
 				req.session.cart[k].quantity = req.params[1];
 				console.log(req.session.cart[k]);
 			}
@@ -315,5 +315,3 @@ module.exports = function CartBindings(store) {
 
 
 };
-
-module.exports.prototype = estore.Extension;

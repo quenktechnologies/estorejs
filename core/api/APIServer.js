@@ -29,5 +29,3 @@ module.exports = function APIServer(store) {
 
 
 };
-
-module.exports.prototype = estore.Extension;

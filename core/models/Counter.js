@@ -8,20 +8,23 @@
 module.exports = function Counter() {
 
 	this.NAME = 'Counter';
+        this.DEFAULT_COLUMNS='name';
 	this.options = {
 		nocreate: true,
-                hidden:true,
+		nodelete: true,
 		map: {
 			name: '_id'
 		}
 	};
 	this.fields = [{
-		_id: {
-			type: String
+		name: {
+			type: String,
+			noedit: true
+
 		},
 		next: {
 			type: Number,
-			noedit: true
+			note: 'Do not change this unless you know what you are doing!'
 		}
 	}];
 
@@ -39,7 +42,7 @@ module.exports = function Counter() {
 		list.schema.methods.increment = function(id, qty) {
 
 			return this.model('Counter').findOneAndUpdate({
-				_id: id
+				name: id
 			}, {
 				$inc: {
 					next: qty
@@ -64,7 +67,7 @@ module.exports = function Counter() {
 		list.schema.methods.increase = function(id, qty, cb) {
 
 			return this.model('Counter').findOneAndUpdate({
-				_id: id
+				name: id
 			}, {
 				$inc: {
 					next: qty

@@ -2025,7 +2025,7 @@
  * @constructor
  *
  */
-module.exports = function Checkout($scope, cartService, configService) {
+module.exports = function Checkout($scope, cartService, configService, $window) {
 
 	this.order = {
 		customer: {
@@ -2045,7 +2045,7 @@ module.exports = function Checkout($scope, cartService, configService) {
 	this.SHIP_TO_BILLING = false;
 	this.paymentOptions = [];
 	this.countries = [{
-		name: 'Trinidad & Tobago'
+		name: 'Trinidad and Tobago'
 	}];
 
 	$scope.order = this.order;
@@ -2062,17 +2062,17 @@ module.exports = function Checkout($scope, cartService, configService) {
 		if (this.SHIP_TO_BILLING)
 			this.order.address.shipping = this.order.address.billing;
 
-                console.log(this.order);
 		cartService.checkout(this.order).
 		then(function(res) {
-			window.location = "/checkout/success";
-			console.log(res);
+
+			if (res.data.paymentUrl)
+			return $window.location.href = res.data.paymentUrl;
+
+				window.location = '/checkout/success';
 
 		}).
 		then(null, function(res) {
-			//window.location = "/checkout/error";
-			console.log(res);
-
+			window.location = '/checkout/error';
 
 		});
 	};
@@ -2276,7 +2276,7 @@ module.exports = function CartAdderController(cart, $scope) {
 };
 
 },{}],7:[function(require,module,exports){
-module.exports = '<label>Quantity:</label>\n<div class="input-group">\n<input class="form-control input-small" type="text" value="1" ng-model="product.quantity">\n      <span class="input-group-btn">\n <button ng-click="product.addToCart()" class="btn btn-fefault cart" type="button">\n  <i class="fa fa-shopping-cart"></i> Add to cart\n</button>       \n      </span>\n    </div>\n\n';
+module.exports = '<label>Quantity:</label>\n<div class="input-group">\n<input class="form-control input-small " type="number" value="1" ng-model="product.quantity" min=1>\n      <span class="input-group-btn">\n <button ng-click="product.addToCart()" class="btn btn-fefault cart" type="button">\n  <i class="fa fa-shopping-cart"></i> Add to cart\n</button>       \n      </span>\n    </div>\n\n';
 },{}],8:[function(require,module,exports){
 /**
  * CartAdderDirective is a directive for providing the
@@ -2304,6 +2304,52 @@ module.exports = function CartAdderDirective() {
 };
 
 },{"./CartAdderController":6,"./cart-adder.html":7}],9:[function(require,module,exports){
+/**
+ * CartCountDirective is a directive that retrieves the current cart count
+ * and binds it to the innerHTML of an element.
+ * @class CartCountDirective
+ *
+ * @constructor
+ *
+ */
+module.exports = function CartCountDirective() {
+
+
+	return {
+
+		restrict: 'A',
+		scope: {},
+		controller: ['$rootScope', 'CartService',
+			function($rootScope, cartService) {
+				cartService.count().
+				then(function(res) {
+					$rootScope.$broadcast('CART_COUNT_CHANGED', res.data.count);
+				});
+
+
+
+			}
+		],
+		link: function(scope, elem) {
+
+			scope.$on('CART_COUNT_CHANGED', function(evt, val) {
+				elem.html(val);
+			});
+
+
+		}
+
+
+
+
+	};
+
+
+
+
+};
+
+},{}],10:[function(require,module,exports){
 /**
  * CheckoutCart is the main controller for the shopping cart.
  * @class CheckoutCart
@@ -2348,9 +2394,9 @@ module.exports = function CheckoutCart(service) {
 
 };
 
-},{}],10:[function(require,module,exports){
-module.exports = '    <div class="table-responsive cart_info" ng-init="cart.getItems()">\n      <table class="table table-condensed">\n        <thead>\n          <tr class="cart_menu">\n            <td class="image">Item</td>\n            <td class="description"></td>\n            <td class="price">Price</td>\n            <td class="quantity">Quantity</td>\n            <td class="total">Total</td>\n            <td></td>\n          </tr>\n        </thead>\n        <tbody>\n        <tr ng-repeat="item in cart.items">\n          <td class="cart_product">\n            <a href="/store/products/{{item.slug}}"><img ng-src="{{item.image}}" alt="item image"></a>\n          </td>\n          <td class="cart_description">\n            <h4><a target="_blank" href="/store/products/{{item.slug}}">{{item.name }}</a></h4>\n          </td>\n          <td class="cart_price">\n            <p>{{item.price | currency}}</p>\n          </td>\n          <td class="cart_quantity">\n            {{item.quantity}}\n          </td>\n          <td class="cart_total">\n            <p class="cart_total_price">{{ item.price * item.quantity | currency}}</p>\n          </td>\n          <td class="cart_delete">\n            <a class="cart_quantity_delete" ng-click="cart.remove(item)" href=""><span class="glyphicon glyphicon-trash"></span></a>\n          </td>\n        </tr>\n        </tbody>\n      </table>\n    </div>\n  </div>\n\n';
 },{}],11:[function(require,module,exports){
+module.exports = '    <div class="table-responsive cart_info" ng-init="cart.getItems()">\n      <table class="table table-condensed">\n        <thead>\n          <tr class="cart_menu">\n            <td class="image">Item</td>\n            <td class="price">Price</td>\n            <td class="quantity">Quantity</td>\n            <td class="total">Total</td>\n          </tr>\n        </thead>\n        <tbody>\n        <tr ng-repeat="item in cart.items">\n          <td class="cart_product">\n            <a href="/products/{{item.slug}}" target="_blank">{{item.name | characters:30}}</a>\n          </td>\n          <td class="cart_price">\n            <p>{{item.price | currency}}</p>\n          </td>\n          <td class="cart_quantity">\n            {{item.quantity}}\n          </td>\n          <td class="cart_total">\n            <p class="cart_total_price">{{ item.price * item.quantity | currency}}</p>\n          </td>\n        </tr>\n        </tbody>\n      </table>\n    </div>\n';
+},{}],12:[function(require,module,exports){
 /**
  * CheckoutCartDirective for the shopping cart.
  * @class CheckoutCartDirective
@@ -2374,9 +2420,9 @@ module.exports = function CheckoutCartDirective() {
 
 };
 
-},{"./CheckoutCart":9,"./cart.html":10}],12:[function(require,module,exports){
+},{"./CheckoutCart":10,"./cart.html":11}],13:[function(require,module,exports){
 module.exports = '<input ng-model="model" id="{{name}}" name="email" class="form-control input-md" ng-required="required" type="email">\n';
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * EmailElementDirective for checkout that explicitly requests an email address.
  * @class EmailElementDirective
@@ -2399,7 +2445,7 @@ module.exports = function EmailElementDirective() {
 
 };
 
-},{"./email.html":12}],14:[function(require,module,exports){
+},{"./email.html":13}],15:[function(require,module,exports){
 /**
  * PaymentSelectDirective
  * @class PaymentSelectDirective
@@ -2426,9 +2472,9 @@ module.exports = function PaymentSelectDirective() {
 
 };
 
-},{"./payment-select.html":15}],15:[function(require,module,exports){
+},{"./payment-select.html":16}],16:[function(require,module,exports){
 module.exports = '<div class="form-group">\n  <div class="col-md-12">\n    <ul class="list-unstyled list-inline">\n<li ng-repeat="option in options">\n        <label>\n          <input ng-required="required" type="radio" checked ng-model="model" name="workflow" value="{{option.value}}">{{option.name}}</label>\n      </li>      \n    </ul>\n  </div>\n</div>\n';
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /**
  * PhoneElementDirective for checkout that explicitly requests an email address.
  * @class PhoneElementDirective
@@ -2453,9 +2499,9 @@ module.exports = function PhoneElementDirective() {
 	};
 };
 
-},{"./phone.html":17}],17:[function(require,module,exports){
+},{"./phone.html":18}],18:[function(require,module,exports){
 module.exports = '<input name="{{name}}" ng-disabled="disable" ng-model="model"  placeholder="{{placeholder}}" class="input-md form-control" ng-required="required" ng-pattern="" type="text">\n';
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /**
  * CartApplication is the main controller for the shopping cart.
  * @class CartApplication
@@ -2585,7 +2631,7 @@ module.exports = function CartApplication(service) {
 
 };
 
-},{"bignumber.js":1}],19:[function(require,module,exports){
+},{"bignumber.js":1}],20:[function(require,module,exports){
 /**
  * CartDirective for the shopping cart.
  * @class CartDirective
@@ -2609,9 +2655,9 @@ module.exports = function CartDirective() {
 
 };
 
-},{"./ShoppingCartController":18,"./shopping-cart.html":20}],20:[function(require,module,exports){
+},{"./ShoppingCartController":19,"./shopping-cart.html":21}],21:[function(require,module,exports){
 module.exports = '    <div class="table-responsive" ng-init="cart.getItems()">\n      <table class="table table-condensed">\n        <thead>\n          <tr class="cart_menu">\n            <td class="image">Item</td>\n            <td class="description"></td>\n            <td class="price">Price</td>\n            <td class="quantity">Quantity</td>\n            <td class="total">Total</td>\n            <td></td>\n          </tr>\n        </thead>\n        <tbody>\n        <tr ng-repeat="item in cart.items">\n          <td class="cart_product">\n            <a href="/store/products/{{item.slug}}"><img ng-src="{{item.image}}" alt="item image"></a>\n          </td>\n          <td class="cart_description">\n            <h4><a target="_blank" href="/store/products/{{item.slug}}">{{item.name }}</a></h4>\n          </td>\n          <td class="cart_price">\n            <p>{{item.price | currency}}</p>\n          </td>\n          <td class="cart_quantity">\n            <div class="cart_quantity_button">\n              <a class="cart_quantity_up" href="" ng-click="cart.modify(item, 1)"> + </a>\n              <input class="cart_quantity_input" ng-model="item.quantity" type="text" name="quantity" value="1" autocomplete="off" size="2">\n              <a class="cart_quantity_down" href="" ng-click="cart.modify(item, -1)"> - </a>\n            </div>\n          </td>\n          <td class="cart_total">\n            <p class="cart_total_price">{{ item.price * item.quantity | currency}}</p>\n          </td>\n          <td class="cart_delete">\n            <a class="cart_quantity_delete" ng-click="cart.remove(item)" href=""><span class="glyphicon glyphicon-trash"></span></a>\n          </td>\n        </tr>\n        </tbody>\n      </table>\n    </div>\n  </div>\n\n';
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 /**
  * TextElementDirective for checkout that explicitly requests an email address.
  * @class TextElementDirective
@@ -2640,9 +2686,9 @@ module.exports = function TextElementDirective() {
 
 };
 
-},{"./text.html":22}],22:[function(require,module,exports){
+},{"./text.html":23}],23:[function(require,module,exports){
 module.exports = '<input ng-disabled="disable" ng-model="model"  name="{{name}}" placeholder="{{placeholder}}" class="input-md form-control" ng-required="required" type="text">\n';
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var app = angular.module('estore', []);
 app.factory('CartService', ['$http', require('./services/CartService')]).
 factory('ConfigService', ['$http', require('./services/ConfigService')]).
@@ -2653,9 +2699,10 @@ directive('esShoppingCart', require('./components/shopping-cart')).
 directive('esCheckoutCart', require('./components/checkout-cart')).
 directive('esEmail', require('./components/email')).
 directive('esPaymentSelect', require('./components/payment-select')).
-directive('esCartAdder', require('./components/cart-adder'));
+directive('esCartAdder', require('./components/cart-adder')).
+directive('esCartCount', require('./components/cart-count'));
 
-},{"./components/address":5,"./components/cart-adder":8,"./components/checkout-cart":11,"./components/email":13,"./components/payment-select":14,"./components/phone":16,"./components/shopping-cart":19,"./components/text":21,"./services/CartService":24,"./services/ConfigService":25}],24:[function(require,module,exports){
+},{"./components/address":5,"./components/cart-adder":8,"./components/cart-count":9,"./components/checkout-cart":12,"./components/email":14,"./components/payment-select":15,"./components/phone":17,"./components/shopping-cart":20,"./components/text":22,"./services/CartService":25,"./services/ConfigService":26}],25:[function(require,module,exports){
 /**
  * CartService is a wrapper around the cart endpoints.
  * @class CartService
@@ -2665,9 +2712,7 @@ directive('esCartAdder', require('./components/cart-adder'));
  */
 module.exports = function CartService($http) {
 
-
 	var self = {};
-
 
 	/**
 	 * add and item to the cart.
@@ -2749,14 +2794,27 @@ module.exports = function CartService($http) {
 	};
 
 
-	return self;
+	/**
+	 * count issues a request for the current count of the cart.
+	 *
+	 * @method count
+	 * @return
+	 *
+	 */
+	self.count = function() {
 
+		return $http.get('/_/cart/items/count');
+
+
+	};
+
+	return self;
 
 
 
 };
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /**
  * ConfigService is a wrapper for the various config endpoints.
  * @class ConfigService
@@ -2806,7 +2864,45 @@ module.exports = function ConfigService($http) {
 
 };
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
+angular.module('truncate', [])
+.filter('characters', function () {
+return function (input, chars, breakOnWord) {
+if (isNaN(chars)) return input;
+if (chars <= 0) return '';
+if (input && input.length > chars) {
+input = input.substring(0, chars);
+if (!breakOnWord) {
+var lastspace = input.lastIndexOf(' ');
+//get last space
+if (lastspace !== -1) {
+input = input.substr(0, lastspace);
+}
+}else{
+while(input.charAt(input.length-1) === ' '){
+input = input.substr(0, input.length -1);
+}
+}
+return input + '...';
+}
+return input;
+};
+})
+.filter('words', function () {
+return function (input, words) {
+if (isNaN(words)) return input;
+if (words <= 0) return '';
+if (input) {
+var inputWords = input.split(/\s+/);
+if (inputWords.length > words) {
+input = inputWords.slice(0, words).join(' ') + '...';
+}
+}
+return input;
+};
+});
+
+},{}],28:[function(require,module,exports){
 /**
  * @license AngularJS v1.2.20
  * (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -24629,13 +24725,15 @@ var styleDirective = valueFn({
 })(window, document);
 
 !window.angular.$$csp() && window.angular.element(document).find('head').prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\\:form{display:block;}.ng-animate-block-transitions{transition:0s all!important;-webkit-transition:0s all!important;}.ng-hide-add-active,.ng-hide-remove{display:block!important;}</style>');
-},{}],27:[function(require,module,exports){
+
+},{}],29:[function(require,module,exports){
 require('../lib/angular');
 require('../estore-angular');
+require('../lib/angular-truncate');
 
-var app = angular.module('seller', ['estore']);
+var app = angular.module('seller', ['estore', 'truncate']);
 
-app.controller('Checkout', ['$scope', 'CartService', 'ConfigService', require('../controllers/Checkout')]);
+app.controller('Checkout', ['$scope', 'CartService', 'ConfigService', '$window', require('../controllers/Checkout')]);
 app.controller('ProductPage', [require('../controllers/ProductPage')]);
 angular.element(document).ready(function() {
 
@@ -24643,4 +24741,4 @@ angular.element(document).ready(function() {
 
 });
 
-},{"../controllers/Checkout":2,"../controllers/ProductPage":3,"../estore-angular":23,"../lib/angular":26}]},{},[27])
+},{"../controllers/Checkout":2,"../controllers/ProductPage":3,"../estore-angular":24,"../lib/angular":28,"../lib/angular-truncate":27}]},{},[29]);
