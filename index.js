@@ -403,6 +403,7 @@ module.exports = function EStore() {
 	 */
 	this._engineConfiguration = function() {
 
+
 		/** Temporary hack to ensure CSRF protection for EStore routes **/
 		this.keystone.pre('routes', function(req, res, next) {
 			if (req.originalUrl.match(/^\/keystone/))
@@ -434,9 +435,12 @@ module.exports = function EStore() {
 			//Set some useful variables.
 			res.locals.BRAND = process.env.BRAND;
 			res.locals.user = req.session.user;
+			res.locals.$settings = this.settings;
+			res.locals.$query = req.query;
 			res.locals.DOMAIN = process.env.DOMAIN;
 			req.session.cart = req.session.cart || [];
 			res.locals.cart = req.session.cart;
+			res.locals.CART_COUNT = req.session.cart.length;
 			req.session.pendingTransactions = req.session.pendingTransactions || [];
 
 			next();

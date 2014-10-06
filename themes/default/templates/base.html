@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="<$ page.description $>">
   <meta name="author" content="<$ page.author $>">
-  <title>Welcome to Your Store: EStore</title>
+  <title><$ $settings.site.brand $></title>
   <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <link href="/assets/css/main.css" rel="stylesheet">
@@ -17,7 +17,7 @@
   <link rel="shortcut icon" href="assets/images/ico/favicon.ico">
 </head>
 {% if not DISABLE_NAV %}
-<nav class="navbar navbar-default" role="navigation">
+<nav class="navbar navbar-default bs-docs-nav" role="navigation">
   <div class="container">
     <div class="col-md-8 col-md-offset-2">
       <div class="navbar-header">
@@ -27,19 +27,17 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/">Your Store</a>
+        <a class="navbar-brand" href="/"><$ $settings.site.brand $></a>
       </div>
       <div class="collapse navbar-collapse navbar-ex1-collapse">
         <ul class="nav navbar-nav">
           <li><a href="/">Home</a>
           </li>
-          <li><a href="/about">About</a>
-          </li>
-          <li><a href="/contact">Contact</a>
+          <li><a href="/shop">Shop</a>
           </li>
         </ul>
-<ul class="nav navbar-nav navbar-right">
-  <li><a href="/cart"><span class="glyphicon glyphicon-shopping-cart"></span><span class="badge alert-danger" es-cart-count></span></a>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="/cart">Cart (<span es-cart-count></span>)</a>
           </li>
         </ul>
         <div class="col-md-4 navbar-right">
@@ -58,11 +56,23 @@
       <!--/.nav-collapse -->
 
     </div>
-    </div>
-    <!--/.container-fluid -->
+  </div>
+  <!--/.container-fluid -->
 </nav>
-{% endif %}
-{% block body %}{% endblock %}
+{% endif %} {% block body %}{% endblock %}
+<footer>
+  <div class="container text-center">
+    <ul class="list-inline">
+      <li><a href="/shop">Shop</a>
+      </li>
+      <li><a href="/search">Search</a>
+      </li>
+    </ul>
+    <small>
+      This site powered by <a href="#">EStore</a>
+      </small>
+  </div>
+</footer>
 <script src="/assets/js/build/seller.js"></script>
 
 </html>

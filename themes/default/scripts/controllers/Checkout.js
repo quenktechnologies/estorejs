@@ -46,17 +46,13 @@ module.exports = function Checkout($scope, cartService, configService, $window) 
 		then(function(res) {
 
 			if (res.data.paymentUrl)
-				console.log(res.data.paymentUrl);
-	//		$window.location.href = res.data.paymentUrl;
+			return $window.location.href = res.data.paymentUrl;
 
-			//	window.location = "/checkout/success";
-			console.log(res);
+				window.location = '/checkout/success';
 
 		}).
 		then(null, function(res) {
-			//window.location = "/checkout/error";
-			console.log(res);
-
+			window.location = '/checkout/error';
 
 		});
 	};

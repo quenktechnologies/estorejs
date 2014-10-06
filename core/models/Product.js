@@ -230,6 +230,8 @@ module.exports = function(store) {
 
 		list.schema.statics.findProductsByKeywords = function(keywords, limit, skip) {
 
+                  keywords = keywords || '';
+
 			skip = skip || 0;
 			limit = limit || 50;
 

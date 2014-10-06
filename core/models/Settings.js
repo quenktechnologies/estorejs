@@ -20,11 +20,6 @@ module.exports = function Settings(store) {
 	};
 	this.fields = ['Owner Information', {
 		owner: {
-			brand: {
-				type: String,
-				label: 'Brand',
-				width: 'medium'
-			},
 			contact: {
 				type: types.Name,
 				label: 'Name'
@@ -49,18 +44,19 @@ module.exports = function Settings(store) {
 
 		}
 	}, 'Site', {
-
-		about: {
-			short: {
+		site: {
+			brand: {
 				type: String,
-				label: 'Short'
+				label: 'Brand',
+				width: 'medium'
 			},
-			long: {
-				type: types.Markdown,
-				label: 'Long'
-			}
-		}
 
+			about: {
+				type: types.Markdown,
+				label: 'About'
+			}
+
+		}
 
 	}];
 
