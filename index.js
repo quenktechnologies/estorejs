@@ -129,13 +129,13 @@ module.exports = function EStore() {
 	this.subs = undefined;
 
 	/**
-	 * extras represents the contents of the extras folder.
+	 * _extras represents the contents of the _extras folder.
 	 *
-	 * @property extras
+	 * @property Extras
 	 * @type {Extras}
 	 *
 	 */
-	this.extras = undefined;
+	this._extras = undefined;
 
 	/**
 	 * extensions
@@ -182,7 +182,7 @@ module.exports = function EStore() {
 		this.themePackage = this.theme.get('package.json');
 
 		this.gateways = new Gateways();
-		this.extras = new Extras(process.cwd() + '/extras');
+		this._extras = new Extras(process.cwd() + '/extras');
 		this.nunjucksEnvironment = NFactory.getEnvironment(this.theme.getTemplatePath(), this.app);
 		var defaults = new DefaultKeystoneConfiguration(this.theme);
 		defaults['custom engine'] = this.nunjucksEnvironment.render;
@@ -247,8 +247,8 @@ module.exports = function EStore() {
 
 		);
 
-		if (this.extras.has('extensions'))
-			list.push.apply(list, this.extras.get('extensions', true));
+		if (this._extras.has('extensions'))
+			list.push.apply(list, this._extras.get('extensions', true));
 
 		list.push(require('./core/themes'));
 
@@ -290,7 +290,7 @@ module.exports = function EStore() {
 
 	/**
 	 * _extensionRegistration registers the extensions (plugins) contained
-	 * in the extras/extensions folder.
+	 * in the _extras/extensions folder.
 	 *
 	 * @method _extensionRegistration
 	 * @return
@@ -445,7 +445,9 @@ module.exports = function EStore() {
 
 			next();
 
-		});
+		}.bind(this));
+
+
 
 		this.nunjucksEnvironment.
 		addExtension('NunjucksMongoose',
@@ -470,6 +472,14 @@ module.exports = function EStore() {
 		this.keystone.set('routes', function(app) {
 
 			this.extensions.composite.routeRegistration(app);
+
+			this._extras.get('apps', true).
+			forEach(function(config) {
+				if (typeof config === 'object')
+					return app.use(config.mount, config.controller);
+				app.use(config);
+
+			}.bind(this));
 
 		}.bind(this));
 
