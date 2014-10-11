@@ -34,6 +34,7 @@ module.exports = function EStore() {
 	this.SETTINGS_CHANGED = 'Settings Changed';
 	this.TRANSACTION_APPROVED = 'TRANSACTION_APPROVED';
 	this.TRANSACTION_DECLINED = 'TRANSACTION_DECLINED';
+	this.SYSTEM_ERROR = 'runtime error';
 
 	//Constants
 	this.STATUS_SYSTEM_ERROR = 503;
@@ -104,14 +105,6 @@ module.exports = function EStore() {
 	this.gateways = undefined;
 
 	/**
-	 * themePackage
-	 *
-	 * @property themePackage
-	 * @type {Object}
-	 */
-	this.themePackage = undefined;
-
-	/**
 	 * endpoints is an object with the api endpoints for the app.
 	 * TODO: In the future, this may be an external package so it can be reused onGateways
 	 * the client side.
@@ -172,14 +165,11 @@ module.exports = function EStore() {
 		process.title = this.title;
 		global.system = new System();
 
-
 		this.keystone = require('keystone');
 		this.ebus = new EventEmitter();
 		this.app = new Express();
 		this.subs = new Subscription(this.ebus);
 		this.theme = new Theme(process.cwd() + '/themes', process.env.THEME || 'default');
-
-		this.themePackage = this.theme.get('package.json');
 
 		this.gateways = new Gateways();
 		this._extras = new Extras(process.cwd() + '/extras');
@@ -227,6 +217,9 @@ module.exports = function EStore() {
 
 	};
 
+
+
+
 	/**
 	 * _scanExtensions loops over all extensions and collects them.
 	 *
@@ -237,6 +230,7 @@ module.exports = function EStore() {
 	this._scanExtensions = function() {
 
 		var list = [];
+		var pkg = this.theme.getPackageFile().estore;
 
 		list.push(
 			require('./core/api/products'),
@@ -246,6 +240,33 @@ module.exports = function EStore() {
 			require('./core/gateway/2checkout-hosted')
 
 		);
+
+		if (pkg.blog)
+			if (pkg.blog.enabled === 'true') {
+
+				this.blog = pkg.blog;
+				list.push(require('./core/blog'));
+			}
+
+		if (pkg.pages)
+			if (pkg.pages.enabled === 'true') {
+
+				var routes = pkg.pages.routes;
+				this.pages = pkg.pages;
+				this.pages.routes = [];
+
+				Object.keys(routes).forEach(function(key) {
+
+					this.pages.routes.push({
+						value: routes[key],
+						label: key
+					});
+
+
+				}.bind(this));
+				list.push(require('./core/pages'));
+			}
+
 
 		if (this._extras.has('extensions'))
 			list.push.apply(list, this._extras.get('extensions', true));
@@ -287,6 +308,17 @@ module.exports = function EStore() {
 
 	};
 
+	/**
+	 * _scanPages scans the theme package file for pages support.
+	 *
+	 * @method _scanPages
+	 * @return
+	 *
+	 */
+	this._scanPages = function() {
+
+
+	};
 
 	/**
 	 * _extensionRegistration registers the extensions (plugins) contained
@@ -356,29 +388,39 @@ module.exports = function EStore() {
 			require('./core/models/Address'),
 		]);
 
+		this.extensions.composite.modelRegistration(models);
+
 		models.forEach(function(Model) {
 			this.installModel(new Model(this));
 
 		}.bind(this));
 
-		this.extensions.composite.modelRegistration(this);
 		this.navigation.settings = ['settings', 'users', 'counters'];
 		this.keystone.set('nav', this.navigation);
 
 
 	};
 
+
 	/**
-	 * _configureEvents sets up event listening.
+	 * _eventRegistration
 	 *
-	 * @method _configureEvents
+	 * @method _eventRegistration
 	 * @return
 	 *
 	 */
-	this._eventConfiguration = function() {
+	this._eventRegistration = function() {
+
+		this.ebus.on(this.SYSTEM_ERROR, function(err) {
+
+			system.log.error(err);
+
+		});
+
 
 
 	};
+
 
 
 	/**
@@ -601,9 +643,10 @@ module.exports = function EStore() {
 		this._preloadSettings(function() {
 			this._scanExtensions();
 			this._coreModelRegistration();
+			this._scanPages();
 			this._extensionRegistration();
 			this._modelRegistration();
-			this._eventConfiguration();
+			this._eventRegistration();
 			this._gatewayRegistration();
 			this._engineConfiguration();
 			this._routeRegistration();

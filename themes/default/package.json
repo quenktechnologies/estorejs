@@ -19,6 +19,19 @@
         "^/store/categories/([-\\w]{1,128})$": "store/category.html",
         "^/products/([-\\w]{1,128})$": "product.html"
       }
+    },
+    "pages":{
+      "enabled":"true",
+      "routes": {
+      "default": "pages/default.html"
+      }
+    },
+    "blog": {
+      "enabled":"true",
+      "routes": {
+        "index": "blog/index.html",
+        "post": "blog/post.html"
+      }
     }
   },
   "devDependencies": {
