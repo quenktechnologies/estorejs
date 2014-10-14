@@ -14,7 +14,6 @@ var Gateways = require('./core/gateway/Gateways');
 var TransactionDaemon = require('./core/daemon/TransactionDaemon');
 var Extension = require('./core/util/Extension');
 
-
 /**
  * EStore is the main entry point for EStore
  * @class EStore
@@ -42,20 +41,20 @@ module.exports = function EStore() {
 	this.STATUS_OPERATION_COMPLETE = 201;
 
 	/**
+	 * theme
 	 *
-	 * @property {String} title The title of the app shown in ps output.
-	 * TODO: We may have to do size comparison in the future, see
-	 * http://nodejs.org/api/process.html#process_process_pid
-	 *
+	 * @property theme
+	 * @type {Theme}
 	 */
-	this.title = undefined;
+	this.theme = undefined;
+
 
 	/**
 	 *
 	 * @property {EventEmitter} ebus
 	 *
 	 */
-	this.ebus = undefined;
+	this.ebus = new EventEmitter();
 
 	/**
 	 * settings contains the settings
@@ -70,7 +69,7 @@ module.exports = function EStore() {
 	 * @property {Application}
 	 *
 	 */
-	this.app = undefined;
+	this.app = new Express();
 
 	/**
 	 *
@@ -78,14 +77,14 @@ module.exports = function EStore() {
 	 *
 	 *
 	 */
-	this.keystone = undefined;
+	this.keystone = require('keystone');
 
 	/**
 	 *
-	 * @property {Environment} nunjucksEnvironment
+	 * @property {Environment} viewEngine
 	 *
 	 */
-	this.nunjucksEnvironment = undefined;
+	this.viewEngine = undefined;
 
 	/**
 	 *
@@ -102,7 +101,7 @@ module.exports = function EStore() {
 	 * @property gateways
 	 * @type {Gateways}
 	 */
-	this.gateways = undefined;
+	this.gateways = new Gateways();
 
 	/**
 	 * endpoints is an object with the api endpoints for the app.
@@ -114,21 +113,13 @@ module.exports = function EStore() {
 	this.endpoints = new Endpoints();
 
 	/**
-	 * subs are the event subscriptions currently active.
-	 * @property subs
-	 * @type {Subscription}
-	 *
-	 */
-	this.subs = undefined;
-
-	/**
 	 * _extras represents the contents of the _extras folder.
 	 *
 	 * @property Extras
 	 * @type {Extras}
 	 *
 	 */
-	this._extras = undefined;
+	this._extras = new Extras('extras');
 
 	/**
 	 * extensions
@@ -152,40 +143,31 @@ module.exports = function EStore() {
 	 */
 	this.util = require('lodash');
 
+
 	/**
-	 * _init initializes the application.
+	 * _preloadThemes
 	 *
-	 * @method _init
+	 * @method _preloadThemes
 	 * @return
 	 *
 	 */
-	this._init = function() {
+	this._preloadThemes = function() {
 
-		this.title = process.env.DOMAIN || 'estore-' + process.env.id;
-		process.title = this.title;
-		global.system = new System();
+		var fs = require('fs');
+		this._templates = [];
 
-		this.keystone = require('keystone');
-		this.ebus = new EventEmitter();
-		this.app = new Express();
-		this.subs = new Subscription(this.ebus);
-		this.theme = new Theme(process.cwd() + '/themes', process.env.THEME || 'default');
+		fs.readdirSync('themes').forEach(function(file) {
 
-		this.gateways = new Gateways();
-		this._extras = new Extras(process.cwd() + '/extras');
-		this.nunjucksEnvironment = NFactory.getEnvironment(this.theme.getTemplatePath(), this.app);
-		var defaults = new DefaultKeystoneConfiguration(this.theme);
-		defaults['custom engine'] = this.nunjucksEnvironment.render;
+			if (fs.statSync('themes/' + file).isDirectory())
+				this._templates.push({
+					value: 'themes/' + file,
+					label: file
+				});
 
-		this.keystone.init(defaults);
-		this.keystone.mongoose.connection.on('error', this.mongooseError);
-
-		this.theme.exists() || this.theme.use('default');
-		this.keystone.connect(this.app);
+		}.bind(this));
 
 
 	};
-
 
 	/**
 	 * _preloadSettings
@@ -197,7 +179,7 @@ module.exports = function EStore() {
 	 */
 	this._preloadSettings = function(cb) {
 
-		var db = require('mongojs')(this.keystone.get('mongo'), ['settings']);
+		var db = require('mongojs')(process.env.MONGO_URI, ['settings']);
 
 		db.settings.findOne(function(err, settings) {
 
@@ -217,7 +199,26 @@ module.exports = function EStore() {
 
 	};
 
+	/**
+	 * _bootstrapTheme
+	 *
+	 * @method _bootstrapTheme
+	 * @return
+	 *
+	 */
+	this._bootstrapTheme = function() {
 
+		var theme;
+
+		if (this.settings.system)
+			if (this.settings.system.theme)
+				theme = this.settings.system.theme;
+
+		this.theme = new Theme(require('path').dirname(
+				require.main.filename) + '/themes',
+			theme || 'default');
+
+	};
 
 
 	/**
@@ -283,6 +284,117 @@ module.exports = function EStore() {
 	};
 
 	/**
+	 * _extensionRegistration registers the extensions (plugins) contained
+	 * in the _extras/extensions folder.
+	 *
+	 * @method _extensionRegistration
+	 * @return
+	 *
+	 */
+	this._extensionRegistration = function() {
+
+		var base = new Extension();
+		var Ctrl;
+
+		for (var key in this.extensions.controllers) {
+
+			if (this.extensions.controllers.hasOwnProperty(key)) {
+
+				Ctrl = this.extensions.controllers[key];
+				Ctrl.prototype = base;
+
+				if (this.settings.extensions.hasOwnProperty(key))
+					if (this.settings.extensions[key].hasOwnProperty('enabled'))
+						if (this.settings.extensions[key].enabled !== true) {
+
+							Ctrl = null;
+
+							console.log('Not registering extension: "' +
+								this.extensions.names[key] + '"');
+
+						}
+				if (Ctrl) {
+					this.extensions.composite.add(new Ctrl(this));
+					console.log('Registered extension ' +
+						this.extensions.names[key] + '.');
+				}
+
+
+			}
+
+
+
+		}
+
+
+
+	};
+
+
+	/**
+	 * _bootstrapNunjucks
+	 *
+	 * @method _bootstrapNunjucks
+	 * @return
+	 *
+	 */
+	this._bootstrapNunjucks = function() {
+
+		var nunjucks = require('nunjucks');
+
+		this.viewEngine = new nunjucks.Environment(
+			new nunjucks.FileSystemLoader(this.theme.getTemplatePath()), {
+				autoescape: true,
+				tags: {
+					variableStart: '<$',
+					variableEnd: '$>'
+				}
+			});
+
+		this.viewEngine.express(this.app);
+
+
+	};
+
+
+	/**
+	 * _boostrapKeystone
+	 *
+	 * @method _boostrapKeystone
+	 * @return
+	 *
+	 */
+	this._boostrapKeystone = function() {
+
+		this.theme.exists() || this.theme.use('default');
+
+		var defaults = {
+
+			'name': process.env.DOMAIN || 'Estore',
+			'brand': process.env.DOMAIN || 'Estore',
+			'auto update': true,
+			'session': true,
+			'session store': 'mongo',
+			'auth': true,
+			'cookie secret': process.env.COOKIE_SECRET,
+			'view engine': 'html',
+			'views': this.theme.getTemplatePath(),
+			'static': this.theme.getStaticPath(),
+			'emails': this.theme.getEmailPath(),
+			'port': process.env.PORT || 3000,
+			'mongo': process.env.MONGO_URI,
+			'custom engine': this.viewEngine.render
+
+		};
+
+		this.keystone.init(defaults);
+		this.keystone.mongoose.connection.on('error', this.mongooseError);
+		this.keystone.connect(this.app);
+
+
+	};
+
+	/**
 	 * _coreModelRegistration
 	 *
 	 * @method _coreModelRegistration
@@ -320,52 +432,6 @@ module.exports = function EStore() {
 
 	};
 
-	/**
-	 * _extensionRegistration registers the extensions (plugins) contained
-	 * in the _extras/extensions folder.
-	 *
-	 * @method _extensionRegistration
-	 * @return
-	 *
-	 */
-	this._extensionRegistration = function() {
-
-		var base = new Extension();
-		var Ctrl;
-
-		for (var key in this.extensions.controllers) {
-
-			if (this.extensions.controllers.hasOwnProperty(key)) {
-
-				Ctrl = this.extensions.controllers[key];
-				Ctrl.prototype = base;
-
-				if (this.settings.extensions.hasOwnProperty(key))
-					if (this.settings.extensions[key].hasOwnProperty('enabled'))
-						if (this.settings.extensions[key].enabled !== true) {
-
-							Ctrl = null;
-
-							system.log.info('Not registering extension: "' +
-								this.extensions.names[key] + '"');
-
-						}
-				if (Ctrl) {
-					this.extensions.composite.add(new Ctrl(this));
-					system.log.info('Registered extension ' +
-						this.extensions.names[key] + '.');
-				}
-
-
-			}
-
-
-
-		}
-
-
-
-	};
 
 	/**
 	 * _modelRegistration registers the keystone models.
@@ -413,7 +479,7 @@ module.exports = function EStore() {
 
 		this.ebus.on(this.SYSTEM_ERROR, function(err) {
 
-			system.log.error(err);
+			console.log(err);
 
 		});
 
@@ -437,14 +503,15 @@ module.exports = function EStore() {
 	};
 
 	/**
-	 * _engineConfiguration configures the 3rd party engines.
+	 * _routeRegistration registers the routes.
 	 *
-	 * @method _engineConfiguration
+	 * @method _routeRegistration
 	 * @return
 	 *
 	 */
-	this._engineConfiguration = function() {
+	this._routeRegistration = function() {
 
+		var self = this;
 
 		/** Temporary hack to ensure CSRF protection for EStore routes **/
 		this.keystone.pre('routes', function(req, res, next) {
@@ -491,25 +558,6 @@ module.exports = function EStore() {
 
 
 
-		this.nunjucksEnvironment.
-		addExtension('NunjucksMongoose',
-			new NunjucksMongoose(this.keystone.mongoose, 'get'));
-
-
-
-	};
-
-
-	/**
-	 * _routeRegistration registers the routes.
-	 *
-	 * @method _routeRegistration
-	 * @return
-	 *
-	 */
-	this._routeRegistration = function() {
-
-		var self = this;
 
 		this.keystone.set('routes', function(app) {
 
@@ -535,7 +583,7 @@ module.exports = function EStore() {
 	 *
 	 */
 	this._startDaemons = function() {
-		system.log.info('Starting application daemons.');
+		console.log('Starting application daemons.');
 		new TransactionDaemon(this);
 
 
@@ -569,7 +617,7 @@ module.exports = function EStore() {
 
 		list.register();
 
-		system.log.info('Registered List ' + model.NAME + '.');
+		console.log('Registered List ' + model.NAME + '.');
 
 
 	};
@@ -585,7 +633,7 @@ module.exports = function EStore() {
 	 */
 	this.mongooseError = function(err) {
 
-		system.log.error('Uncaught mongoose error detected!', err);
+		console.log('Uncaught mongoose error detected!', err);
 		process.exit(-1);
 
 	};
@@ -639,16 +687,18 @@ module.exports = function EStore() {
 	 */
 	this.start = function() {
 
-		this._init();
+		this._preloadThemes();
 		this._preloadSettings(function() {
+			this._bootstrapTheme();
 			this._scanExtensions();
+			this._extensionRegistration();
+			this._bootstrapNunjucks();
+			this._boostrapKeystone();
 			this._coreModelRegistration();
 			this._scanPages();
-			this._extensionRegistration();
 			this._modelRegistration();
-			this._eventRegistration();
 			this._gatewayRegistration();
-			this._engineConfiguration();
+			this._eventRegistration();
 			this._routeRegistration();
 			this._startDaemons();
 			this.keystone.start();

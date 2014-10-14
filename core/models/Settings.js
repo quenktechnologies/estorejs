@@ -50,7 +50,6 @@ module.exports = function Settings(store) {
 				label: 'Brand',
 				width: 'medium'
 			},
-
 			about: {
 				type: types.Markdown,
 				label: 'About'
@@ -58,6 +57,30 @@ module.exports = function Settings(store) {
 
 		}
 
+	}, 'System', {
+		system: {
+			theme: {
+
+				type: types.Select,
+				options: store._templates,
+				default: 'default',
+				label: 'Theme'
+
+
+			},
+			imageStorage: {
+					type: types.Select,
+				options: [{
+					label: 'URL',
+					value: 'url'
+				}],
+				default: 'url',
+				label: 'Image Storage'
+
+
+			}
+
+		}
 	}];
 
 

@@ -45,6 +45,20 @@
  */
 module.exports = function Extension(store) {
 
+  /**
+   * keystoneConfiguration is called during keystone configuration.
+   *
+   * @method keystoneConfiguration
+   * @param {Object} config An object to be used to configure keystone.
+   * @return 
+   *
+   */
+  this.keystoneConfiguration = function () {
+
+
+
+  };
+
 	/**
 	 * routeRegistration is called to setup routes.
 	 *
