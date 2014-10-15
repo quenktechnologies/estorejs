@@ -1,4 +1,4 @@
-var Invoice = require('./Invoice');
+var invoice = require('./invoice');
 /**
  * Transaction represents the state of an order.
  *
@@ -17,48 +17,38 @@ var Invoice = require('./Invoice');
  * @constructor
  *
  */
-module.exports = function Transaction(store) {
+module.exports = {
 
-	var t = store.keystone.Field.Types;
-	this.NAME = 'Transaction';
-
-	this.options = {
+	type: 'model',
+	name: 'Transaction',
+	defaultColumns: '_id, invoice.customer.email, status, timestamp, invoice.total',
+	options: {
 		nocreate: true,
 		track: true,
 		noedit: true
-	};
+	},
+	model: function(store, types, ui) {
 
-	this.DEFAULT_COLUMNS = '_id, invoice.customer.email, status, timestamp, invoice.total';
+		return [{
+			status: {
+				type: String,
+				default: 'created',
+				noedit: true,
 
-	this.fields = [{
-		status: {
-			type: String,
-			default: 'created',
-			noedit: true,
+			},
+			timestamp: {
+				type: types.Datetime,
+				default: Date.now,
+				noedit: true,
 
-		},
-		timestamp: {
-			type: t.Datetime,
-			default: Date.now,
-			noedit: true,
+			}
+		}];
 
-		}
-	}];
-
-	/**
-	 * run
-	 *
-	 * @method run
-	 * @param {List} list
-	 * @return
-	 *
-	 */
-	this.run = function(list) {
-
-		var Invoice = require('./NestedInvoice');
+	},
+	run: function(list, store, types) {
 
 		list.schema.add({
-			invoice: new Invoice(),
+			invoice: require('./nestedInvoice')
 		});
 
 		list.schema.statics.getApproved = function(limit) {
@@ -136,6 +126,5 @@ module.exports = function Transaction(store) {
 
 		};
 
-	};
-
+	}
 };

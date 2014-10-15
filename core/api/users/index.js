@@ -1,9 +1,7 @@
 module.exports = {
 
+  type:'controller',
 	name: 'User Endpoints',
-	key: 'userEndpoints',
-	optional: true,
-  default: true,
 	controller: require('./UserBindings')
 
 

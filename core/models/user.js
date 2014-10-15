@@ -1,22 +1,17 @@
-
 /**
- * Checkout 
- * @class Checkout
- * 
+ * User
+ * @class User
  * @constructor
  *
  */
-module.exports = function Checkout(store) {
+module.exports = {
 
-	var types = store.keystone.Field.Types;
-	this.NAME = 'Checkout';
-        this.options = {
+  type: 'model',
+  name: 'User',
+  defaultColumns : 'name, email, roles.admin',
+  model : function(store, types, ui) {
 
-          hidden:true,
-          nocreate:true
-
-        };
-	this.fields = [{
+return [{
 
 			name: {
 				type: types.Name,
@@ -46,8 +41,19 @@ module.exports = function Checkout(store) {
 		}
 	];
 
-  
-  
+  },
+        run: function(list) {
 
+		// Provide access to Keystone
+		list.schema.virtual('canAccessKeystone').get(function() {
+			return this.roles.admin;
+		});
+
+	}
+
+
+
+
+  
 };
 

@@ -1,28 +1,23 @@
-/**
- * Address is a model for getting address data.
- * @class Address
- * @constructor
- *
- */
-module.exports = function Address(store) {
 
-	var t = store.keystone.Field.Types;
+module.exports = {
 
-	this.NAME = 'Address';
-	this.options = {
+  type: 'model',
+  name: 'Address',
+  options: {
 		hidden: true,
 		nocreate: true
-	};
+	},
+  model:  function(store, types, ui) {
 
-	this.fields = [{
+    return [{
 
 			name: {
-				type: t.Name,
+				type: types.Name,
                                   label:'Name'
 
 			},
 				phone: {
-				type: t.Text,
+				type: types.Text,
 				match: /^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})?[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/,
 				label: 'Phone',
 
@@ -32,36 +27,36 @@ module.exports = function Address(store) {
                                 label:'Company'
 			},
 			street1: {
-				type: t.Text,
+				type: types.Text,
 				label: 'Street Line1',
 				match: /.{1,128}/,
 			},
 			street2: {
-				type: t.Text,
+				type: types.Text,
 				label: 'Street Line2',
 				match: /.{0,128}/,
 
 			},
 			code: {
 
-				type: t.Text,
+				type: types.Text,
 				label: 'Postal Code',
 				match: /\w{2,8}/,
 
 			},
 			city: {
-				type: t.Text,
+				type: types.Text,
 				label: 'City/Region',
 				match: /\w{2,32}/,
 			},
                         state: {
-                          type: t.Text,
+                          type: types.Text,
                           label: 'State',
 				match: /\w{2,32}/,
 
                         },
 			country: {
-				type: t.Text,
+				type: types.Text,
 				label: 'Country',
 				match: /\w{2,32}/,
 			}
@@ -69,8 +64,7 @@ module.exports = function Address(store) {
 
 	];
 
+  }
 
-
-
-
+  
 };

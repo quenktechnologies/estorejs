@@ -1,11 +1,11 @@
 var Composite = require('./Composite');
 /**
- * CompositeExtension makes managing multiple extensions easier.
- * @class CompositeExtension
+ * CompositeController makes managing multiple extensions easier.
+ * @class CompositeController
  * @constructor
  *
  */
-module.exports = function CompositeExtension() {
+module.exports = function CompositeController() {
 
 	var add = this.add.bind(this);
 
@@ -16,7 +16,7 @@ module.exports = function CompositeExtension() {
 	 * settings model.
 	 *
 	 * @method add
-	 * @param {Extension} ext
+	 * @param {Controller} ext
 	 * @return
 	 *
 	 */
@@ -31,7 +31,7 @@ module.exports = function CompositeExtension() {
 	 *
 	 * @method routeRegistration
 	 * @param {Object} app
-	 * @return CompositeExtension
+	 * @return CompositeController
 	 *
 	 */
 	this.routeRegistration = function(app) {
@@ -63,7 +63,7 @@ module.exports = function CompositeExtension() {
 	 *
 	 * @method modelRegistration
 	 * @param {ModelRegistrar} reg
-	 * @return CompositeExtension
+	 * @return CompositeController
 	 *
 	 */
 	this.modelRegistration = function(reg) {

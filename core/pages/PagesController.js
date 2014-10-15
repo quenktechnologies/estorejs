@@ -22,20 +22,6 @@ module.exports = function PagesController(store) {
 	};
 
 	/**
-	 * modelRegistration
-	 *
-	 * @method modelRegistration
-	 * @param {Array} models
-	 * @return
-	 *
-	 */
-	this.modelRegistration = function(models) {
-
-		models.push(require('./PageModel'));
-
-	};
-
-	/**
 	 * onGetPageRequest
 	 *
 	 * @method GetPageRequest

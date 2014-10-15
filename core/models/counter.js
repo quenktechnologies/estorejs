@@ -1,22 +1,25 @@
 /**
  * Counter model.
- * Counter objects are used to simulate auto increment fields in mongo.1
+ * Counter objects are used to simulate auto increment fields in mongo.
  * @class Counter
- * @constructor
  *
  */
-module.exports = function Counter() {
+module.exports = {
 
-	this.NAME = 'Counter';
-        this.DEFAULT_COLUMNS='name';
-	this.options = {
+  type: 'model',
+  name: 'Counter',
+  defaultColumns: 'name',
+  options:{
 		nocreate: true,
 		nodelete: true,
 		map: {
 			name: '_id'
 		}
-	};
-	this.fields = [{
+	},
+
+  model: function(store, types, ui) {
+
+    return [{
 		name: {
 			type: String,
 			noedit: true
@@ -28,15 +31,9 @@ module.exports = function Counter() {
 		}
 	}];
 
-	/**
-	 * run
-	 *
-	 * @method run
-	 * @param {List} list
-	 * @return
-	 *
-	 */
-	this.run = function(list) {
+  },
+
+  run: function(list) {
 
 
 		list.schema.methods.increment = function(id, qty) {
@@ -81,8 +78,9 @@ module.exports = function Counter() {
 
 
 
-	};
+	}
 
 
-
+  
+  
 };

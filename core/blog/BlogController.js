@@ -23,21 +23,6 @@ module.exports = function BlogsController(store) {
 	};
 
 	/**
-	 * modelRegistration
-	 *
-	 * @method modelRegistration
-	 * @param {Array} models
-	 * @return
-	 *
-	 */
-	this.modelRegistration = function(models) {
-
-		models.push(require('./BlogModel'));
-
-	};
-
-
-	/**
 	 * onGetBlogPageRequest
 	 *
 	 * @method GetBlogPageRequest

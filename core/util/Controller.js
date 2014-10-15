@@ -1,12 +1,12 @@
 /**
- * Extension acts as the base object of all extensions.
+ * Controller acts as the base object of all extensions.
  *
  * EStore is built to be extension (plugin) friendly from the start. All of the
  * internal route bindings are done via extensions and follow the same steps you would
  * take to include a 3rd party extension.
  *
  * The folder `extras/extensions` is scanned on startup for 3rd party extension code.
- * Extensions should be self contained in their individual folders and are expected to
+ * Controllers should be self contained in their individual folders and are expected to
  * export a single object. That is `typeof require('myextension`) === 'object'`.
  *
  * That object is described below:
@@ -29,7 +29,7 @@
  *                                         extension.
  *
  *     controller: // <Function|Required> This function is the actual extension. It will have it's prototype forced to
- *                                        the Extension object. All extensions are instantiated with a reference to
+ *                                        the Controller object. All extensions are instantiated with a reference to
  *                                        the main EStore object.
  *
  *   }
@@ -38,12 +38,12 @@
  *
  * ```
  *
- * @class Extension
+ * @class Controller
  * @param {Estore} store
  * @constructor
  *
  */
-module.exports = function Extension(store) {
+module.exports = function Controller(store) {
 
   /**
    * keystoneConfiguration is called during keystone configuration.

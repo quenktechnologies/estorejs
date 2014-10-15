@@ -1,9 +1,9 @@
-module.exports = function(store) {
+module.exports = {
 
-	var t = store.keystone.Field.Types;
-	this.DEFAULT_COLUMNS = 'title,author,template,createdBy,createdAt';
-	this.NAME = 'Page';
-	this.options = {
+	type: 'model',
+	name: 'Page',
+	defaultColumns: 'title,author,template,createdBy,createdAt',
+	options: {
 
 		autokey: {
 			path: 'slug',
@@ -15,67 +15,49 @@ module.exports = function(store) {
 		},
 		track: true
 
-	};
-	this.fields = [{
-			title: {
-				type: String,
-				width: 'long',
-				required: true
-			},
-			author: {
-				type: String,
-				width: 'medium'
-			},
-			content: {
-				type: t.Markdown,
-				wysiwyg: true,
-				width: 'long'
-			},
-			description: {
-				type: String,
-				width: 'long',
-				label: 'Meta Description'
+	},
+	model: function(store, types, ui) {
 
-			},
-			template: {
-				type: t.Select,
-				options: store.pages.routes,
-				width: 'long',
-				initial: true,
-				required: true
+		return [{
+				title: {
+					type: String,
+					width: 'long',
+					required: true
+				},
+				author: {
+					type: String,
+					width: 'medium'
+				},
+				content: {
+					type: types.Markdown,
+					wysiwyg: true,
+					width: 'long'
+				},
+				description: {
+					type: String,
+					width: 'long',
+					label: 'Meta Description'
 
+				},
+				template: {
+					type: types.Select,
+					options: store.pages.routes,
+					width: 'long',
+					initial: true,
+					required: true
+
+				}
 			}
-		}
 
-	];
+		];
 
-	/**
-	 * navigate
-	 *
-	 * @method navigate
-	 * @param {Object} nav
-	 * @return
-	 *
-	 */
-	this.navigate = function(nav) {
+	},
+
+	navigate: function(nav) {
 		nav.pages = ['pages'];
-	};
-
-	/**
-	 * run
-	 *
-	 * @method run
-	 * @param {List} list
-	 * @return
-	 *
-	 */
-	this.run = function(list) {
+	}
 
 
 
 
-
-
-
-	};
 };

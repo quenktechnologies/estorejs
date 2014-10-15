@@ -1,8 +1,6 @@
 module.exports = {
 
-	name: 'Pages Extension',
-	key: 'pagesFeature',
-	controller: require('./PagesController')
-
-
+	type: 'composite',
+	controllers: [require('./PagesController')],
+	models: [require('./PageModel')]
 };

@@ -1,10 +1,8 @@
 module.exports = {
 
-	name: 'Blog Extension',
-	key: 'blogFeature',
-	optional: true,
-	default: true,
-	controller: require('./BlogController')
+	type: 'composite',
+        models: [require('./PostModel')],
+        controllers: [require('./BlogController')]
 
 
 };

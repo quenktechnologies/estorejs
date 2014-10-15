@@ -1,18 +1,14 @@
 var EventEmitter = require('events').EventEmitter;
 var Theme = require('./core/util/Theme');
 var Extras = require('./core/util/Extras');
-var NFactory = require('./core/util/NunjucksEnvironmentFactory')();
 var DefaultKeystoneConfiguration = require('./core/util/DefaultKeystoneConfiguration');
 var Endpoints = require('./core/api/Endpoints');
 var Express = require('express');
-var System = require('./core/sys/System');
 var NunjucksMongoose = require('nunjucks-mongoose');
-var Subscription = require('./core/util/Subscription');
-var Extension = require('./core/util/Extension');
-var CompositeExtension = require('./core/util/CompositeExtension');
+var Controller = require('./core/util/Controller');
+var CompositeController = require('./core/util/CompositeController');
 var Gateways = require('./core/gateway/Gateways');
 var TransactionDaemon = require('./core/daemon/TransactionDaemon');
-var Extension = require('./core/util/Extension');
 
 /**
  * EStore is the main entry point for EStore
@@ -22,6 +18,11 @@ var Extension = require('./core/util/Extension');
  *
  */
 module.exports = function EStore() {
+
+	//Private
+	var models = {};
+	var __Controller__ = new Controller();
+	var settingFields = {};
 
 	//Settings
 	this.MAX_TRANSACTIONS_PROCESSED = 10;
@@ -125,14 +126,18 @@ module.exports = function EStore() {
 	 * extensions
 	 *
 	 * @property extensions
-	 * @type {Object}
+	 * @type {Array}
 	 */
-	this.extensions = {
-		names: {},
-		controllers: {},
-		settings: {},
-		composite: new CompositeExtension(this)
-	};
+	this.extensions = [];
+
+
+	/**
+	 * composite
+	 *
+	 * @property composite
+	 * @type {CompositeController}
+	 */
+	this.composite = new CompositeController();
 
 
 	/**
@@ -220,117 +225,6 @@ module.exports = function EStore() {
 
 	};
 
-
-	/**
-	 * _scanExtensions loops over all extensions and collects them.
-	 *
-	 * @method _scanExtensions
-	 * @return
-	 *
-	 */
-	this._scanExtensions = function() {
-
-		var list = [];
-		var pkg = this.theme.getPackageFile().estore;
-
-		list.push(
-			require('./core/api/products'),
-			require('./core/api/cart'),
-			require('./core/api/checkout'),
-			require('./core/gateway/bank-deposit'),
-			require('./core/gateway/2checkout-hosted')
-
-		);
-
-		if (pkg.blog)
-			if (pkg.blog.enabled === 'true') {
-
-				this.blog = pkg.blog;
-				list.push(require('./core/blog'));
-			}
-
-		if (pkg.pages)
-			if (pkg.pages.enabled === 'true') {
-
-				var routes = pkg.pages.routes;
-				this.pages = pkg.pages;
-				this.pages.routes = [];
-
-				Object.keys(routes).forEach(function(key) {
-
-					this.pages.routes.push({
-						value: routes[key],
-						label: key
-					});
-
-
-				}.bind(this));
-				list.push(require('./core/pages'));
-			}
-
-
-		if (this._extras.has('extensions'))
-			list.push.apply(list, this._extras.get('extensions', true));
-
-		list.push(require('./core/themes'));
-
-
-		list.forEach(function(ext) {
-
-			this.installExtension(ext);
-
-		}.bind(this));
-
-	};
-
-	/**
-	 * _extensionRegistration registers the extensions (plugins) contained
-	 * in the _extras/extensions folder.
-	 *
-	 * @method _extensionRegistration
-	 * @return
-	 *
-	 */
-	this._extensionRegistration = function() {
-
-		var base = new Extension();
-		var Ctrl;
-
-		for (var key in this.extensions.controllers) {
-
-			if (this.extensions.controllers.hasOwnProperty(key)) {
-
-				Ctrl = this.extensions.controllers[key];
-				Ctrl.prototype = base;
-
-				if (this.settings.extensions.hasOwnProperty(key))
-					if (this.settings.extensions[key].hasOwnProperty('enabled'))
-						if (this.settings.extensions[key].enabled !== true) {
-
-							Ctrl = null;
-
-							console.log('Not registering extension: "' +
-								this.extensions.names[key] + '"');
-
-						}
-				if (Ctrl) {
-					this.extensions.composite.add(new Ctrl(this));
-					console.log('Registered extension ' +
-						this.extensions.names[key] + '.');
-				}
-
-
-			}
-
-
-
-		}
-
-
-
-	};
-
-
 	/**
 	 * _bootstrapNunjucks
 	 *
@@ -383,42 +277,136 @@ module.exports = function EStore() {
 			'emails': this.theme.getEmailPath(),
 			'port': process.env.PORT || 3000,
 			'mongo': process.env.MONGO_URI,
-			'custom engine': this.viewEngine.render
+			'custom engine': this.viewEngine.render,
+                          'user model' : 'User'
 
 		};
 
 		this.keystone.init(defaults);
 		this.keystone.mongoose.connection.on('error', this.mongooseError);
+		this.viewEngine.addExtension('NunjucksMongoose',
+			new NunjucksMongoose(this.keystone.mongoose, 'get'));
 		this.keystone.connect(this.app);
 
 
 	};
 
 	/**
-	 * _coreModelRegistration
+	 * _gatherExtensions
 	 *
-	 * @method _coreModelRegistration
+	 * @method _gatherExtensions
 	 * @return
 	 *
 	 */
-	this._coreModelRegistration = function() {
+	this._gatherExtensions = function() {
 
-		var Settings = require('./core/models/Settings');
-		var User = require('./core/models/User');
-		var settings = new Settings(this);
-		var user = new User(this);
 
-		settings.fields.push({
-			extensions: this.extensions.settings
-		});
+		if (this._extras.has('extensions'))
+			this.extensions.push.apply(this.extensions, this._extras.get('extensions', true));
 
-		this.installModel(settings);
-		this.installModel(user);
-		this.settings = this.keystone.list('Settings').model(this.settings).toObject();
-		this.keystone.set('user model', 'User');
+		this.extensions.forEach(function(ext) {
+
+			if (ext.settings) {
+
+				this._installSettings(ext.settings);
+
+			}
+
+		}.bind(this));
+
+
 
 
 	};
+
+	/**
+	 * _registerSettingsDataModel
+	 *
+	 * @method _registerSettingsDataModel
+	 * @return
+	 *
+	 */
+	this._registerSettingsDataModel = function() {
+
+		var settings = require('./core/models/settings');
+		var fields = settings.model(this, this.keystone.Field.Types);
+		fields.push.apply(settingFields);
+
+		var list = new this.keystone.List('Settings', settings.options);
+		list.add.apply(list, fields);
+		settings.run(list, this);
+		list.register();
+		this.settings = this.keystone.list('Settings').model(this.settings).toObject();
+
+	};
+
+	/**
+	 * _processExtensions
+	 *
+	 * @method _processExtensions
+	 * @return
+	 *
+	 */
+	this._processExtensions = function() {
+
+		var list = [];
+		var pkg = this.theme.getPackageFile().estore;
+
+		list.push(require('./core/themes'));
+		list.push(require('./core/models/user'));
+		list.push(require('./core/models/counter'));
+		list.push(require('./core/models/item'));
+		list.push(require('./core/models/invoice'));
+		list.push(require('./core/models/product'));
+		list.push(require('./core/models/category'));
+		list.push(require('./core/models/transaction'));
+
+		if (this.settings.apis.checkout)
+			require('./core/api/checkout');
+
+		if (this.settings.apis.products)
+			list.push(require('./core/api/products'));
+
+		if (this.settings.apis.cart)
+			list.push(require('./core/api/cart'));
+
+		if (pkg.blog)
+			if (pkg.blog.enabled === 'true') {
+
+				this.blog = pkg.blog;
+				list.push(require('./core/blog'));
+			}
+
+		if (pkg.pages)
+			if (pkg.pages.enabled === 'true') {
+
+				var routes = pkg.pages.routes;
+				this.pages = pkg.pages;
+				this.pages.routes = [];
+
+				Object.keys(routes).forEach(function(key) {
+
+					this.pages.routes.push({
+						value: routes[key],
+						label: key
+					});
+
+
+				}.bind(this));
+				list.push(require('./core/pages'));
+			}
+
+
+		this.extensions.unshift.apply(this.extensions, list);
+
+		this.extensions.forEach(function(ext) {
+
+			this.install(ext);
+
+		}.bind(this));
+
+	};
+
 
 	/**
 	 * _scanPages scans the theme package file for pages support.
@@ -442,22 +430,29 @@ module.exports = function EStore() {
 	 */
 	this._modelRegistration = function() {
 
-		var models = [];
+		this.composite.modelRegistration(models);
 
-		models.push.apply(models, [
-			require('./core/models/Counter'),
-			require('./core/models/ProductCategory'),
-			require('./core/models/Product'),
-			require('./core/models/Item'),
-			require('./core/models/Invoice'),
-			require('./core/models/Transaction'),
-			require('./core/models/Address'),
-		]);
+		var next;
+		var list;
 
-		this.extensions.composite.modelRegistration(models);
+		Object.keys(models).forEach(function(key) {
 
-		models.forEach(function(Model) {
-			this.installModel(new Model(this));
+			next = models[key];
+			list = new this.keystone.List(next.name, next.options || {});
+
+			if (next.defaultColumns)
+				list.defaultColumns = next.defaultColumns;
+
+			list.add.apply(list, next.model(this, this.keystone.Field.Types));
+
+			next.run && next.run(list, this, this.keystone.Field.Types);
+			next.navigate && next.navigate(this.navigation);
+
+			list.register();
+
+			console.log('Registered List ' + next.name + '.');
+
+
 
 		}.bind(this));
 
@@ -498,7 +493,7 @@ module.exports = function EStore() {
 	 */
 	this._gatewayRegistration = function() {
 
-		this.extensions.composite.gatewayRegistration(this.gateways);
+		this.composite.gatewayRegistration(this.gateways);
 
 	};
 
@@ -561,7 +556,7 @@ module.exports = function EStore() {
 
 		this.keystone.set('routes', function(app) {
 
-			this.extensions.composite.routeRegistration(app);
+			this.composite.routeRegistration(app);
 
 			this._extras.get('apps', true).
 			forEach(function(config) {
@@ -589,40 +584,6 @@ module.exports = function EStore() {
 
 	};
 
-
-
-
-	/**
-	 * installModel sets up model registration with keystone.
-	 *
-	 * A model should be an object like the following:
-	 *  { NAME: 'MyModel', COLLECTION: 'models', fields: []}
-	 *
-	 * @method installModel
-	 * @param {Model} model
-	 * @return
-	 *
-	 */
-	this.installModel = function(model) {
-
-		var options = model.options || {};
-		var list = new this.keystone.List(model.NAME, options);
-		if (model.DEFAULT_COLUMNS)
-			list.defaultColumns = model.DEFAULT_COLUMNS;
-
-		list.add.apply(list, model.fields);
-
-		model.run && model.run(list, this.keystone);
-		model.navigate && model.navigate(this.navigation);
-
-		list.register();
-
-		console.log('Registered List ' + model.NAME + '.');
-
-
-	};
-
-
 	/**
 	 * mongooseError is called when uncaught errors are detected.
 	 *
@@ -638,44 +599,6 @@ module.exports = function EStore() {
 
 	};
 
-	/**
-	 * installExtension installs an extension.
-	 *
-	 * @param {Object} ext
-	 * @return {EStore}
-	 *
-	 */
-	this.installExtension = function(ext) {
-
-		var settings = {};
-		if (ext.optional) {
-
-			settings.enabled = {
-				type: Boolean,
-				label: ext.name,
-				default: ext.
-				default
-			};
-
-			if (ext.settings) {
-				ext.settings(settings, this.keystone.Field.Types);
-			}
-
-			this.extensions.settings[ext.key] = settings;
-
-
-		}
-
-
-		this.extensions.controllers[ext.key] = ext.controller;
-		this.extensions.names[ext.key] = ext.name;
-
-		return this;
-
-
-
-
-	};
 
 	/**
 	 * start will start the server
@@ -690,11 +613,11 @@ module.exports = function EStore() {
 		this._preloadThemes();
 		this._preloadSettings(function() {
 			this._bootstrapTheme();
-			this._scanExtensions();
-			this._extensionRegistration();
 			this._bootstrapNunjucks();
 			this._boostrapKeystone();
-			this._coreModelRegistration();
+			this._gatherExtensions();
+			this._registerSettingsDataModel();
+			this._processExtensions();
 			this._scanPages();
 			this._modelRegistration();
 			this._gatewayRegistration();
@@ -705,6 +628,105 @@ module.exports = function EStore() {
 		}.bind(this));
 
 	};
+
+
+	/**
+	 * _installController
+	 *
+	 * @method _installController
+	 * @return
+	 *
+	 */
+	this._installController = function(Controller) {
+
+		Controller.prototype = __Controller__;
+		this.composite.add(new Controller(this));
+
+	};
+
+	/**
+	 * _installModel
+	 *
+	 * @method _installModel
+	 * @return
+	 *
+	 */
+	this._installModel = function(ext) {
+
+		models[ext.name] = ext;
+
+
+	};
+
+
+	/**
+	 * _installComposite
+	 *
+	 * @method _installComposite
+	 * @return
+	 *
+	 */
+	this._installComposite = function(ext) {
+
+
+		if (ext.models)
+			ext.models.forEach(function(ext) {
+
+				this.install(ext);
+
+			}.bind(this));
+
+		if (ext.controllers)
+			ext.controllers.forEach(function(c) {
+
+				this.install(c);
+
+			}.bind(this));
+
+	};
+
+	/**
+	 * _installSettings
+	 *
+	 * @method _installSettings
+	 * @return
+	 *
+	 */
+	this._installSettings = function(settings) {
+
+
+		settingFields[settings.key] = settings.provide(this, this.keystone.Field.Types);
+
+	};
+
+
+
+
+	/**
+	 * install an extension.
+	 *
+	 * @method install
+	 * @param {Object} ext An object declaring an extension.
+	 * @return
+	 *
+	 */
+	this.install = function(ext) {
+
+		if (ext.type === 'controller')
+			this._installController(ext.controller);
+
+		if (ext.type === 'model')
+			this._installModel(ext);
+
+		if (ext.type === 'composite')
+			this._installComposite(ext);
+
+		if (ext.type === 'settings')
+			this._installSettings(ext);
+
+	};
+
+
 
 
 };

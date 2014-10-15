@@ -1,9 +1,7 @@
-module.exports = function(store) {
-
-	var t = store.keystone.Field.Types;
-	this.DEFAULT_COLUMNS = 'name,stock.balance,price,createdAt';
-	this.NAME = 'Product';
-	this.options = {
+module.exports =  {
+  type: 'model',
+  name:'Product',
+  options:{
 
 		autokey: {
 			path: 'slug',
@@ -12,8 +10,11 @@ module.exports = function(store) {
 		},
 		track: true
 
-	};
-	this.fields = [{
+	},
+    defaultColumns:'name,stock.balance,price,createdAt',
+    model: function(store, types, ui) {
+
+return [{
 
 			name: {
 				type: String,
@@ -22,12 +23,12 @@ module.exports = function(store) {
 				initial: true
 			},
 			price: {
-				type: t.Money,
+				type: types.Money,
 				required: true,
 				initial: true
 			},
 			image: {
-				type: t.Url,
+				type: types.Url,
 				width: 'medium',
                                 label:'Image URL',
 				default: require('../util/DefaultImage'),
@@ -35,7 +36,7 @@ module.exports = function(store) {
 			},
 			_keywords: {
 
-				type: t.Textarea,
+				type: types.Textarea,
 				label: 'Keywords',
 				note: 'Seperate each term with a comma.',
 				height: 5,
@@ -48,14 +49,14 @@ module.exports = function(store) {
 			description: {
 
 				short: {
-					type: t.Text,
+					type: types.Text,
 					label: 'Short',
 					width: 'long',
 					collapse: true
 				},
 
 				long: {
-					type: t.Markdown,
+					type: types.Markdown,
 					label: 'Long',
 					width: 'long',
 					height: 10,
@@ -109,28 +110,8 @@ module.exports = function(store) {
 			}
 		}
 	];
-
-	/**
-	 * navigate
-	 *
-	 * @method navigate
-	 * @param {Object} nav
-	 * @return
-	 *
-	 */
-	this.navigate = function(nav) {
-		nav.products = ['products', 'categories'];
-	};
-
-	/**
-	 * run
-	 *
-	 * @method run
-	 * @param {List} list
-	 * @return
-	 *
-	 */
-	this.run = function(list) {
+    },
+    run: function(list, store, types, ui) {
 
 		list.schema.add({
 
@@ -248,5 +229,16 @@ module.exports = function(store) {
 
 
 
-	};
+	},
+    navigate: function(nav) {
+
+		nav.products = ['products', 'categories'];
+
+    }
+
+
+  
+
+
+
 };

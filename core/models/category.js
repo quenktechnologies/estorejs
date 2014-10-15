@@ -1,9 +1,9 @@
-module.exports = function(store) {
+module.exports =  
+{
 
-	this.NAME = 'Category';
-	this.defaultColumns = 'name, createdOn';
-	var t = store.keystone.Field.Types;
-	this.options = {
+  type:'model',
+  name:'Category',
+  options: {
 		autokey: {
 			path: 'slug',
 			from: 'name',
@@ -11,9 +11,9 @@ module.exports = function(store) {
 		},
 		track: true,
 		drilldown: 'products'
-	};
-
-	this.fields = [{
+	},
+  model: function(store, types, ui) {
+return [{
 
 			name: {
 				type: String,
@@ -23,7 +23,7 @@ module.exports = function(store) {
 		},
 		'Details', {
 			image: {
-				type: t.Url,
+				type: types.Url,
 				collapse: true
 			}
 
@@ -33,14 +33,14 @@ module.exports = function(store) {
 			description: {
 
 				short: {
-					type: t.Text,
+					type: types.Text,
 					label: 'Short',
 					width: 'long',
 					collapse: true
 				},
 
 				long: {
-					type: t.Markdown,
+					type: types.Markdown,
 					label: 'Long',
 					width: 'long',
 					height: 10,
@@ -51,7 +51,7 @@ module.exports = function(store) {
 		}, 'Products', {
 			products: {
 
-				type: t.Relationship,
+				type: types.Relationship,
 				ref: 'Product',
 				many: true,
 				label: 'member',
@@ -65,7 +65,8 @@ module.exports = function(store) {
 
 	];
 
-        
+  }
 
-
+  
 };
+
