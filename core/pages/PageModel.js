@@ -46,6 +46,22 @@ module.exports = {
 					initial: true,
 					required: true
 
+				}},'Options',{
+				index: {
+					type: Boolean,
+					default: false,
+					unique: true,
+					label: 'Use as front page?'
+
+				},
+				navigation: {
+
+					type: Boolean,
+					default: false,
+					label: 'Include in navigation menu?'
+
+
+
 				}
 			}
 

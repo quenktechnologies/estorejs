@@ -278,7 +278,7 @@ module.exports = function EStore() {
 			'port': process.env.PORT || 3000,
 			'mongo': process.env.MONGO_URI,
 			'custom engine': this.viewEngine.render,
-                          'user model' : 'User'
+			'user model': 'User'
 
 		};
 
@@ -541,6 +541,7 @@ module.exports = function EStore() {
 			res.locals.user = req.session.user;
 			res.locals.$settings = this.settings;
 			res.locals.$query = req.query;
+			res.locals.$navigation = this._navigation;
 			res.locals.DOMAIN = process.env.DOMAIN;
 			req.session.cart = req.session.cart || [];
 			res.locals.cart = req.session.cart;
@@ -580,6 +581,40 @@ module.exports = function EStore() {
 	this._startDaemons = function() {
 		console.log('Starting application daemons.');
 		new TransactionDaemon(this);
+
+
+	};
+
+	/**
+	 * _fetchNavigationLinks
+	 *
+	 * @method _fetchNavigationLinks
+	 * @return
+	 *
+	 */
+	this._fetchNavigationLinks = function(cb) {
+
+		this.keystone.list('Page').model.find({
+			navigation: true
+		}, {
+			_id: false,
+			slug: true,
+			index: true
+		}).
+		exec().
+		then(null, function(err) {
+
+                  console.log(err);
+
+		}).
+		then(function(links) {
+
+			if (!links)
+				links = [];
+
+			this._navigation = links;
+
+		}).end();
 
 
 	};
@@ -625,6 +660,7 @@ module.exports = function EStore() {
 			this._routeRegistration();
 			this._startDaemons();
 			this.keystone.start();
+			this._fetchNavigationLinks();
 		}.bind(this));
 
 	};

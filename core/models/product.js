@@ -108,7 +108,8 @@ return [{
 				},
 
 			}
-		}
+		},
+                  'Options', {featured: {type:Boolean, label:'Feature this product?'}}
 	];
     },
     run: function(list, store, types, ui) {

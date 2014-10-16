@@ -1,8 +1,8 @@
 module.exports = {
 
 	type: 'composite',
-        models: [require('./PostModel')],
-        controllers: [require('./BlogController')]
+	models: [require('./post'), require('./category')],
+	controllers: [require('./BlogController')]
 
 
 };

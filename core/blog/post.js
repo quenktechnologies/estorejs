@@ -53,7 +53,7 @@ module.exports = {
 
 	},
 	navigate: function(nav) {
-		nav.blog = ['posts'];
+		nav.blog = ['posts', 'post-categories'];
 	}
 
 

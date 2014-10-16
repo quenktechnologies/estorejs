@@ -52,10 +52,9 @@ module.exports = {
 		}, 'Theme', {
 			theme: {
 				current: {
-
 					type: types.Select,
 					options: store._templates,
-                                  default: {label:'default', value:'default'},
+					default: 'themes/default',
 					label: 'Theme'
 
 

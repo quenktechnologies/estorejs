@@ -5,21 +5,6 @@
   "author": "Lasana Murray <lmurray@quenk.com> (http://blog.quenk.com/)",
   "license": "Apache2",
   "estore": {
-    "serve": {
-      "static": {
-        "/": "index.html",
-        "/search": "search.html",
-        "/shop": "shop.html",
-        "/cart": "cart.html",
-        "/checkout": "checkout.html",
-        "/checkout/success" : "checkout-success.html",
-        "checkout/error": "checkout-error.html"
-      },
-      "pattern": {
-        "^/store/categories/([-\\w]{1,128})$": "store/category.html",
-        "^/products/([-\\w]{1,128})$": "product.html"
-      }
-    },
     "pages":{
       "enabled":"true",
       "routes": {

@@ -18,6 +18,7 @@ module.exports = function PagesController(store) {
 	this.routeRegistration = function(app) {
 
 		app.get(/^\/pages\/([\w-]+)$/, this.onGetPageRequest);
+		app.get('/', this.onGetIndexRequest);
 
 	};
 
@@ -59,6 +60,42 @@ module.exports = function PagesController(store) {
 	};
 
 
+	/**
+	 * onGetIndexRequest
+	 *
+	 * @method GetIndexRequest
+	 * @param {Object} req The express Request object.
+	 * @param {Object} res The express Response object.
+	 * @return
+	 *
+	 */
+	this.onGetIndexRequest = function(req, res) {
+
+		store.keystone.list('Page').
+		model.
+		findOne({
+			index: true
+		}).
+		exec().
+		then(null, function(err) {
+
+			store.ebus.emit(store.SYSTEM_ERROR, err);
+			next();
+
+		}).
+		then(function(page) {
+
+			if (!page)
+				return next();
+
+			res.locals.$page = page.toObject();
+			res.render('index.html');
+
+		}).end();
+
+
+
+	};
 
 
 };
