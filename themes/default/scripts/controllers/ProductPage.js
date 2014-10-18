@@ -27,6 +27,7 @@ module.exports = function ProductPage() {
 	 */
 	this.addFailure = function() {
 
+		console.log('Error adding to cart');
 
 
 	};

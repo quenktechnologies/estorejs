@@ -11,7 +11,7 @@
         <tbody>
         <tr ng-repeat="item in cart.items">
           <td class="cart_product">
-            <a href="/products/{{item.slug}}" target="_blank">{{item.name | characters:30}}</a>
+            {{item.name | characters:30}}
           </td>
           <td class="cart_price">
             <p>{{item.price | currency}}</p>

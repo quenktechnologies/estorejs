@@ -4,8 +4,11 @@
 {% then 'limit' with 20 %}
 {% done %} 
 {% block body %}
-<div class="container">
-  <div class="col-md-8 col-md-offset-2">
+<div class="row row-bordered">
+  <div class="col-md-12">
+      <h2>Products</h2>
+    </div>
+</div>
     <div class="row" style="padding-top:35px;">
       {% for product in products %}
       <div class="col-md-3">
@@ -31,6 +34,4 @@
       </div>
       {% endfor %}
     </div>
-  </div>
-</div>
 <hr>{% endblock %}

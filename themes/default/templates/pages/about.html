@@ -1,4 +1,4 @@
-{% extends "common/base.html" %} {% block body %}
+{% extends "base.html" %} {% block body %}
 <section id="title" class="wet-asphalt" style="min-height:300px;background-image:url('/assets/img/trees.jpg');background-size:cover; background-position:bottom;">
   <div class="container">
   </div>
@@ -6,7 +6,7 @@
 <section>
 <div class="container">
   <div class="col-md-12">
-    <$ page.body | safe $>
+    <$ $page.content.html | safe $>
   </div>
 </div>
 </section>

@@ -1,10 +1,9 @@
-{% extends "base.html" %} {% include "snippets/billingForm.html" %} {% set DISABLE_NAV=true %} {% block body %}
-<div class="container main" ng-controller="Checkout as checkout">
-  <div class="col-md-10 col-md-offset-1">
-    <div class="row text-center" style="margin-bottom:50px">
-      <h2><$ $settings.site.brand $></h2>
+{% extends "checkout/base.html" %} {% include "snippets/billingForm.html" %} {% set DISABLE_NAV=true %} {% block body %}
+<div class="main" ng-controller="Checkout as checkout">
+    <div class="row text-center row-bordered" style="margin-bottom:50px">
+      <h2><$ $settings.site.name $></h2>
       <h4>Checkout</h4>
-      <hr>
+        <a href="/" class="pull-left">&leftarrow; Back to <$ $settings.site.name $></a>
     </div>
     <div class="col-md-5">
       <h2>Summary</h2>
@@ -62,6 +61,5 @@
       </div>
     </div>
   </div>
-</div>
 </div>
 {% endblock %}

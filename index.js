@@ -594,7 +594,7 @@ module.exports = function EStore() {
 			res.locals.$url = req.protocol + '://' + req.get('Host') + req.url;
 			res.locals.$navigation = this._navigation;
 			req.session.cart = req.session.cart || [];
-			res.locals.cart = req.session.cart;
+			res.locals.$cart = req.session.cart;
 			res.locals.CART_COUNT = req.session.cart.length;
 			req.session.pendingTransactions = req.session.pendingTransactions || [];
 
@@ -608,7 +608,6 @@ module.exports = function EStore() {
 		this.keystone.set('routes', function(app) {
 
 			this.composite.routeRegistration(app);
-
 			this._extras.get('apps', true).
 			forEach(function(config) {
 				if (typeof config === 'object')

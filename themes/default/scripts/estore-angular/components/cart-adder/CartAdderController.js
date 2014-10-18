@@ -18,7 +18,6 @@ module.exports = function CartAdderController(cart, $scope) {
 	 * @method addToCart
 	 * @return
 	 *
-	console.log('instantiated');
 	 */
 	self.addToCart = function() {
 

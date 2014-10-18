@@ -1,5 +1,5 @@
 module.exports = {
 
 	type: 'composite',
-	members: [require('./PagesController'), require('./PageModel')]
+	members: [{type:'controller', controller:require('./PagesController')}, require('./PageModel')]
 };

@@ -1,23 +1,17 @@
-{% extends "common/base.html" %} {% block body %}
+{% extends "base.html" %} {% block body %}
 <section id="title" class="wet-asphalt">
   <div class="container">
     <div class="row">
       <div class="col-sm-6">
-        <h1><$ page.title $></h1>
-        {% if page.description %}
-        <p>
-          <$ page.description $>
-        </p>
-        {% endif %}
+        <h1><$ $page.title $></h1>
       </div>
-
     </div>
   </div>
 </section>
 <section>
 <div class="container">
   <div class="col-md-7">
-    <$ page.body | safe $>
+      <$ $page.content.html | safe $>
   </div>
 <div class="col-md-3 col-md-offset-2">
   <div class="row">

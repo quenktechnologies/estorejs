@@ -13,6 +13,7 @@ exports.create = {
 				min: 1,
 				max: 3
 			},
+			featured: true,
 			_keywords: 'samsung,galaxy,android,cellphone,phone,smartphone,test',
 			description: {
 				short: 'This product was created as a test.',
@@ -36,6 +37,7 @@ exports.create = {
 				min: 1,
 				max: 3
 			},
+			featured: true,
 			_keywords: 'nokia,cellphone,phone,smartphone,test',
 
 			description: {
@@ -56,6 +58,7 @@ exports.create = {
 				sku: 'gc1',
 				balance: '100'
 			},
+			featured: true,
 			_keywords: 'case,phones,cellphone,test',
 			order: {
 				min: 1,
@@ -81,6 +84,7 @@ exports.create = {
 				sku: 'spr',
 				balance: 200
 			},
+			featured: true,
 			_keywords: 'sony,cellphone,test',
 			order: {
 				min: 1,
@@ -92,6 +96,30 @@ exports.create = {
 					md: 'This is the long description of this product',
 					html: 'This is the long description of this product'
 				},
+			}
+
+
+		}, {
+
+			name: 'Very Generic Case',
+			price: '15.25',
+			image: '/assets/images/product3.jpg',
+			stock: {
+				sku: 'gc1',
+				balance: '100'
+			},
+			featured: true,
+			_keywords: 'case,phones,cellphone,test',
+			order: {
+				min: 1,
+				max: 30
+			},
+			description: {
+				short: 'This product was created as a test.',
+				long: {
+					md: 'This is the long description of this product',
+					html: 'This is the long description of this product'
+				}
 			}
 
 

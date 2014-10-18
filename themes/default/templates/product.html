@@ -1,56 +1,49 @@
 {% extends "base.html" %} 
-{% get 'product' from 'Product' using 'findOne' with {slug:$params[0]} %} {% done %} 
 {% block body %}
-
-{% if product %}
-  <div class="container" ng-controller="ProductPage as pctrl">
-    <div class="col-md-8 col-md-offset-2">
+<div class="row row-vertical-center" ng-controller="ProductPage as pctrl">
       <div class="col-md-5">
-        <img alt="<$ product.name $>" src="<$ product.image $>" class="img center-block img-responsive">
+        <img alt="<$ $product.name $>" src="<$ $product.image $>" class="img center-block img-responsive">
       </div>
-      <div class="col-md-0"></div>
       <div class="col-md-7">
         <div class="row product-profile">
-          <h2 class="product-name"><$ product.name $></h2>
-          {% if product.vendor %}
+          <h2 class="product-name"><$ $product.name $></h2>
+          {% if $product.vendor %}
           <p class="product-vendor">by
-          <$ product.vendor $>
+          <$ $product.vendor $>
           </p>
           {% endif %}
           <p class="product-price">
-          <$ product._.price.format( '$0,00.00') $>
+          <$ $product._.price.format( '$0,00.00') $>
           </p>
-          <hr>
-          {% if product.stock.balance > 0 %} 
-          {% if product.stock.balance < 11 %}
-          <p> <$ product.stock.balance $>left</p>
+          {% if $product.stock.balance > 0 %} 
+          {% if $product.stock.balance < 11 %}
+          <p> <$ $product.stock.balance $>left</p>
           {% else %}
           <p>In stock</p>
           {% endif %} {% else %}
           <p class="text-danger">Out of Stock</p>
-          {% endif %} {% if product.stock.balance > 0 %}
+          {% endif %} {% if $product.stock.balance > 0 %}
           <div class="row">
-            <div class="col-md-6">
-              <es-cart-adder id="<$ product._id $>" add-success="pctrl.addSuccess()" add-failure="pctrl.addFailure()"></es-cart-adder>
+            <div class="col-md-5">
+              <es-cart-adder id="<$ $product._id $>" add-success="pctrl.addSuccess()" add-failure="pctrl.addFailure()"></es-cart-adder>
             </div>
           </div>
           {% endif %}
         </div>
-        <hr>
-
-        <div class="row">
+        {% if $product.description.long.html %}
+        <div class="row row-bordered">
           <h3 class="product-heading">Description</h3>
-          <$ product.description.long.html | safe $>
+          <$ $product.description.long.html | safe $>
         </div>
-        <hr>
+        {% endif %}
         <div class="row">
           <h3 class="product-heading">Share</h3>
           <div class="social-sharing is-large">
-            <a class="share-facebook" href="//www.facebook.com/sharer.php?u=<$ $url $>/products/<$ product.slug $>" target="_blank">
+            <a class="share-facebook" href="//www.facebook.com/sharer.php?u=<$ $url $>/products/<$ $product.slug $>" target="_blank">
               <span class="fa fa-facebook-square"></span>
               <span class="share-title">Share</span>
             </a>
-            <a class="share-twitter" href="//twitter.com/share?url=<$ $url $>/products/<$ product.slug $>" target="_blank">
+            <a class="share-twitter" href="//twitter.com/share?url=<$ $url $>/products/<$ $product.slug $>" target="_blank">
               <span class="fa fa-twitter"></span>
               <span class="share-title">Tweet</span>
             </a>
@@ -58,9 +51,5 @@
           <hr>
         </div>
       </div>
-    </div>
-  </div>
-{% else %}
-
-{% endif %}
+      </div>
 {% endblock %}

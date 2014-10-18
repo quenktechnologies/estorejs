@@ -86,6 +86,13 @@ input.ng-valid.ng-dirty {
 .no-border {
   border: none;
 }
+.no-style {
+  list-style: outside none none;
+  padding: 0px;
+}
+.row-bordered {
+  border-bottom: 1px #dddddd solid;
+}
 .main {
   margin-top: 50px;
 }
@@ -301,33 +308,15 @@ footer,
   width: 100%;
   /* Set the fixed height of the footer here */
   height: 80px;
-  background-color: #f5f5f5;
 }
-.error {
-  margin: 0 auto;
-  max-width: 600px;
-  position: relative;
-  width: 90%;
-  top: 50%;
-  -webkit-transform: translate(0, -50%);
-  -ms-transform: translate(0, -50%);
-  transform: translate(0, -50%);
-}
-h1,
-h2,
-h3 {
-  font-weight: 300;
-}
-h1 {
-  font-size: 1.5em;
-}
-h2 {
-  font-size: 1.25em;
-}
-h3 {
-  font-size: 1.1em;
+.footBox h4 {
+  padding-bottom: 5px;
+  border-bottom: #dddddd solid 1px;
 }
 .loud {
   font-size: 25px;
   font-weight: 900;
+}
+.row-vertical-center {
+  margin-top: 75px;
 }

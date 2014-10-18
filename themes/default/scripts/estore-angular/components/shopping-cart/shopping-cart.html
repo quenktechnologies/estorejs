@@ -19,7 +19,7 @@
             <h4><a target="_blank" href="/store/products/{{item.slug}}">{{item.name }}</a></h4>
           </td>
           <td class="cart_price">
-            <p>{{item.price | currency}}</p>
+            <h4>{{item.price | currency}}</h4>
           </td>
           <td class="cart_quantity">
             <div class="cart_quantity_button">
@@ -29,10 +29,10 @@
             </div>
           </td>
           <td class="cart_total">
-            <p class="cart_total_price">{{ item.price * item.quantity | currency}}</p>
+            <h4 class="cart_total_price">{{ item.price * item.quantity | currency}}</h4>
           </td>
           <td class="cart_delete">
-            <a class="cart_quantity_delete" ng-click="cart.remove(item)" href=""><span class="glyphicon glyphicon-trash"></span></a>
+  <h4>          <a class="cart_quantity_delete" ng-click="cart.remove(item)" href=""><span class="glyphicon glyphicon-trash"></span></a> </h4>
           </td>
         </tr>
         </tbody>

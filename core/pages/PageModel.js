@@ -31,11 +31,9 @@ module.exports = {
 				content: {
 					type: types.Markdown,
 					wysiwyg: true,
-					width: 'long'
 				},
 				description: {
 					type: String,
-					width: 'long',
 					label: 'Meta Description'
 
 				},
@@ -46,7 +44,8 @@ module.exports = {
 					initial: true,
 					required: true
 
-				}},'Options',{
+				}
+			}, 'Options', {
 				index: {
 					type: Boolean,
 					default: false,

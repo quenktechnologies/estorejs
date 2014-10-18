@@ -7,7 +7,6 @@
  */
 module.exports = function PagesController(store) {
 
-
 	/**
 	 * routeRegistration
 	 *
@@ -16,8 +15,7 @@ module.exports = function PagesController(store) {
 	 *
 	 */
 	this.routeRegistration = function(app) {
-
-		app.get(/^\/pages\/([\w-]+)$/, this.onGetPageRequest);
+		app.get(/^\/pages\/([\w]+(?:-[\w]+)*)$/, this.onGetPageRequest);
 		app.get('/', this.onGetIndexRequest);
 
 	};
@@ -38,10 +36,11 @@ module.exports = function PagesController(store) {
 		findOne({
 			slug: req.params[0]
 		}).
+		lean().
 		exec().
 		then(null, function(err) {
 
-			store.ebus.emit(store.SYSTEM_ERROR, err);
+			console.log(err);
 			next();
 
 		}).
@@ -50,7 +49,7 @@ module.exports = function PagesController(store) {
 			if (!page)
 				return next();
 
-			res.locals.$page = page.toObject();
+			res.locals.$page = page;
 			res.render(page.template);
 
 		}).end();

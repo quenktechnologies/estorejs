@@ -1,6 +1,4 @@
 {% extends "base.html" %} {% if $query.q %} {% get "results" from "Product" using "findProductsByKeywords" with $query.q, 10 %} {% done %} {% endif %} {% block body %}
-<div class="container">
-  <div class="col-md-8 col-md-offset-2">
     <h1>Search</h1>
     <hr>
     <div class="col-md-12 search-result">
@@ -39,8 +37,4 @@
       </div>
      <hr>{% endfor %}
     </div>
-
-  </div>
-</div>
-
 {% endblock %}

@@ -1,3 +1,4 @@
+var address = require('./settingsAddress');
 module.exports = {
 
 	type: 'model',
@@ -12,52 +13,49 @@ module.exports = {
 	},
 	model: function(store, types, ui) {
 
-		return ['Owner Information', {
-				owner: {
-					contact: {
-						type: types.Name,
-						label: 'Name'
-					},
-					company: {
-						type: String,
-						width: 'medium',
-						label: 'Company Name'
-					},
-
-					email: {
-						type: types.Email,
-						width: 'medium',
-						label: 'Email',
-					},
-					phone: {
-						type: String,
-						label: 'Phone',
-						width: 'medium'
-					},
-				}
-			}, 'Site', {
+		return ['Site Details', {
 				site: {
-					brand: {
+					name: {
 						type: String,
-						label: 'Brand',
+						label: 'Name',
 						width: 'medium'
 					},
-					about: {
-						type: types.Markdown,
-						label: 'About'
+					meta: {
+
+						description: {
+							type: types.Textarea,
+							label: 'Meta Description',
+							note: 'Used by some search engines to summarize the site.'
+						},
+						title: {
+
+							type: String,
+							label: 'Meta title',
+							width: 'medium',
+
+						}
+
 					}
 
 				}
 
-			}, 'Theme', {
+			},
+			'Store Address', {
+				store: {
+
+					address: address(store, types, ui)
+
+				}
+			},
+
+
+			'Theme', {
 				theme: {
 					current: {
 						type: types.Select,
 						options: store._templates,
 						default: 'themes/default',
 						label: 'Theme'
-
-
 					},
 				}
 			}, 'Payments', {
@@ -78,7 +76,7 @@ module.exports = {
 						}
 					}
 				}
-			
+
 			}];
 	},
 	run: function(list, store) {
