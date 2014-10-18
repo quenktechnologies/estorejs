@@ -36,7 +36,7 @@ module.exports = function NewInvoiceEmail(invoice) {
 			invoice: invoice,
 		}, function(err) {
 
-			if (err) system.log.error(err);
+			if (err) console.log(err);
 		});
 
 	};

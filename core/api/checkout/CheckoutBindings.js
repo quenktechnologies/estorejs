@@ -7,31 +7,7 @@
  */
 module.exports = function CheckoutBindings(store) {
 
-	this.NAME = 'checkout';
 	var self = this;
-
-	/**
-	 * meta
-	 *
-	 * @property meta
-	 * @type {Object}
-	 */
-	this.meta = {
-
-		name: 'Checkout API',
-		key: 'checkoutAPI',
-		settings: {
-			enabled: {
-				type: Boolean,
-				default: true
-			}
-		}
-
-
-
-
-	};
-
 
 
 	/**
@@ -46,9 +22,6 @@ module.exports = function CheckoutBindings(store) {
 
 		app.post('/_/checkout/transactions', this.onCheckoutTransactionRequest);
 		app.get('/_/payments/options', this.onPaymentOptionsRequest);
-
-		store.ebus.on(store.TRANSACTION_APPROVED, this.transactionApproved);
-
 
 	};
 
@@ -65,21 +38,26 @@ module.exports = function CheckoutBindings(store) {
 
 		var Invoice = store.keystone.list('Invoice').model;
 		var Transaction = store.keystone.list('Transaction').model;
-		var Context = require('./Context');
+		var TransactionProcessor = require('./TransactionProcessor');
 		var that = this;
+		var gateway;
 
 		if ((!req.session.cart) || (req.session.cart.length < 1))
 			return res.send(400, 'The cart is empty!');
 
-		if ((!req.body.workflow) || ('string' !== typeof req.body.workflow))
-			return res.send(400, 'No workflow specified!') && console.log(req.body);
+		if (store.gateways.active.hasOwnProperty(req.body.workflow))
+			gateway = store.gateways.active[req.body.workflow];
+
+		if (!gateway)
+			return res.send(400, 'Gateway not found!');
+
 
 		var invoice = new Invoice(req.body);
 		invoice.set({
 			items: req.session.cart,
 			payment: {
 				id: '',
-				type: '',
+				type: req.body.workflow,
 				status: 'outstanding'
 			}
 		});
@@ -90,23 +68,17 @@ module.exports = function CheckoutBindings(store) {
 
 			//create transaction and save it, then seek approval.
 
-			if (err) return system.log.warn(err) && res.send(400, 'There were validation errors!');
-
-			if (!store.gateways.has(req.body.workflow))
-				return res.send(400, 'Gateway not found!');
-
-			var gateway = store.gateways.get(req.body.workflow);
+			if (err) return console.log(err) && res.send(400, 'There were validation errors!');
 
 			var transaction = new Transaction();
 			transaction.set('invoice', invoice.toObject());
 			transaction.
 			save(function(err, saved) {
 
-
-				if (err) return system.log.error(err) && res.send(500);
-				gateway.onCheckout({
+				if (err) return console.log(err) && res.send(500);
+				gateway.checkout({
 					transaction: saved,
-					controller: self,
+					model: new TransactionProcessor(store),
 					request: req,
 					response: res
 				});
@@ -129,81 +101,10 @@ module.exports = function CheckoutBindings(store) {
 	 *
 	 */
 	this.onPaymentOptionsRequest = function(req, res) {
-		res.json(store.gateways.getPaymentOptions());
+
+		res.json(store.gateways.list);
 
 	};
-
-	/**
-	 * transactionApproved is called when a transaction is approved.
-	 *
-	 * @method transactionApproved
-	 *
-	 * @return {Promise} q style
-	 *
-	 */
-	this.transactionApproved = function(ctx) {
-
-		var InvoiceNumberPromise = require('./InvoiceNumberPromise');
-		var SaveTransactionPromise = require('./SaveTransactionPromise');
-		var Counter = store.keystone.list('Counter').model;
-
-		return new InvoiceNumberPromise(new Counter()).
-		then(function(number) {
-
-			ctx.transaction.set({
-				status: 'approved',
-				invoice: {
-					number: number.next
-				}
-			});
-
-			return new SaveTransactionPromise(ctx.transaction);
-
-		}).
-		then(function(transaction) {
-
-			ctx.request.session.cart.length = 0;
-			ctx.request.session.pendingTransactions.length = 0;
-		}).
-		then(null, function(err) {
-
-			system.log.error(err);
-
-
-		});
-
-
-
-	};
-
-	/**
-	 * transactionDeclined is called when a transaction is declined.
-	 *
-	 * @method transactionDeclined
-	 *
-	 * @return {Promise} q style.
-	 *
-	 */
-	this.transactionDeclined = function(ctx) {
-
-		ctx.transaction.set({
-			status: 'declined'
-		});
-
-		return require('q').ninvoke(ctx.transaction, 'save').
-		then(null, function(err) {
-
-			system.log.error(err);
-
-		});
-
-
-
-
-
-	};
-
-
 
 
 };

@@ -19,7 +19,7 @@ module.exports = function TransactionDaemon(store) {
 		getApproved(store.MAX_TRANSACTIONS_PROCESSED).
 		then(function(transactions) {
 			transactions.forEach(function(trn) {
-				system.log.info('Found approved transaction ' + trn._id + '.');
+				console.log('Found approved transaction ' + trn._id + '.');
 				trn.invoice.items.forEach(invert);
 				trn.commit().
 				then(function() {
@@ -28,13 +28,15 @@ module.exports = function TransactionDaemon(store) {
 						if (!number.next) throw new Error('No invoice number found!');
 						trn.invoice.items.forEach(invert);
 						trn.invoice.number = number.next;
-						system.log.info('Generating invoice number ' + number.next + '.');
+						console.log('Generating invoice number ' + number.next + '.');
 						return trn.generateInvoice().
 						then(function() {
-                                                  system.log.info('Transaction '+trn._id+' has been committed');
 							//All products have been updated successfully.
 							trn.set('status', 'committed');
-							return require('q').ninvoke(trn, 'save');
+							var r = require('q').ninvoke(trn, 'save');
+                                                  console.log('Transaction '+trn._id+' has been committed');
+                                                  return r;
+
 
 						});
 

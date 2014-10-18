@@ -17,6 +17,7 @@ updates/*
 extras
 npm-debug.log
 .mongo
+.trash
 .env
 tmp
 .DS_Store

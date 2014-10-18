@@ -1,14 +1,12 @@
 var EventEmitter = require('events').EventEmitter;
 var Theme = require('./core/util/Theme');
 var Extras = require('./core/util/Extras');
-var DefaultKeystoneConfiguration = require('./core/util/DefaultKeystoneConfiguration');
 var Endpoints = require('./core/api/Endpoints');
 var Express = require('express');
 var NunjucksMongoose = require('nunjucks-mongoose');
-var Controller = require('./core/util/Controller');
 var CompositeController = require('./core/util/CompositeController');
-var Gateways = require('./core/gateway/Gateways');
 var TransactionDaemon = require('./core/daemon/TransactionDaemon');
+var Installer = require('./core/util/Installer');
 
 /**
  * EStore is the main entry point for EStore
@@ -20,9 +18,10 @@ var TransactionDaemon = require('./core/daemon/TransactionDaemon');
 module.exports = function EStore() {
 
 	//Private
-	var models = {};
-	var __Controller__ = new Controller();
-	var settingFields = {};
+	this.models = {};
+	this.settingFields = {};
+	this.runnableSettings = [];
+	this.daemons = [];
 
 	//Settings
 	this.MAX_TRANSACTIONS_PROCESSED = 10;
@@ -100,9 +99,14 @@ module.exports = function EStore() {
 	 * gateways is an object containing the gateway modules that are enabled.
 	 *
 	 * @property gateways
-	 * @type {Gateways}
+	 * @type {Object}
 	 */
-	this.gateways = new Gateways();
+	this.gateways = {
+		available: [],
+		other: [],
+		active: {},
+		list: []
+	};
 
 	/**
 	 * endpoints is an object with the api endpoints for the app.
@@ -147,6 +151,15 @@ module.exports = function EStore() {
 	 * @type {Object}
 	 */
 	this.util = require('lodash');
+
+	/**
+	 * installer
+	 *
+	 * @property installer
+	 * @type {Installer}
+	 */
+	this.installer = new Installer(this);
+
 
 
 	/**
@@ -300,15 +313,17 @@ module.exports = function EStore() {
 	 */
 	this._gatherExtensions = function() {
 
+		this.extensions.push(require('./core/extensions/payments/cod'));
+		this.extensions.push(require('./core/extensions/payments/bank'));
+		this.extensions.push(require('./core/extensions/payments/cheque'));
+		this.extensions.push(require('./core/extensions/daemons/transaction'));
 
 		if (this._extras.has('extensions'))
 			this.extensions.push.apply(this.extensions, this._extras.get('extensions', true));
 
 		this.extensions.forEach(function(ext) {
-
-			if (ext.settings) {
-
-				this._installSettings(ext.settings);
+			if (typeof ext.settings === 'object') {
+				this.installer.settings(ext.settings);
 
 			}
 
@@ -330,12 +345,20 @@ module.exports = function EStore() {
 
 		var settings = require('./core/models/settings');
 		var fields = settings.model(this, this.keystone.Field.Types);
-		fields.push.apply(settingFields);
+
+		fields.push.apply(this.settingFields);
 
 		var list = new this.keystone.List('Settings', settings.options);
+
 		list.add.apply(list, fields);
 		settings.run(list, this);
+
+		this.runnableSettings.forEach(function(f) {
+			f(list, this.keystone.Field.Types);
+		}.bind(this));
+
 		list.register();
+
 		this.settings = this.keystone.list('Settings').model(this.settings).toObject();
 
 	};
@@ -360,42 +383,20 @@ module.exports = function EStore() {
 		list.push(require('./core/models/product'));
 		list.push(require('./core/models/category'));
 		list.push(require('./core/models/transaction'));
+		list.push(require('./core/blog'));
+		list.push(require('./core/pages'));
 
-		if (this.settings.apis.checkout)
-			require('./core/api/checkout');
+		if (pkg.apis) {
 
-		if (this.settings.apis.products)
-			list.push(require('./core/api/products'));
+			if (pkg.apis.checkout)
+				list.push(require('./core/api/checkout'));
 
-		if (this.settings.apis.cart)
-			list.push(require('./core/api/cart'));
+			if (pkg.apis.products)
+				list.push(require('./core/api/products'));
 
-		if (pkg.blog)
-			if (pkg.blog.enabled === 'true') {
-
-				this.blog = pkg.blog;
-				list.push(require('./core/blog'));
-			}
-
-		if (pkg.pages)
-			if (pkg.pages.enabled === 'true') {
-
-				var routes = pkg.pages.routes;
-				this.pages = pkg.pages;
-				this.pages.routes = [];
-
-				Object.keys(routes).forEach(function(key) {
-
-					this.pages.routes.push({
-						value: routes[key],
-						label: key
-					});
-
-
-				}.bind(this));
-				list.push(require('./core/pages'));
-			}
-
+			if (pkg.apis.cart)
+				list.push(require('./core/api/cart'));
+		}
 
 		this.extensions.unshift.apply(this.extensions, list);
 
@@ -416,7 +417,21 @@ module.exports = function EStore() {
 	 *
 	 */
 	this._scanPages = function() {
+		var pkg = this.theme.getPackageFile().estore;
 
+		var routes = pkg.pages.templates;
+		this.pages = pkg.pages;
+		this.pages.templates = [];
+
+		Object.keys(routes).forEach(function(key) {
+
+			this.pages.templates.push({
+				value: routes[key],
+				label: key
+			});
+
+
+		}.bind(this));
 
 	};
 
@@ -430,14 +445,14 @@ module.exports = function EStore() {
 	 */
 	this._modelRegistration = function() {
 
-		this.composite.modelRegistration(models);
+		this.composite.modelRegistration(this.models);
 
 		var next;
 		var list;
 
-		Object.keys(models).forEach(function(key) {
+		Object.keys(this.models).forEach(function(key) {
 
-			next = models[key];
+			next = this.models[key];
 			list = new this.keystone.List(next.name, next.options || {});
 
 			if (next.defaultColumns)
@@ -482,18 +497,52 @@ module.exports = function EStore() {
 
 	};
 
-
-
 	/**
-	 * _gatewayRegistration will register any  payment gateway extensions.
+	 * _buildGatewayList
 	 *
-	 * @method _gatewayRegistration
+	 * @method _buildGatewayList
 	 * @return
 	 *
 	 */
-	this._gatewayRegistration = function() {
+	this._buildGatewayList = function() {
 
-		this.composite.gatewayRegistration(this.gateways);
+		var self = this;
+
+		this.gateways.list.length = 0;
+
+		this.gateways.available.forEach(function(gw) {
+
+			if (gw.workflow === 'card') {
+
+				if (gw.value === self.settings.payments.card.active) {
+					self.gateways.active.card = gw;
+					self.gateways.list.push({
+						label: 'Credit Card',
+						value: 'card'
+					});
+				}
+
+			} else {
+
+				if (self.settings.payments[gw.key])
+					if (self.settings.payments[gw.key].active === true) {
+						self.gateways.active[gw.workflow] = gw;
+						self.gateways.list.push({
+							label: gw.label,
+							value: gw.workflow
+						});
+
+
+					}
+
+
+
+			}
+
+
+
+
+		});
 
 	};
 
@@ -537,12 +586,13 @@ module.exports = function EStore() {
 		this.keystone.pre('routes', function(req, res, next) {
 
 			//Set some useful variables.
-			res.locals.BRAND = process.env.BRAND;
 			res.locals.user = req.session.user;
 			res.locals.$settings = this.settings;
 			res.locals.$query = req.query;
+			//The below is not being set here so we do it in the ThemeController.
+			//res.locals.$params = req.params;
+			res.locals.$url = req.protocol + '://' + req.get('Host') + req.url;
 			res.locals.$navigation = this._navigation;
-			res.locals.DOMAIN = process.env.DOMAIN;
 			req.session.cart = req.session.cart || [];
 			res.locals.cart = req.session.cart;
 			res.locals.CART_COUNT = req.session.cart.length;
@@ -579,9 +629,12 @@ module.exports = function EStore() {
 	 *
 	 */
 	this._startDaemons = function() {
-		console.log('Starting application daemons.');
-		new TransactionDaemon(this);
 
+		this.daemons.forEach(function(daemon) {
+
+			setInterval(daemon.exec(this), daemon.interval);
+
+		}.bind(this));
 
 	};
 
@@ -604,7 +657,7 @@ module.exports = function EStore() {
 		exec().
 		then(null, function(err) {
 
-                  console.log(err);
+			console.log(err);
 
 		}).
 		then(function(links) {
@@ -655,7 +708,7 @@ module.exports = function EStore() {
 			this._processExtensions();
 			this._scanPages();
 			this._modelRegistration();
-			this._gatewayRegistration();
+			this._buildGatewayList();
 			this._eventRegistration();
 			this._routeRegistration();
 			this._startDaemons();
@@ -664,79 +717,6 @@ module.exports = function EStore() {
 		}.bind(this));
 
 	};
-
-
-	/**
-	 * _installController
-	 *
-	 * @method _installController
-	 * @return
-	 *
-	 */
-	this._installController = function(Controller) {
-
-		Controller.prototype = __Controller__;
-		this.composite.add(new Controller(this));
-
-	};
-
-	/**
-	 * _installModel
-	 *
-	 * @method _installModel
-	 * @return
-	 *
-	 */
-	this._installModel = function(ext) {
-
-		models[ext.name] = ext;
-
-
-	};
-
-
-	/**
-	 * _installComposite
-	 *
-	 * @method _installComposite
-	 * @return
-	 *
-	 */
-	this._installComposite = function(ext) {
-
-
-		if (ext.models)
-			ext.models.forEach(function(ext) {
-
-				this.install(ext);
-
-			}.bind(this));
-
-		if (ext.controllers)
-			ext.controllers.forEach(function(c) {
-
-				this.install(c);
-
-			}.bind(this));
-
-	};
-
-	/**
-	 * _installSettings
-	 *
-	 * @method _installSettings
-	 * @return
-	 *
-	 */
-	this._installSettings = function(settings) {
-
-
-		settingFields[settings.key] = settings.provide(this, this.keystone.Field.Types);
-
-	};
-
-
-
 
 	/**
 	 * install an extension.
@@ -748,20 +728,23 @@ module.exports = function EStore() {
 	 */
 	this.install = function(ext) {
 
-		if (ext.type === 'controller')
-			this._installController(ext.controller);
-
-		if (ext.type === 'model')
-			this._installModel(ext);
-
-		if (ext.type === 'composite')
-			this._installComposite(ext);
-
-		if (ext.type === 'settings')
-			this._installSettings(ext);
+		this.installer.install(ext);
 
 	};
 
+
+	/**
+	 * onSettingsChanged is called when the settings data has changed.
+	 *
+	 * @method onSettingsChanged
+	 * @param {Object} settings The settings object.
+	 * @return
+	 *
+	 */
+	this.onSettingsChanged = function(settings) {
+		this.settings = settings;
+		this._buildGatewayList();
+	};
 
 
 

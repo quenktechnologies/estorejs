@@ -25,15 +25,17 @@ module.exports = {
 	options: {
 		nocreate: true,
 		track: true,
-		noedit: true
+		noedit: true,
 	},
 	model: function(store, types, ui) {
 
 		return [{
 			status: {
-				type: String,
+				type: types.Select,
+				options: ['created', 'approved', 'committed', 'rollback'],
 				default: 'created',
-				noedit: true,
+
+
 
 			},
 			timestamp: {
@@ -101,7 +103,7 @@ module.exports = {
 				'increase', 'invoices', 1).
 			then(null, function(err) {
 
-				system.log.error('generateInvoiceNumber: ', err);
+				console.log('generateInvoiceNumber: ', err);
 
 			});
 
@@ -120,7 +122,7 @@ module.exports = {
 			return require('q').ninvoke(newInvoice, 'save').
 			then(null, function(err) {
 
-				system.log.error('generateInvoice: ', err);
+				console.log('generateInvoice: ', err);
 
 			});
 

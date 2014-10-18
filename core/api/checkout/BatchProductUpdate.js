@@ -54,7 +54,7 @@ module.exports = function BatchProductUpdate(x, trn, model) {
 					if (product)
 						return em.emit(self.PRODUCT_UPDATED, product);
 
-					system.log.warn('Transaction ' + trn._id +
+					console.log('Transaction ' + trn._id +
 						' did not have any effect.');
 
 				});

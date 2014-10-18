@@ -12,9 +12,6 @@ module.exports = {
   options:{
 		nocreate: true,
 		nodelete: true,
-		map: {
-			name: '_id'
-		}
 	},
 
   model: function(store, types, ui) {
@@ -50,7 +47,7 @@ module.exports = {
 			}).exec().
 			onReject(function(err) {
 
-				system.log.error('Cannot query counters! ', err);
+				console.log('Cannot query counters! ', err);
 
 			});
 		};

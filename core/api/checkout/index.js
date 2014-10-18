@@ -1,7 +1,7 @@
+
 module.exports = {
 
-  type: 'controller',
-	name: 'Checkout Endpoints',
+	type: 'controller',
 	controller: require('./CheckoutBindings')
 
 

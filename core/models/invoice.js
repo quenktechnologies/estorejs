@@ -6,12 +6,12 @@ module.exports = {
 	name: 'Invoice',
 	defaultColumns: 'number, customer.email, payment.type, payment.status, total, createdAt',
 	options: {
-		autoindex: true,
+	//	autoindex: true,
 		nocreate: true,
 		nodelete: true,
 		track: true,
 		map: {
-			name: '_id'
+			name: 'number'
 		}
 	},
 	model: function(store, types, ui) {

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container" style="margin-top:75px">
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <h1><$ $post.title $></h1>
+      <p class="lead">by
+          <$ $post.author $>
+      </p>
+      <hr>
+      <p>
+        <span class="glyphicon glyphicon-time"></span> Posted on
+        <$ $post.createdAt $>
+      </p>
+      <hr/>{% if post.image %}
+      <img src="<$ $post.image $>" class="img-responsive">
+      <hr>{% endif %}
+      <$ $post.content.full.html | safe $>
+
+    </div>
+</div>
+
+</div>
+<!-- /.container -->
+{% endblock %}

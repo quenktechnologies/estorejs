@@ -2059,16 +2059,18 @@ module.exports = function Checkout($scope, cartService, configService, $window) 
 	 */
 	this.confirm = function() {
 
+		var that = this;
+
 		if (this.SHIP_TO_BILLING)
 			this.order.address.shipping = this.order.address.billing;
 
 		cartService.checkout(this.order).
-		then(function(res) {
+		then(function(res, data, headers) {
 
 			if (res.data.paymentUrl)
-			return $window.location.href = res.data.paymentUrl;
+				return $window.location.href = res.data.paymentUrl;
 
-				window.location = '/checkout/success';
+				window.location = res.headers('x-checkout-url');
 
 		}).
 		then(null, function(res) {

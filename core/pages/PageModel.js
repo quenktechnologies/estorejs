@@ -41,7 +41,7 @@ module.exports = {
 				},
 				template: {
 					type: types.Select,
-					options: store.pages.routes,
+					options: store.pages.templates,
 					width: 'long',
 					initial: true,
 					required: true

@@ -46,7 +46,7 @@ module.exports = function BatchTransaction(x, transactions, keystone) {
 
 			return pu.on(pu.PRODUCT_UPDATED, function(product) {
 
-				system.log.info('Finished updating product \'' + product.name + '\'.');
+				console.log('Finished updating product \'' + product.name + '\'.');
 				if (product.stock.balance < 1)
 					em.emit(self.ITEM_OUT_OF_STOCK, product);
 
@@ -67,13 +67,13 @@ module.exports = function BatchTransaction(x, transactions, keystone) {
 
 			}).
 			then(function() {
-				system.log.info('Transaction \'' + trn._id + '\' completed without errors.');
+				console.log('Transaction \'' + trn._id + '\' completed without errors.');
 				em.emit(self.TRANSACTION_COMPLETE, trn);
 
 			}).
 			catch (function(err) {
 
-				system.log.warn('Transaction  \'' + trn._id + '\'failed: ' + err);
+				console.log('Transaction  \'' + trn._id + '\'failed: ' + err);
 				em.emit(self.TRANSACTION_ERROR, trn);
 
 			});

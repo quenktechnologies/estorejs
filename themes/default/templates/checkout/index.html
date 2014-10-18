@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% set DISABLE_NAV=true %} {% block body %}
+{% extends "base.html" %} {% include "snippets/billingForm.html" %} {% set DISABLE_NAV=true %} {% block body %}
 <div class="container main" ng-controller="Checkout as checkout">
   <div class="col-md-10 col-md-offset-1">
     <div class="row text-center" style="margin-bottom:50px">
@@ -26,17 +26,29 @@
                 </div>
               </div>
             </div>
-            {% include "checkout/billing-form.html" %}
-            <input ng-click="checkout.togglebilling()" id="ship-to-billing-address" type="checkbox" data-ng-model="checkout.SHIP_TO_BILLING">
-            <label class="" for="ship-to-billing-address">Ship items to the address above?</label>
-  <span ng-if="!checkout.SHIP_TO_BILLING" class="animate-if">
-            {% include "checkout/shipping-form.html" %}
+            <div class="row">
+              <div class="panel panel-default">
+                <div class="panel-body">
+                  <$ address( 'order.address.billing', 'order[address][billing]') $>
+                    <input ng-click="checkout.togglebilling()" id="ship-to-billing-address" type="checkbox" data-ng-model="checkout.SHIP_TO_BILLING">
+                    <label class="" for="ship-to-billing-address">Ship items to the address above?</label>
+                </div>
+              </div>
+            </div>
+            <span ng-if="!checkout.SHIP_TO_BILLING" class="animate-if">
+            <div class="row">
+              <div class="panel panel-default">
+                <div class="panel-body">
+                  <$ address('order.address.shipping', 'order[address][shipping]') $>
+        </div>
+        </div>
+        </div>
           </span>
             <div class="row">
               <div class="panel panel-default">
                 <div class="panel-body">
                   <h3>Payment Method</h3>
-                  <select class="form-control" required ng-options="workflow.value as workflow.name for workflow in checkout.paymentOptions" ng-model="checkout.order.workflow">
+                  <select class="form-control" required ng-options="workflow.value as workflow.label for workflow in checkout.paymentOptions" ng-model="checkout.order.workflow">
                     <option value="">--Select One--</option>
                   </select>
                 </div>

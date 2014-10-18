@@ -16,8 +16,7 @@ module.exports = function BlogsController(store) {
 	 *
 	 */
 	this.routeRegistration = function(app) {
-
-		app.get(/^\/blog(?:\/pages\/([\d]{2}))?$/, this.onGetBlogIndexRequest);
+		app.get('/blog', this.onGetBlogIndexRequest);
 		app.get(/^\/blog\/([\w-]+)$/, this.onGetBlogPageRequest);
 
 	};
@@ -51,7 +50,7 @@ module.exports = function BlogsController(store) {
 				return next();
 
 			res.locals.$post = post;
-			res.render(store.blog.routes.post);
+			res.render('post.html');
 
 		}).end();
 
@@ -87,7 +86,7 @@ module.exports = function BlogsController(store) {
 				return next();
 
 			res.locals.$posts = posts;
-			res.render(store.blog.routes.index);
+			res.render('blog.html');
 
 		}).end();
 

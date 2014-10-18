@@ -149,7 +149,7 @@ return [{
 				_id: id
 			}).select('_id name price stock, image'), 'exec').
 			then(null, function(err) {
-				system.log.error('getProductForCart: ', err);
+				console.log('getProductForCart: ', err);
 
 			});
 
@@ -189,7 +189,7 @@ return [{
 
 		list.schema.statics.applyTransaction = function(id, item) {
 
-			system.log.info('Applying Transaction ' + id + ' to ' + this.name + '.');
+			console.log('Applying Transaction ' + id + ' to ' + this.name + '.');
 			return this.model('Product').findOneAndUpdate({
 
 				_id: item._id,
