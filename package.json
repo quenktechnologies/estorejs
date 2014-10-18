@@ -10,6 +10,7 @@
     "express",
     "nunjucks"
   ],
+  "repository":"https://github.com/quenktechnologies/vendorlize-estore",
   "main": "run",
   "author": {
     "name": "Lasana Murray",
