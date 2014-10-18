@@ -16,7 +16,11 @@
       "description": "Secret for signing cookies",
       "generator": "secret"
 
+    },
+    "MONGO_URI": {
+      "description": "The uri to the database to use.",
+      "required": true",
+      "value": ""
     }
-  },
-  "addons": ["mongolab:sandbox"]
+  }
 }
