@@ -383,8 +383,8 @@ module.exports = function EStore() {
 		list.push(require('./core/models/product'));
 		list.push(require('./core/models/category'));
 		list.push(require('./core/models/transaction'));
-		list.push(require('./core/blog'));
-		list.push(require('./core/pages'));
+		list.push(require('./core/extensions/blog'));
+		list.push(require('./core/extensions/pages'));
 
 		if (pkg.apis) {
 
