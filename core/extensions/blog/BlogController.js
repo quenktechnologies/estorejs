@@ -17,7 +17,7 @@ module.exports = function BlogsController(store) {
 	 */
 	this.routeRegistration = function(app) {
 		app.get('/blog', this.onGetBlogIndexRequest);
-		app.get(/^\/blog\/([\w-]+)$/, this.onGetBlogPageRequest);
+		app.get(/^\/blog\/posts\/([\w]+(?:-[\w]+)*)$/, this.onGetBlogPageRequest);
 
 	};
 
@@ -35,12 +35,13 @@ module.exports = function BlogsController(store) {
 		store.keystone.list('Post').
 		model.
 		findOne({
-			slug: req.params[0]
+			slug: req.params[0],
+			state: 'published'
 		}).
 		exec().
 		then(null, function(err) {
 
-			store.ebus.emit(store.SYSTEM_ERROR, err);
+			console.log(err);
 			next();
 
 		}).
@@ -50,7 +51,7 @@ module.exports = function BlogsController(store) {
 				return next();
 
 			res.locals.$post = post;
-			res.render('post.html');
+			res.render('blog/post.html');
 
 		}).end();
 
@@ -72,11 +73,15 @@ module.exports = function BlogsController(store) {
 
 		store.keystone.list('Post').
 		model.
-		find().
+		find({
+			state: 'published'
+		}).
+		limit(20).
+		lean().
 		exec().
 		then(null, function(err) {
 
-			store.ebus.emit(store.SYSTEM_ERROR, err);
+			console.log(err);
 			next();
 
 		}).
@@ -86,7 +91,7 @@ module.exports = function BlogsController(store) {
 				return next();
 
 			res.locals.$posts = posts;
-			res.render('blog.html');
+			res.render('blog/index.html');
 
 		}).end();
 
