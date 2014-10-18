@@ -19,8 +19,8 @@
     },
     "MONGO_URI": {
       "description": "The uri to the database to use.",
-      "required": true",
-      "value": ""
+      "required": true,
+      "value": "none specified"
     }
   }
 }
