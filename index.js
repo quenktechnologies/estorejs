@@ -229,7 +229,7 @@ module.exports = function EStore() {
 		var theme;
 
 		if (this.settings.theme)
-				theme = this.settings.theme.current;
+			theme = this.settings.theme.current;
 
 		this.theme = new Theme(require('path').dirname(
 				require.main.filename) + '/themes',
@@ -374,7 +374,6 @@ module.exports = function EStore() {
 		var list = [];
 		var pkg = this.theme.getPackageFile().estore;
 
-		list.push(require('./core/themes'));
 		list.push(require('./core/models/user'));
 		list.push(require('./core/models/counter'));
 		list.push(require('./core/models/item'));
@@ -384,6 +383,7 @@ module.exports = function EStore() {
 		list.push(require('./core/models/transaction'));
 		list.push(require('./core/extensions/blog'));
 		list.push(require('./core/extensions/pages'));
+		list.push(require('./core/extensions/themes'));
 
 		if (pkg.apis) {
 

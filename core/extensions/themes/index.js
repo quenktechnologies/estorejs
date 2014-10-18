@@ -1,7 +1,6 @@
 module.exports = {
 
- 
-  type:'controller',
+	type: 'controller',
 	controller: require('./ThemeBindings')
 
 };
