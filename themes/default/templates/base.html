@@ -4,9 +4,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="<$ page.description $>">
-  <meta name="author" content="<$ page.author $>">
-  <title><$ $settings.site.brand $></title>
+  <meta name="description" content="<$ $page.description $>">
+  <meta name="author" content="<$ $page.author $>">
+  <title>
+    <$ $page.title $>
+  </title>
   <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <link href="/assets/css/main.css" rel="stylesheet">
@@ -17,7 +19,7 @@
   <link rel="shortcut icon" href="assets/images/ico/favicon.ico">
 </head>
 {% if not DISABLE_NAV %}
-<nav class="navbar navbar-default bs-docs-nav" role="navigation">
+<nav class="navbar navbar-default bs-dcs-nav" role="navigation">
   <div class="container">
     <div class="col-md-8 col-md-offset-2">
       <div class="navbar-header">
@@ -27,18 +29,26 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/"><$ $settings.site.brand $></a>
+        <a class="navbar-brand" href="/">
+          <$ $settings.site.name $>
+        </a>
       </div>
       <div class="collapse navbar-collapse navbar-ex1-collapse">
         <ul class="nav navbar-nav">
-          <li><a href="/">Home</a>
+          <li><a href="/categories">Shop</a>
           </li>
-          <li><a href="/shop">Shop</a>
+          <li><a href="/blog">Blog</a>
+          </li>
+          <li><a href="/pages/about">About</a>
           </li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="/cart">Cart (<span es-cart-count></span>)</a>
-          </li>
+          <li><a href="/cart">Cart (<$ $cart.length | int $>)</a></li>
+            {% if $cart.length > 0 %}
+            <li>
+            <a href="/checkout">Checkout</a>
+            </li>
+            {% endif %}
         </ul>
         <div class="col-md-4 navbar-right">
           <form class="navbar-form" role="search" method="GET" action="/search">
@@ -59,18 +69,46 @@
   </div>
   <!--/.container-fluid -->
 </nav>
-{% endif %} {% block body %}{% endblock %}
+{% endif %}
+<div class="container">
+  <div class="col-md-8 col-md-offset-2">
+    {% block body %}{% endblock %}
+  </div>
+</div>
 <footer>
-  <div class="container text-center">
-    <ul class="list-inline">
-      <li><a href="/shop">Shop</a>
-      </li>
-      <li><a href="/search">Search</a>
-      </li>
-    </ul>
+  <div class="container">
+    <div class="col-md-8 col-md-offset-2">
+      <div class="row">
+        <div class="col-md-4 footBox">
+          <h4>News</h4>
+          {% if not recentPost %}
+          <p>Nothing to report yet!</p>
+          {% endif %}
+        </div>
+        <div class="col-md-4 footBox">
+          <h4>Links</h4>
+          <ul class="list-inline">
+            <li><a href="/categories">Shop</a>
+            </li>
+            <li><a href="/search">Search</a>
+            </li>
+            <li><a href="/blog">Blog</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-4 footBox">
+          <h4>Connect with us</h4>
+        </div>
+        {% for network in $social %}
+        <a class="icon-social <$ network.name $>" href="<$ network.link $>"></a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="container text-center" style="margin-top:75px">
     <small>
       This site powered by <a href="#">EStore</a>
-      </small>
+    </small>
   </div>
 </footer>
 <script src="/assets/js/build/seller.js"></script>

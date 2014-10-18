@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block body %}
+    <div class="row row-bordered" style="margin-bottom:50px">
+      <h1><$ $post.title $></h1>
+      <p class="lead">by
+          <$ $post.author $>
+      </p>
+      <p>
+        <span class="glyphicon glyphicon-time"></span> Posted on
+        <$ $post.createdAt $>
+      </p>
+    </div>
+      {% if $post.image %}
+      <div class="row">
+      <img src="<$ $post.image $>" class="img-responsive" style="margin-bottom:50px">
+    </div>
+      {% endif %}
+      <div class="row row-bordered">
+      <$ $post.content.full.html | safe $>
+    </div>
+
+    </div>
+{% endblock %}

@@ -64,6 +64,22 @@ module.exports = function Theme(base, theme) {
 
 	};
 
+
+        /**
+         * getPackageFile returns the `package.json` file of the theme.
+         *
+         * @method getPackageFile
+         * @return {Object}
+         *
+         */
+        this.getPackageFile = function () {
+
+          return this.get('package.json');
+
+
+        };
+
+
 	/**
 	 * use changes the theme in use.
 	 *

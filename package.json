@@ -1,12 +1,16 @@
 {
   "name": "estore",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "Run an e-store in the cloud using mongodb, keystone and nunjucks.",
   "keywords": [
     "ecommerce",
     "mongodb",
-    "keystone"
+    "keystone",
+    "mongoose",
+    "express",
+    "nunjucks"
   ],
+  "repository":"https://github.com/quenktechnologies/vendorlize-estore",
   "main": "run",
   "author": {
     "name": "Lasana Murray",
@@ -16,7 +20,6 @@
     "start": "node run.js"
   },
   "dependencies": {
-    "2checkout-node": "0.0.1",
     "bignumber.js": "1.4.x",
     "connect-mongo": "0.4.x",
     "dotenv": "0.0.x",
@@ -25,30 +28,13 @@
     "json2csv": "2.2.x",
     "keystone": "^0.2.x",
     "lodash": "2.4.x",
-    "mongojs": "^0.14.2",
+    "mongojs": "^0.15.1",
     "mongoose": "^3.8.17",
-    "mpromise": "^0.5.1",
     "nunjucks": "1.0.x",
     "nunjucks-mongoose": "0.2.x",
     "passport": "0.2.x",
-    "q": "1.0.x",
-    "winston": "0.7.x"
+    "q": "1.0.x"
   },
-  "bundledDependencies": [
-    "vzlib",
-    "bignumber.js",
-    "connect-mongo",
-    "dotenv",
-    "express",
-    "json2csv",
-    "keystone",
-    "lodash",
-    "nunjucks",
-    "nunjucks-mongoose",
-    "passport",
-    "q",
-    "winston"
-  ],
   "engines": {
     "node": "0.10.x",
     "npm": "1.4.x"

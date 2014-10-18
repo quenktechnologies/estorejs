@@ -1,0 +1,28 @@
+{% extends "base.html" %} {% block body %}
+<section id="title" class="wet-asphalt">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6">
+        <h1><$ $page.title $></h1>
+      </div>
+    </div>
+  </div>
+</section>
+<section>
+<div class="container">
+  <div class="col-md-7">
+      <$ $page.content.html | safe $>
+  </div>
+<div class="col-md-3 col-md-offset-2">
+  <div class="row">
+   <a href="/order" class="btn btn-block btn-epic btn-lg">Purchase Here</a>
+  </div>
+  <div class="row" style="margin-top:50px">
+    <iframe src="//www.facebook.com/plugins/likebox.php?href=https%3A%2F%2Fwww.facebook.com%2Fcocolooks&amp;width&amp;height=258&amp;colorscheme=light&amp;show_faces=true&amp;header=false&amp;stream=false&amp;show_border=false&amp;appId=421481091323517" scrolling="no" frameborder="0" style="border:none; overflow:hidden; height:258px;" allowTransparency="true"></iframe>
+</div>
+  </div>
+</div>
+</section>
+
+
+{% endblock %}

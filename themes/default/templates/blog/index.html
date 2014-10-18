@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="row row-vertical-center">
+  <h1>News</h1>
+</div>
+    {% for $post in $posts %}
+    <div class="row">
+      <h1><a href="/blog/<$ $post.slug $>"><$ $post.title $></a></h1>
+      {% if $post.author %}
+      <p class="lead">by <$ $post.author $></p>
+      {% endif %}
+      <p>
+        <span class="glyphicon glyphicon-time"></span> Posted on
+        <$ $post.createdAt $>
+      </p>
+      <$ $post.content.brief.html | safe $>
+        <a class="btn btn-primary" href="/blog/posts/<$ $post.slug $>">Read More <span class="glyphicon glyphicon-chevron-right"></span></a>
+
+        <hr>
+    </div>
+    {% endfor %}
+{% endblock %}
+<!-- /.container -->
+

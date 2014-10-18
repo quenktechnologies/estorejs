@@ -2,6 +2,8 @@
 #EStore
 **Note: This version will break apps based on prior versions.**
 
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/quenktechnologies/vendorlize-estore)
+
 EStore is an ecommerce platform built to run in the 'cloud'. The main goal behind it is a platform that is easy to deploy as well as integrate with other other systems.
 
 EStore is designed with the [12 factor](http://12factor.net) app in mind.

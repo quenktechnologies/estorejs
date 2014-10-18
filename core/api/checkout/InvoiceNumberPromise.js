@@ -10,7 +10,7 @@ module.exports = function InvoiceNumberPromise(counter) {
 	return require('q').ninvoke(counter, 'increase', 'invoices', 1).
 	catch (function(err) {
 
-		system.log.error('Cannot query counters! ', err);
+		console.log('Cannot query counters! ', err);
 
 	});
 

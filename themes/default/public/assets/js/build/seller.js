@@ -2059,16 +2059,18 @@ module.exports = function Checkout($scope, cartService, configService, $window) 
 	 */
 	this.confirm = function() {
 
+		var that = this;
+
 		if (this.SHIP_TO_BILLING)
 			this.order.address.shipping = this.order.address.billing;
 
 		cartService.checkout(this.order).
-		then(function(res) {
+		then(function(res, data, headers) {
 
 			if (res.data.paymentUrl)
-			return $window.location.href = res.data.paymentUrl;
+				return $window.location.href = res.data.paymentUrl;
 
-				window.location = '/checkout/success';
+				window.location = res.headers('x-checkout-url');
 
 		}).
 		then(null, function(res) {
@@ -2172,6 +2174,7 @@ module.exports = function ProductPage() {
 	 */
 	this.addFailure = function() {
 
+		console.log('Error adding to cart');
 
 
 	};
@@ -2252,7 +2255,6 @@ module.exports = function CartAdderController(cart, $scope) {
 	 * @method addToCart
 	 * @return
 	 *
-	console.log('instantiated');
 	 */
 	self.addToCart = function() {
 
@@ -2276,7 +2278,7 @@ module.exports = function CartAdderController(cart, $scope) {
 };
 
 },{}],7:[function(require,module,exports){
-module.exports = '<label>Quantity:</label>\n<div class="input-group">\n<input class="form-control input-small " type="number" value="1" ng-model="product.quantity" min=1>\n      <span class="input-group-btn">\n <button ng-click="product.addToCart()" class="btn btn-fefault cart" type="button">\n  <i class="fa fa-shopping-cart"></i> Add to cart\n</button>       \n      </span>\n    </div>\n\n';
+module.exports = '<label>Quantity:</label>\n<div class="input-group">\n  <input class="form-control input-small " type="number" value="1" ng-model="product.quantity" min=1>\n  <span class="input-group-btn">\n <button ng-click="product.addToCart()" class="btn btn-danger cart" type="button">\n   Add to <i class="fa fa-shopping-cart"></i>\n</button>       \n      </span>\n</div>\n';
 },{}],8:[function(require,module,exports){
 /**
  * CartAdderDirective is a directive for providing the
@@ -2395,7 +2397,7 @@ module.exports = function CheckoutCart(service) {
 };
 
 },{}],11:[function(require,module,exports){
-module.exports = '    <div class="table-responsive cart_info" ng-init="cart.getItems()">\n      <table class="table table-condensed">\n        <thead>\n          <tr class="cart_menu">\n            <td class="image">Item</td>\n            <td class="price">Price</td>\n            <td class="quantity">Quantity</td>\n            <td class="total">Total</td>\n          </tr>\n        </thead>\n        <tbody>\n        <tr ng-repeat="item in cart.items">\n          <td class="cart_product">\n            <a href="/products/{{item.slug}}" target="_blank">{{item.name | characters:30}}</a>\n          </td>\n          <td class="cart_price">\n            <p>{{item.price | currency}}</p>\n          </td>\n          <td class="cart_quantity">\n            {{item.quantity}}\n          </td>\n          <td class="cart_total">\n            <p class="cart_total_price">{{ item.price * item.quantity | currency}}</p>\n          </td>\n        </tr>\n        </tbody>\n      </table>\n    </div>\n';
+module.exports = '    <div class="table-responsive cart_info" ng-init="cart.getItems()">\n      <table class="table table-condensed">\n        <thead>\n          <tr class="cart_menu">\n            <td class="image">Item</td>\n            <td class="price">Price</td>\n            <td class="quantity">Quantity</td>\n            <td class="total">Total</td>\n          </tr>\n        </thead>\n        <tbody>\n        <tr ng-repeat="item in cart.items">\n          <td class="cart_product">\n            {{item.name | characters:30}}\n          </td>\n          <td class="cart_price">\n            <p>{{item.price | currency}}</p>\n          </td>\n          <td class="cart_quantity">\n            {{item.quantity}}\n          </td>\n          <td class="cart_total">\n            <p class="cart_total_price">{{ item.price * item.quantity | currency}}</p>\n          </td>\n        </tr>\n        </tbody>\n      </table>\n    </div>\n';
 },{}],12:[function(require,module,exports){
 /**
  * CheckoutCartDirective for the shopping cart.
@@ -2656,7 +2658,7 @@ module.exports = function CartDirective() {
 };
 
 },{"./ShoppingCartController":19,"./shopping-cart.html":21}],21:[function(require,module,exports){
-module.exports = '    <div class="table-responsive" ng-init="cart.getItems()">\n      <table class="table table-condensed">\n        <thead>\n          <tr class="cart_menu">\n            <td class="image">Item</td>\n            <td class="description"></td>\n            <td class="price">Price</td>\n            <td class="quantity">Quantity</td>\n            <td class="total">Total</td>\n            <td></td>\n          </tr>\n        </thead>\n        <tbody>\n        <tr ng-repeat="item in cart.items">\n          <td class="cart_product">\n            <a href="/store/products/{{item.slug}}"><img ng-src="{{item.image}}" alt="item image"></a>\n          </td>\n          <td class="cart_description">\n            <h4><a target="_blank" href="/store/products/{{item.slug}}">{{item.name }}</a></h4>\n          </td>\n          <td class="cart_price">\n            <p>{{item.price | currency}}</p>\n          </td>\n          <td class="cart_quantity">\n            <div class="cart_quantity_button">\n              <a class="cart_quantity_up" href="" ng-click="cart.modify(item, 1)"> + </a>\n              <input class="cart_quantity_input" ng-model="item.quantity" type="text" name="quantity" value="1" autocomplete="off" size="2">\n              <a class="cart_quantity_down" href="" ng-click="cart.modify(item, -1)"> - </a>\n            </div>\n          </td>\n          <td class="cart_total">\n            <p class="cart_total_price">{{ item.price * item.quantity | currency}}</p>\n          </td>\n          <td class="cart_delete">\n            <a class="cart_quantity_delete" ng-click="cart.remove(item)" href=""><span class="glyphicon glyphicon-trash"></span></a>\n          </td>\n        </tr>\n        </tbody>\n      </table>\n    </div>\n  </div>\n\n';
+module.exports = '    <div class="table-responsive" ng-init="cart.getItems()">\n      <table class="table table-condensed">\n        <thead>\n          <tr class="cart_menu">\n            <td class="image">Item</td>\n            <td class="description"></td>\n            <td class="price">Price</td>\n            <td class="quantity">Quantity</td>\n            <td class="total">Total</td>\n            <td></td>\n          </tr>\n        </thead>\n        <tbody>\n        <tr ng-repeat="item in cart.items">\n          <td class="cart_product">\n            <a href="/store/products/{{item.slug}}"><img ng-src="{{item.image}}" alt="item image"></a>\n          </td>\n          <td class="cart_description">\n            <h4><a target="_blank" href="/store/products/{{item.slug}}">{{item.name }}</a></h4>\n          </td>\n          <td class="cart_price">\n            <h4>{{item.price | currency}}</h4>\n          </td>\n          <td class="cart_quantity">\n            <div class="cart_quantity_button">\n              <a class="cart_quantity_up" href="" ng-click="cart.modify(item, 1)"> + </a>\n              <input class="cart_quantity_input" ng-model="item.quantity" type="text" name="quantity" value="1" autocomplete="off" size="2">\n              <a class="cart_quantity_down" href="" ng-click="cart.modify(item, -1)"> - </a>\n            </div>\n          </td>\n          <td class="cart_total">\n            <h4 class="cart_total_price">{{ item.price * item.quantity | currency}}</h4>\n          </td>\n          <td class="cart_delete">\n  <h4>          <a class="cart_quantity_delete" ng-click="cart.remove(item)" href=""><span class="glyphicon glyphicon-trash"></span></a> </h4>\n          </td>\n        </tr>\n        </tbody>\n      </table>\n    </div>\n  </div>\n\n';
 },{}],22:[function(require,module,exports){
 /**
  * TextElementDirective for checkout that explicitly requests an email address.

@@ -1,0 +1,37 @@
+{% extends "base.html" %} 
+{% get 'products' from 'Product' using 'find' %}
+{% then 'skip' with $query.next %}
+{% then 'limit' with 20 %}
+{% done %} 
+{% block body %}
+<div class="row row-bordered">
+  <div class="col-md-12">
+      <h2>Products</h2>
+    </div>
+</div>
+    <div class="row" style="padding-top:35px;">
+      {% for product in products %}
+      <div class="col-md-3">
+        <div class="thumbnail no-border">
+          <img alt="<$ product.name $>" src="<$ product.image $>">
+          <div class="caption">
+            <div class="col-md-12">
+              <h6 class="product-title"><a  href="/products/<$ product.slug $>"><$ product.name | truncate(128) $></a></h6>
+            </div>
+            <div class="col-md-12">
+              <span class="product-price">
+              $<$ product.price $>
+            </span>
+            </div>
+            <div class="col-md-12">
+              {% if product.stock.balance < 1 %}
+              <span class="text-danger">Out of Stock</span>
+                {% endif %}
+
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+<hr>{% endblock %}

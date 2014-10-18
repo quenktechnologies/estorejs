@@ -143,19 +143,19 @@ module.exports = function CartBindings(store) {
 		then(function(product) {
 
 			if (!product)
-				return res.send(store.CLIENT_ERROR_STATUS, new Error('PRODUCT_NOT_FOUND'));
+				return res.send(409, new Error('PRODUCT_NOT_FOUND'));
 
 			if (product.stock.balance < 1)
-				return res.send(store.CLIENT_ERROR_STATUS, new Error('ITEM_OUT_OF_STOCK'));
+				return res.send(409, new Error('ITEM_OUT_OF_STOCK'));
 
 			req.body.quantity = Number(req.body.quantity);
 
 			if ((!_.isNumber(req.body.quantity)) || (_.isNaN(req.body.quantity)))
-				return res.send(store.CLIENT_ERROR_STATUS, new Error(
+				return res.send(409, new Error(
 					'INVALID_QUANTITY'));
 
 			if (req.body.quantity > product.stock.balance)
-				return res.send(store.CLIENT_ERROR_STATUS, new Error('INSUFFICENT_STOCK'));
+				return res.send(409, new Error('INSUFFICENT_STOCK'));
 
 			req.session.cart = _.reject(req.session.cart, {
 				'_id': req.body._id
@@ -172,7 +172,7 @@ module.exports = function CartBindings(store) {
 				subtotal: new Big(product.price).times(req.body.quantity).toString()
 
 			});
-			res.send(store.OPERATION_COMPLETE);
+			res.send(201);
 
 		});
 

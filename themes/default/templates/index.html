@@ -1,16 +1,9 @@
-{% extends "base.html" %} {% set PAGE_IS_HOME=true %} {% get 'products' from 'Product' using 'find' %} {% then 'limit' with 4 %} {% done %} {% block body %}
-<div class="container">
-  <div class="col-md-8 col-md-offset-2">
-    <div class="row">
-      <div class="col-sm-6">
-        <h1><$ $settings.site.brand $></h1>
-        <p><$ $settings.site.about.html | safe $></p>
-      </div>
-      <div class="col-sm-6">
-        <img src="assets/images/woman-bag.jpg" class="girl img-responsive" alt="Image of a woman with shopping bags." />
-      </div>
+{% extends "base.html" %} {% set PAGE_IS_HOME=true %} {% get 'products' from 'Product' using 'find' with {featured:true}  %} {% then 'limit' with 4 %} {% done %} {% block body %}
+    <div class="row row-bordered">
+      <h1>Welcome       <small>to <$ $settings.site.name $></small>
+</h1>
     </div>
-    <div class="row" style="padding-top:35px;">
+    <div class="row row-bordered" style="padding-top:35px;">
       {% for product in products %}
       <div class="col-md-3">
         <div class="thumbnail no-border">
@@ -25,8 +18,8 @@
             </span>
             </div>
             <div class="col-md-12">
-              {% if product.stock.balance < 1 %}
-              <span class="text-danger">Out of Stock</span>
+              {% if product.stock.balance
+              < 1 %} <span class="text-danger">Out of Stock</span>
                 {% endif %}
 
             </div>
@@ -35,6 +28,9 @@
       </div>
       {% endfor %}
     </div>
-  </div>
-</div>
+    {% if $page.content %}
+    <div class="row row-bordered">
+      <$ $page.content | safe $>
+    </div>
+    {% endif %}
 {% endblock %}
