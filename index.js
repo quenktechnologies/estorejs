@@ -231,9 +231,11 @@ module.exports = function EStore() {
 		if (this.settings.theme)
 			theme = this.settings.theme.current;
 
+		if (!theme)
+			theme = 'themes/default';
+
 		this.theme = new Theme(require('path').dirname(
-				require.main.filename) + '/themes',
-			theme || 'default');
+			require.main.filename), theme);
 
 	};
 
@@ -416,21 +418,24 @@ module.exports = function EStore() {
 	 *
 	 */
 	this._scanPages = function() {
+
 		var pkg = this.theme.getPackageFile().estore;
 
-		var routes = pkg.pages.templates;
-		this.pages = pkg.pages;
-		this.pages.templates = [];
+			var routes = pkg.pages.templates;
+			this.pages = pkg.pages;
+			this.pages.templates = [];
 
-		Object.keys(routes).forEach(function(key) {
+			Object.keys(routes).forEach(function(key) {
 
-			this.pages.templates.push({
-				value: routes[key],
-				label: key
-			});
+				this.pages.templates.push({
+					value: routes[key],
+					label: key
+				});
 
 
-		}.bind(this));
+			}.bind(this));
+
+
 
 	};
 
@@ -588,21 +593,15 @@ module.exports = function EStore() {
 			res.locals.user = req.session.user;
 			res.locals.$settings = this.settings;
 			res.locals.$query = req.query;
-			//The below is not being set here so we do it in the ThemeController.
-			//res.locals.$params = req.params;
 			res.locals.$url = req.protocol + '://' + req.get('Host') + req.url;
 			res.locals.$navigation = this._navigation;
 			req.session.cart = req.session.cart || [];
 			res.locals.$cart = req.session.cart;
-			res.locals.CART_COUNT = req.session.cart.length;
 			req.session.pendingTransactions = req.session.pendingTransactions || [];
 
 			next();
 
 		}.bind(this));
-
-
-
 
 		this.keystone.set('routes', function(app) {
 
