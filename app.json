@@ -18,5 +18,5 @@
 
     }
   },
-  "addons": ["mongolab:shared-single-small"]
+  "addons": ["mongolab:sandbox"]
 }
