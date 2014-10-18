@@ -1,0 +1,22 @@
+{
+  "name": "Node estore",
+  "description": "An ecommerce application built on nodejs.",
+  "keywords": [
+    "ecommerce",
+    "mongodb",
+    "keystone",
+    "mongoose",
+    "express",
+    "nunjucks"
+  ],
+  "website":"https://github.com/quenktechnologies/vendorlize-estore",
+  "repository":"https://github.com/quenktechnologies/vendorlize-estore",
+  "env" : {
+    "COOKIE_SECRET": {
+      "description": "Secret for signing cookies",
+      "generator": "secret"
+
+    }
+  },
+  "addons": ["mongolab:shared-single-small"]
+}
