@@ -228,9 +228,8 @@ module.exports = function EStore() {
 
 		var theme;
 
-		if (this.settings.system)
-			if (this.settings.system.theme)
-				theme = this.settings.system.theme;
+		if (this.settings.theme)
+				theme = this.settings.theme.current;
 
 		this.theme = new Theme(require('path').dirname(
 				require.main.filename) + '/themes',
