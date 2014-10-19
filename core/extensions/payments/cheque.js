@@ -13,7 +13,7 @@ module.exports = {
 	settings: {
 		run: function(list, types) {
 
-			list.add({
+			list.add('Cheque/Money Orders',{
 				payments: {
 					cheque: {
 						active: {

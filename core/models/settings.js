@@ -55,10 +55,10 @@ module.exports = {
 						type: types.Select,
 						options: store._templates,
 						default: 'themes/default',
-						label: 'Theme'
+                                                         label: 'Select one:'
 					},
 				}
-			}, 'Payments', {
+			}, 'Credit Cards', {
 				payments: {
 					card: {
 						active: {
@@ -72,7 +72,7 @@ module.exports = {
 								return list;
 							})(),
 							default: 'none',
-							label: 'Credit Card Processor:'
+							label: 'Choose a gateway:'
 						}
 					}
 				}

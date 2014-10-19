@@ -30,6 +30,7 @@ module.exports = {
 				},
 				content: {
 					type: types.Markdown,
+toolbarOptions:{hideable:true},
 					wysiwyg: true,
 				},
 				description: {
