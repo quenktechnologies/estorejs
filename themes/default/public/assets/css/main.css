@@ -96,6 +96,13 @@ input.ng-valid.ng-dirty {
 .main {
   margin-top: 50px;
 }
+.pad-top-35 {
+  margin-top: 35px;
+}
+.row-no-padding [class*="col-"] {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
 .social-sharing {
   font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -298,16 +305,15 @@ html {
 }
 body {
   /* Margin bottom by footer height */
-  margin-bottom: 80px;
+  margin-bottom: 60px;
 }
-footer,
-.footer {
+.sticky {
   position: absolute;
   bottom: 0;
   padding: 15px;
   width: 100%;
   /* Set the fixed height of the footer here */
-  height: 80px;
+  height: 20px;
 }
 .footBox h4 {
   padding-bottom: 5px;
@@ -319,4 +325,7 @@ footer,
 }
 .row-vertical-center {
   margin-top: 75px;
+}
+#contentPane {
+  padding-top: 30px;
 }
