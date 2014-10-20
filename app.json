@@ -19,8 +19,9 @@
     },
     "MONGO_URI": {
       "description": "The uri to the database to use.",
-      "required": true,
+      "required": false,
       "value": "none specified"
-    }
+    },
+    "addons":["mongolab:sandbox"]
   }
 }
