@@ -30,7 +30,7 @@
     </div>
     {% if $page.content %}
     <div class="row row-bordered">
-      <$ $page.content | safe $>
+      <$ $page.content.html | safe $>
     </div>
     {% endif %}
 {% endblock %}

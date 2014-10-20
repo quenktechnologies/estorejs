@@ -1,7 +1,7 @@
-module.exports =  {
-  type: 'model',
-  name:'Product',
-  options:{
+module.exports = {
+	type: 'model',
+	name: 'Product',
+	options: {
 
 		autokey: {
 			path: 'slug',
@@ -11,108 +11,113 @@ module.exports =  {
 		track: true
 
 	},
-    defaultColumns:'name,stock.balance,price,createdAt',
-    model: function(store, types, ui) {
+	defaultColumns: 'name,stock.balance,price,createdAt',
+	model: function(store, types, ui) {
 
-return [{
+		return [{
 
-			name: {
-				type: String,
-				required: true,
-				width: 'short',
-				initial: true
-			},
-			price: {
-				type: types.Money,
-				required: true,
-				initial: true
-			},
-			image: {
-				type: types.Url,
-				width: 'medium',
-                                label:'Image URL',
-				default: require('../util/DefaultImage'),
-				collapse: true
-			},
-			_keywords: {
-
-				type: types.Textarea,
-				label: 'Keywords',
-				note: 'Seperate each term with a comma.',
-				height: 5,
-				collapse: true,
-				width: 'medium'
-
-			}
-		},
-		'Description', {
-			description: {
-
-				short: {
-					type: types.Text,
-					label: 'Short',
-					width: 'long',
+				name: {
+					type: String,
+					required: true,
+					width: 'short',
+					initial: true
+				},
+				price: {
+					type: types.Money,
+					required: true,
+					initial: true
+				},
+				image: {
+					type: types.Url,
+					width: 'medium',
+					label: 'Image URL',
+					default: require('../util/DefaultImage'),
 					collapse: true
 				},
+				_keywords: {
 
-				long: {
-					type: types.Markdown,
-					label: 'Long',
-					width: 'long',
-					height: 10,
-					collapse: true
+					type: types.Textarea,
+					label: 'Keywords',
+					note: 'Seperate each term with a comma.',
+					height: 5,
+					collapse: true,
+					width: 'medium'
+
+				}
+			},
+			'Description', {
+				description: {
+
+					short: {
+						type: types.Text,
+						label: 'Short',
+						width: 'long',
+						collapse: true
+					},
+
+					long: {
+						type: types.Markdown,
+						label: 'Long',
+						width: 'long',
+						height: 10,
+						collapse: true
+					}
+
+				}
+			},
+
+			'Stock', {
+
+				stock: {
+
+					sku: {
+						type: String,
+						label: 'SKU',
+						width: 'short',
+						collapse: true,
+
+					},
+					balance: {
+
+						type: Number,
+						label: 'Balance',
+						default: 0,
+						min: 0,
+						collapse: true,
+						initial: true
+
+
+					},
 				}
 
+			}, 'Orders', {
+				orders: {
+					min: {
+						type: Number,
+						min: 1,
+						default: 1,
+						collapse: true,
+						label: 'Minimum'
+					},
+					max: {
+						type: Number,
+						default: 9999999999,
+						min: 1,
+						collapse: true,
+						label: 'Maximum'
+					},
+
+				}
+			},
+			'Options', {
+				featured: {
+					type: Boolean,
+					label: 'Feature this product?'
+				}
 			}
-		},
-
-		'Stock', {
-
-			stock: {
-
-				sku: {
-					type: String,
-					label: 'SKU',
-					width: 'short',
-					collapse: true,
-
-				},
-				balance: {
-
-					type: Number,
-					label: 'Balance',
-					default: 0,
-					min: 0,
-					collapse: true,
-					initial: true
-
-
-				},
-			}
-
-		}, 'Orders', {
-			orders: {
-				min: {
-					type: Number,
-					min: 1,
-					default: 1,
-					collapse: true,
-					label: 'Minimum'
-				},
-				max: {
-					type: Number,
-					default: 9999999999,
-					min: 1,
-					collapse: true,
-					label: 'Maximum'
-				},
-
-			}
-		},
-                  'Options', {featured: {type:Boolean, label:'Feature this product?'}}
-	];
-    },
-    run: function(list, store, types, ui) {
+		];
+	},
+	run: function(list, store, types, ui) {
 
 		list.schema.add({
 
@@ -212,7 +217,7 @@ return [{
 
 		list.schema.statics.findProductsByKeywords = function(keywords, limit, skip) {
 
-                  keywords = keywords || '';
+			keywords = keywords || '';
 
 			skip = skip || 0;
 			limit = limit || 50;
@@ -229,16 +234,27 @@ return [{
 		};
 
 
+		list.schema.pre('validate', function(product, next) {
+
+			if (this._req_user)
+				if (!this._req_user.productManager)
+					return next(new Error('You do not have the required permissions to do that!'));
+
+			next();
+
+		});
+
+
 
 	},
-    navigate: function(nav) {
+	navigate: function(nav) {
 
 		nav.products = ['products', 'categories'];
 
-    }
+	}
 
 
-  
+
 
 
 

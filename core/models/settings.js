@@ -55,7 +55,7 @@ module.exports = {
 						type: types.Select,
 						options: store._templates,
 						default: 'themes/default',
-                                                         label: 'Select one:'
+						label: 'Select one:'
 					},
 				}
 			}, 'Credit Cards', {
@@ -89,10 +89,20 @@ module.exports = {
 
 		};
 
-		list.schema.post('save', function(data) {
 
-			store.onSettingsChanged(data);
+		list.schema.pre('validate', function(conf, next) {
 
+			if (this._req_user)
+				if (!this._req_user.settingsManager)
+					return next(new Error('You do not have the required permissions to do that!'));
+			next();
+
+
+		});
+
+		list.schema.post('save', function(conf) {
+
+			store.onSettingsChanged(conf);
 		});
 
 	}
