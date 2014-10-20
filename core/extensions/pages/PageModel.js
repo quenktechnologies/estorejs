@@ -24,28 +24,29 @@ module.exports = {
 					width: 'long',
 					required: true
 				},
-				author: {
-					type: String,
-					width: 'medium'
-				},
-				content: {
-					type: types.Markdown,
-toolbarOptions:{hideable:true},
-					wysiwyg: true,
-				},
-				description: {
-					type: String,
-					label: 'Meta Description'
-
-				},
 				template: {
 					type: types.Select,
 					options: store.pages.templates,
-					width: 'long',
 					initial: true,
 					required: true
 
-				}
+				},
+				author: {
+					type: String,
+					width: 'medium',
+					label: 'Meta Author'
+				},
+				description: {
+					type: types.Textarea,
+					width: 'medium',
+					label: 'Meta Description'
+
+				},
+				content: {
+					type: types.Markdown,
+					height: 400,
+					wysiwyg: true,
+				},
 			}, 'Options', {
 				index: {
 					type: Boolean,

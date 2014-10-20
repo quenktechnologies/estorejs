@@ -1,6 +1,6 @@
 var render = require('./render');
 /**
- * StoreBindings comment
+ * StoreRoutes
  * @class StoreBindings
  * @param {EStore} store
  * @constructor

@@ -1,12 +1,12 @@
 var EventEmitter = require('events').EventEmitter;
 var Theme = require('./core/util/Theme');
 var Extras = require('./core/util/Extras');
-var Endpoints = require('./core/api/Endpoints');
+var Endpoints = require('./core/extensions/apis/Endpoints');
 var Express = require('express');
 var NunjucksMongoose = require('nunjucks-mongoose');
 var CompositeController = require('./core/util/CompositeController');
-var TransactionDaemon = require('./core/daemon/TransactionDaemon');
 var Installer = require('./core/util/Installer');
+var UIFactory = require('./core/util/UIFactory');
 
 /**
  * EStore is the main entry point for EStore
@@ -16,6 +16,10 @@ var Installer = require('./core/util/Installer');
  *
  */
 module.exports = function EStore() {
+
+	//TODO: In future add support for popular mongodb hosting services.
+	var MONGO_URI = process.env.MONGO_URI || process.env.MONGOLAB_URI;
+	var COOKIE_SECRET = process.env.COOKIE_SECRET || require('crypto').randomBytes(64).toString('hex');
 
 	//Private
 	this.models = {};
@@ -45,8 +49,7 @@ module.exports = function EStore() {
 	 *
 	 * @property theme
 	 * @type {Theme}
-	 */
-	this.theme = undefined;
+	 *types.Technologiesthis.theme = undefined;
 
 
 	/**
@@ -197,7 +200,7 @@ module.exports = function EStore() {
 	 */
 	this._preloadSettings = function(cb) {
 
-		var db = require('mongojs')(process.env.MONGO_URI, ['settings']);
+		var db = require('mongojs')(MONGO_URI, ['settings']);
 
 		db.settings.findOne(function(err, settings) {
 
@@ -284,13 +287,13 @@ module.exports = function EStore() {
 			'session': true,
 			'session store': 'mongo',
 			'auth': true,
-			'cookie secret': process.env.COOKIE_SECRET,
+			'cookie secret': COOKIE_SECRET,
 			'view engine': 'html',
 			'views': this.theme.getTemplatePath(),
 			'static': this.theme.getStaticPath(),
 			'emails': this.theme.getEmailPath(),
 			'port': process.env.PORT || 3000,
-			'mongo': process.env.MONGO_URI,
+			'mongo': MONGO_URI,
 			'custom engine': this.viewEngine.render,
 			'user model': 'User'
 
@@ -385,18 +388,18 @@ module.exports = function EStore() {
 		list.push(require('./core/models/transaction'));
 		list.push(require('./core/extensions/blog'));
 		list.push(require('./core/extensions/pages'));
-		list.push(require('./core/extensions/themes'));
+		list.push(require('./core/extensions/routes'));
 
 		if (pkg.apis) {
 
 			if (pkg.apis.checkout)
-				list.push(require('./core/api/checkout'));
+				list.push(require('./core/extensions/apis/checkout'));
 
 			if (pkg.apis.products)
-				list.push(require('./core/api/products'));
+				list.push(require('./core/extensions/apis/products'));
 
 			if (pkg.apis.cart)
-				list.push(require('./core/api/cart'));
+				list.push(require('./core/extensions/apis/cart'));
 		}
 
 		this.extensions.unshift.apply(this.extensions, list);
@@ -421,19 +424,19 @@ module.exports = function EStore() {
 
 		var pkg = this.theme.getPackageFile().estore;
 
-			var routes = pkg.pages.templates;
-			this.pages = pkg.pages;
-			this.pages.templates = [];
+		var routes = pkg.pages.templates;
+		this.pages = pkg.pages;
+		this.pages.templates = [];
 
-			Object.keys(routes).forEach(function(key) {
+		Object.keys(routes).forEach(function(key) {
 
-				this.pages.templates.push({
-					value: routes[key],
-					label: key
-				});
+			this.pages.templates.push({
+				value: routes[key],
+				label: key
+			});
 
 
-			}.bind(this));
+		}.bind(this));
 
 
 
