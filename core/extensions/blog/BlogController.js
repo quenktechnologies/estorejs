@@ -30,7 +30,7 @@ module.exports = function BlogsController(store) {
 	 * @return
 	 *
 	 */
-	this.onGetBlogPageRequest = function(req, res) {
+	this.onGetBlogPageRequest = function(req, res, next) {
 
 		store.keystone.list('Post').
 		model.

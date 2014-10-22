@@ -68,7 +68,7 @@ module.exports = function PagesController(store) {
 	 * @return
 	 *
 	 */
-	this.onGetIndexRequest = function(req, res) {
+	this.onGetIndexRequest = function(req, res, next) {
 
 		store.keystone.list('Page').
 		model.

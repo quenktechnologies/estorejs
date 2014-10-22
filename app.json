@@ -9,8 +9,8 @@
     "express",
     "nunjucks"
   ],
-  "website":"https://github.com/quenktechnologies/vendorlize-estore",
-  "repository":"https://github.com/quenktechnologies/vendorlize-estore",
+  "website":"https://github.com/quenktechnologies/estore",
+  "repository":"https://github.com/quenktechnologies/estore",
   "env" : {
     "COOKIE_SECRET": {
       "description": "Secret for signing cookies",
@@ -19,8 +19,10 @@
     },
     "MONGO_URI": {
       "description": "The uri to the database to use.",
-      "required": true,
+      "required": false,
       "value": "none specified"
     }
-  }
+   },
+   "addons":["mongolab:sandbox"]
+
 }

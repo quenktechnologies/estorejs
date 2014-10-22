@@ -1,7 +1,7 @@
-module.exports =  {
-  type: 'model',
-  name:'Product',
-  options:{
+module.exports = {
+	type: 'model',
+	name: 'Product',
+	options: {
 
 		autokey: {
 			path: 'slug',
@@ -11,108 +11,106 @@ module.exports =  {
 		track: true
 
 	},
-    defaultColumns:'name,stock.balance,price,createdAt',
-    model: function(store, types, ui) {
+	defaultColumns: 'name,stock.balance,price,createdAt',
+	model: function(store, types, ui) {
 
-return [{
+		return [{
 
-			name: {
-				type: String,
-				required: true,
-				width: 'short',
-				initial: true
-			},
-			price: {
-				type: types.Money,
-				required: true,
-				initial: true
-			},
-			image: {
-				type: types.Url,
-				width: 'medium',
-                                label:'Image URL',
-				default: require('../util/DefaultImage'),
-				collapse: true
-			},
-			_keywords: {
-
-				type: types.Textarea,
-				label: 'Keywords',
-				note: 'Seperate each term with a comma.',
-				height: 5,
-				collapse: true,
-				width: 'medium'
-
-			}
-		},
-		'Description', {
-			description: {
-
-				short: {
-					type: types.Text,
-					label: 'Short',
-					width: 'long',
+				name: ui.TextField({
+					required: true,
+					initial: true
+				}),
+				price: ui.PriceField({
+					required: true,
+					initial: true
+				}),
+				image: {
+					type: types.Url,
+					width: 'medium',
+					label: 'Image URL',
+					default: require('../util/DefaultImage'),
 					collapse: true
 				},
+				_keywords: ui.TextBox({
+					label: 'Keywords'
+				})
 
-				long: {
-					type: types.Markdown,
-					label: 'Long',
-					width: 'long',
-					height: 10,
-					collapse: true
+			},
+			'Description', {
+				description: {
+
+                                  brief: ui.TextBox({label:'Brief'}),
+					full: ui.PageContentEditor({label:'Full'})
+
+				}
+			}, 'Stock', {
+
+				stock: {
+					isTangible: {
+						type: Boolean,
+						label: 'This product is tangible?',
+						default: true
+					},
+
+					sku: ui.ShortTextField({
+						label: 'SKU',
+						collapse: true,
+					}),
+					balance: ui.NumberField(0, null, {
+						label: 'Inventory',
+						dependsOn: {
+							'stock.isTangible': true
+						},
+						default: 0,
+						initial: true
+					}),
 				}
 
+			},
+			'Attributes', {
+
+				attributes: {
+
+					weight: ui.NumberField(0.00000001, null, {
+						label: 'Weight',
+						dependsOn: {
+							'stock.isTangible': true
+						}
+					})
+				}
+
+
+			},
+			'Order', {
+				order: {
+					min: ui.NumberField(1, null, {
+						default: 1,
+						collapse: true,
+						label: 'Minimum'
+					}),
+					max: ui.NumberField(1, null, {
+						default: 9999999999,
+						collapse: true,
+						label: 'Maximum'
+					}),
+					deliveryCharge: ui.PriceField({
+						label: 'Fixed delivery Charge',
+						dependsOn: {
+							'stock.isTangible': true
+						}
+					})
+
+				}
+			},
+			'Other', {
+				isFeatured: {
+					type: Boolean,
+					label: 'Feature this product?'
+				}
 			}
-		},
-
-		'Stock', {
-
-			stock: {
-
-				sku: {
-					type: String,
-					label: 'SKU',
-					width: 'short',
-					collapse: true,
-
-				},
-				balance: {
-
-					type: Number,
-					label: 'Balance',
-					default: 0,
-					min: 0,
-					collapse: true,
-					initial: true
-
-
-				},
-			}
-
-		}, 'Orders', {
-			orders: {
-				min: {
-					type: Number,
-					min: 1,
-					default: 1,
-					collapse: true,
-					label: 'Minimum'
-				},
-				max: {
-					type: Number,
-					default: 9999999999,
-					min: 1,
-					collapse: true,
-					label: 'Maximum'
-				},
-
-			}
-		},
-                  'Options', {featured: {type:Boolean, label:'Feature this product?'}}
-	];
-    },
-    run: function(list, store, types, ui) {
+		];
+	},
+	run: function(list, store, types, ui) {
 
 		list.schema.add({
 
@@ -212,7 +210,7 @@ return [{
 
 		list.schema.statics.findProductsByKeywords = function(keywords, limit, skip) {
 
-                  keywords = keywords || '';
+			keywords = keywords || '';
 
 			skip = skip || 0;
 			limit = limit || 50;
@@ -229,16 +227,27 @@ return [{
 		};
 
 
+		list.schema.pre('validate', function(product, next) {
+
+			if (this._req_user)
+				if (!this._req_user.productManager)
+					return next(new Error('You do not have the required permissions to do that!'));
+
+			next();
+
+		});
+
+
 
 	},
-    navigate: function(nav) {
+	navigate: function(nav) {
 
 		nav.products = ['products', 'categories'];
 
-    }
+	}
 
 
-  
+
 
 
 

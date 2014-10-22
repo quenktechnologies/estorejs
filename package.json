@@ -1,6 +1,6 @@
 {
   "name": "estore",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Run an e-store in the cloud using mongodb, keystone and nunjucks.",
   "keywords": [
     "ecommerce",
@@ -10,7 +10,7 @@
     "express",
     "nunjucks"
   ],
-  "repository":"https://github.com/quenktechnologies/vendorlize-estore",
+  "repository": "https://github.com/quenktechnologies/estore",
   "main": "run",
   "author": {
     "name": "Lasana Murray",
@@ -40,6 +40,7 @@
     "npm": "1.4.x"
   },
   "devDependencies": {
+    "bootlint": "^0.5.0",
     "grunt-supervisor": "^0.2.4",
     "longjohn": "^0.2.4",
     "look": "^0.1.3",
