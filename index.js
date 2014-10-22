@@ -465,7 +465,8 @@ module.exports = function EStore() {
 			if (next.defaultColumns)
 				list.defaultColumns = next.defaultColumns;
 
-			list.add.apply(list, next.model(this, this.keystone.Field.Types));
+			list.add.apply(list, next.model(this, this.keystone.Field.Types,
+                            new UIFactory(this.keystone.Field.Types)));
 
 			next.run && next.run(list, this, this.keystone.Field.Types);
 			next.navigate && next.navigate(this.navigation);

@@ -9,20 +9,8 @@
 module.exports = function UIFactory(types) {
 
 	var _cons = function(opts) {
-
 		opts = opts || {};
-		var o = {};
-
-		if (opts.label)
-			o.label = opts.label;
-
-		if (opts.required)
-			o.required = true;
-
-		if (opts['default'])
-			o['default'] = opts['default'];
-
-		return o;
+		return opts;
 
 	};
 
@@ -70,7 +58,7 @@ module.exports = function UIFactory(types) {
 	 * @return
 	 *
 	 */
-	this.TextField = function(label) {
+	this.TextField = function() {
 
 		var o = _cons(arguments);
 		o.type = String;
@@ -78,6 +66,78 @@ module.exports = function UIFactory(types) {
 		return o;
 
 	};
+
+	/**
+	 * ShortTextField
+	 *
+	 * @method ShortTextField
+	 * @return
+	 *
+	 */
+	this.ShortTextField = function() {
+
+		var o = this.TextField.apply(arguments);
+		o.width = 'short';
+		return o;
+	};
+
+
+	/**
+	 * NumberField
+	 *
+	 * @method NumberField
+	 * @param {Number} min
+	 * @param {Number} max
+	 * @return
+	 *
+	 */
+	this.NumberField = function(min, max) {
+
+		min = min || 1;
+		max = max || 9999999999;
+
+		var o = _cons(arguments[2]);
+		o.min = min;
+		o.max = max;
+		o.type = Number;
+		return o;
+
+	};
+
+
+	/**
+	 * Selection
+	 *
+	 * @method Selection
+	 * @param {Array} options
+	 * @return
+	 *
+	 */
+	this.Selection = function(options) {
+
+		var o = _cons(arguments[1]);
+		o.type = types.Select;
+		o.options = options;
+
+		return o;
+
+	};
+
+	/**
+	 * PriceField
+	 *
+	 * @method PriceField
+	 * @return
+	 *
+	 */
+	this.PriceField = function() {
+
+		var o = _cons(arguments[0]);
+		o.type = types.Money;
+		return o;
+
+	};
+
 
 
 
