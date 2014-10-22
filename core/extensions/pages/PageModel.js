@@ -19,11 +19,9 @@ module.exports = {
 	model: function(store, types, ui) {
 
 		return [{
-				title: {
-					type: String,
-					width: 'long',
+				title: ui.TextField({
 					required: true
-				},
+				}),
 				template: {
 					type: types.Select,
 					options: store.pages.templates,
@@ -31,22 +29,9 @@ module.exports = {
 					required: true
 
 				},
-				author: {
-					type: String,
-					width: 'medium',
-					label: 'Meta Author'
-				},
-				description: {
-					type: types.Textarea,
-					width: 'medium',
-					label: 'Meta Description'
-
-				},
-				content: {
-					type: types.Markdown,
-					height: 400,
-					wysiwyg: true,
-				},
+				author: ui.TextField('Meta Author'),
+				description: ui.TextBox('Meta Description'),
+				content: ui.PageContentEditor(),
 			}, 'Options', {
 				index: {
 					type: Boolean,
