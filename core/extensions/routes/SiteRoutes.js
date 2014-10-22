@@ -57,7 +57,7 @@ module.exports = function SiteBindings(store) {
 
 
 		store.keystone.list('Page').model.findOne({
-			index: true
+			isIndex: true
 		}).
 		exec().
 		then(null, function(err) {

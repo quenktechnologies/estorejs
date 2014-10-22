@@ -33,10 +33,9 @@ module.exports = {
 				description: ui.TextBox('Meta Description'),
 				content: ui.PageContentEditor(),
 			}, 'Options', {
-				index: {
+				isIndex: {
 					type: Boolean,
 					default: false,
-					unique: true,
 					label: 'Use as front page?'
 
 				},
