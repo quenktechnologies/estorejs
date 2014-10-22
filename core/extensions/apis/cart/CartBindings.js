@@ -167,6 +167,7 @@ module.exports = function CartBindings(store) {
 				price: product.price,
 				slug: product._id,
 				stock: product.stock,
+                          attributes: product.attributes,
 				image: product.image,
 				quantity: req.body.quantity,
 				subtotal: new Big(product.price).times(req.body.quantity).toString()
