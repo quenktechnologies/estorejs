@@ -230,7 +230,7 @@ module.exports = {
 		list.schema.pre('validate', function(product, next) {
 
 			if (this._req_user)
-				if (!this._req_user.productManager)
+				if (!this._req_user.roles.productManager)
 					return next(new Error('You do not have the required permissions to do that!'));
 
 			next();

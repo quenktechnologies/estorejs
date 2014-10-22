@@ -76,7 +76,7 @@ module.exports = {
 
 		list.schema.pre('validate', function(user, next, done) {
 			if (this._req_user)
-				if (!this._req_user.userManager)
+				if (!this._req_user.roles.userManager)
 					return next(new Error('You do not have the required permissions to do that!'));
 			next();
 		});
