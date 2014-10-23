@@ -37,17 +37,22 @@ module.exports = {
 				match: /.{0,128}/,
 
 			},
-			code: {
+			city: {
+				type: types.Text,
+				label: 'City/Region',
+				match: /\w{2,32}/,
+			},
+			country: {
+				type: types.Text,
+				label: 'Country',
+				match: /\w{2,32}/,
+			},
+	code: {
 
 				type: types.Text,
 				label: 'Postal Code',
 				match: /\w{2,8}/,
 
-			},
-			city: {
-				type: types.Text,
-				label: 'City/Region',
-				match: /\w{2,32}/,
 			},
                         state: {
                           type: types.Text,
@@ -55,12 +60,7 @@ module.exports = {
 				match: /\w{2,32}/,
 
                         },
-			country: {
-				type: types.Text,
-				label: 'Country',
-				match: /\w{2,32}/,
-			}
-		}
+				}
 
 	];
 

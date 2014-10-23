@@ -386,6 +386,7 @@ module.exports = function EStore() {
 		list.push(require('./core/models/product'));
 		list.push(require('./core/models/category'));
 		list.push(require('./core/models/transaction'));
+		list.push(require('./core/models/destinations'));
 		list.push(require('./core/extensions/blog'));
 		list.push(require('./core/extensions/pages'));
 		list.push(require('./core/extensions/routes'));
@@ -466,7 +467,7 @@ module.exports = function EStore() {
 				list.defaultColumns = next.defaultColumns;
 
 			list.add.apply(list, next.model(this, this.keystone.Field.Types,
-                            new UIFactory(this.keystone.Field.Types)));
+				new UIFactory(this.keystone.Field.Types)));
 
 			next.run && next.run(list, this, this.keystone.Field.Types);
 			next.navigate && next.navigate(this.navigation);
@@ -479,7 +480,7 @@ module.exports = function EStore() {
 
 		}.bind(this));
 
-		this.navigation.settings = ['settings', 'users', 'counters'];
+		this.navigation.settings = ['settings', 'users', 'destinations', 'counters'];
 		this.keystone.set('nav', this.navigation);
 
 

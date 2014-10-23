@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% get 'products' from 'Product' using 'find' with {isFeatured:true}  %}
+{% get 'products' from 'Product' using 'find' with {isFeatured:true} %}
 {% then 'limit' with 4 %}
 {% done %}
 {% block body %}
 <div class="row">
 <div class="jumbotron">
   <$ $page.content.html | safe $>
-      </div>
+  </div>
 </div>
 <div class="row pad-top-35">
   {% for product in products %}
@@ -32,4 +32,4 @@
   </div>
   {% endfor %}
 </div>
-{% endblock}
+{% endblock %}
