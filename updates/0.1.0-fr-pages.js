@@ -18,7 +18,7 @@ exports.create = {
 				"of this page.\n\n" +
 				"<a href=\"/keystone\" target=\"_blank\" class=\"btn btn-danger" +
 				"\">Log in</a>",
-			"index": true
+			"isIndex": true
 		}
 
 	]
