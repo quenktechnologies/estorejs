@@ -30,6 +30,7 @@
     "lodash": "2.4.x",
     "mongojs": "^0.15.1",
     "mongoose": "^3.8.17",
+    "node-uuid": "^1.4.1",
     "nunjucks": "1.0.x",
     "nunjucks-mongoose": "0.2.x",
     "passport": "0.2.x",
