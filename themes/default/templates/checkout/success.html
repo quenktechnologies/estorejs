@@ -1,22 +1,14 @@
-{% extends "base.html" %}
-{% block script %}
-{% endblock %}
-{% block body %}
-<div class="container">
-  <div class="row">
-    <div class="col-sm-12">
-      <div class="row">
-        <h3>Success! Your order has been recorded!</h3>
-        <hr>
-      </div>
-      <div class="row">
-        <p>We will contact you when it's ready!</a>
-      </div>
-      <div class="row">
-        <p>Back to the <a href="/">store</a></p>
-      </div>
-    </div>
-  </div> 
+{% extends "checkout/base.html" %} {% block body %}
+<div class="col-md-6 col-md-offset-3" style="margin-top:13%">
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <h3>Success!<small> (Invoice #<$ $order.invoice.number $>)</small></h3>
+        <p>Your order has been recorded!</p>
+    <hr>
+    <p>Thank you for shopping with us!</a>
+    <p>Back to the <a href="/">store</a>
+    </p>
+</div>
 </div>
 </div>
 {% endblock %}

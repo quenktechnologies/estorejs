@@ -2,7 +2,7 @@ exports.create = {
 
 	Counter: [{
 		name: 'invoices',
-		next: 1
+		next: 100
 
 	}]
 

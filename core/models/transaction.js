@@ -44,6 +44,11 @@ module.exports = {
 		invoice.payment = payment;
 
 		return [{
+			tid: {
+				type: String,
+				default: require('node-uuid').v4
+
+			},
 			status: {
 				type: types.Select,
 				options: ['created', 'approved', 'committed', 'rollback'],
@@ -64,9 +69,11 @@ module.exports = {
 	},
 	run: function(list, store, types, ui) {
 
-		list.schema.add({invoice: {
-			items: [store.keystone.list('Item').schema]
-		}});
+		list.schema.add({
+			invoice: {
+				items: [store.keystone.list('Item').schema]
+			}
+		});
 
 		list.schema.statics.getApproved = function(limit) {
 

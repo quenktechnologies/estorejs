@@ -19,7 +19,7 @@ module.exports = function CheckoutBindings(store) {
 
 		app.get('/checkout', this.onCheckoutPageRequest);
 		app.get('/checkout/error', render('checkout/error.html'));
-		app.get(/^\/checkout\/success\/([a-f\d]{24})$/,
+		app.get(/^\/checkout\/success\/([a-f\d-]{36})$/,
 			this.onCheckoutSuccessPageRequest);
 
 	};
@@ -39,7 +39,7 @@ module.exports = function CheckoutBindings(store) {
 		//In future do not query using mongo _ids
 
 		store.keystone.list('Transaction').model.findOne({
-			_id: req.params[0]
+			tid: req.params[0]
 		}).
 		exec().
 		then(null, function(err) {
@@ -52,12 +52,14 @@ module.exports = function CheckoutBindings(store) {
 			if (!trn)
 				return next();
 
-			res.locals.order = trn;
+			res.locals.$order = trn;
 
 			if (trn.invoice.payment.type !== 'card')
 				if (store.settings.payments[trn.type])
 					res.locals.$page = store.settings.payments[trn.type];
 
+                res.locals.$page = res.locals.$page || {};
+                res.locals.$page.title = 'Order #'+trn.invoice.number;
 			render('checkout/success.html')(req, res, next);
 
 		}).end();

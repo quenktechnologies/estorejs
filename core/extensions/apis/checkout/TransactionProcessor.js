@@ -36,13 +36,14 @@ module.exports = function TransactionProcessor(store) {
 		then(function(transaction) {
 			ctx.request.session.cart.length = 0;
 			ctx.request.session.pendingTransactions.length = 0;
-			var url = '/checkout/success/' + transaction[0]._id;
+			var url = '/checkout/success/' + transaction[0].tid;
 			ctx.response.set('x-checkout-url', url);
 			ctx.response.redirect(204, url);
 		}).
 		then(null, function(err) {
 
 			console.log(err);
+                        ctx.response.redirect(409,'/checkout/error');
 
 		});
 
