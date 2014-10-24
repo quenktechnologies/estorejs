@@ -1,4 +1,7 @@
-var invoice = require('./invoice');
+var AddressSchema = require('./schema/AddressSchema');
+var CustomerSchema = require('./schema/CustomerSchema');
+var InvoiceSchema = require('./schema/InvoiceSchema');
+var PaymentSchema = require('./schema/PaymentSchema');
 /**
  * Transaction represents the state of an order.
  *
@@ -29,6 +32,17 @@ module.exports = {
 	},
 	model: function(store, types, ui) {
 
+		var invoice = new InvoiceSchema(store, types, ui);
+		var address = new AddressSchema(store, types, ui);
+		var customer = new CustomerSchema(store, types, ui);
+		var payment = new PaymentSchema(store, types, ui);
+
+		invoice.address = {};
+		invoice.address.billing = address;
+		invoice.address.shipping = address;
+		invoice.customer = customer;
+		invoice.payment = payment;
+
 		return [{
 			status: {
 				type: types.Select,
@@ -43,15 +57,16 @@ module.exports = {
 				default: Date.now,
 				noedit: true,
 
-			}
+			},
+			invoice: invoice
 		}];
 
 	},
-	run: function(list, store, types) {
+	run: function(list, store, types, ui) {
 
-		list.schema.add({
-			invoice: require('./nestedInvoice')
-		});
+		list.schema.add({invoice: {
+			items: [store.keystone.list('Item').schema]
+		}});
 
 		list.schema.statics.getApproved = function(limit) {
 

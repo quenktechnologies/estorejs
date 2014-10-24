@@ -1,4 +1,8 @@
 var Table = require('easy-table');
+var AddressSchema = require('./schema/AddressSchema');
+var CustomerSchema = require('./schema/CustomerSchema');
+var InvoiceSchema = require('./schema/InvoiceSchema');
+var PaymentSchema = require('./schema/PaymentSchema');
 
 module.exports = {
 
@@ -6,7 +10,7 @@ module.exports = {
 	name: 'Invoice',
 	defaultColumns: 'number, customer.email, payment.type, payment.status, total, createdAt',
 	options: {
-	//	autoindex: true,
+		//	autoindex: true,
 		nocreate: true,
 		nodelete: true,
 		track: true,
@@ -16,88 +20,34 @@ module.exports = {
 	},
 	model: function(store, types, ui) {
 
-		var address = require('./address').model(store, types, ui)[0];
+		var invoice = new InvoiceSchema(store, types, ui);
+		var address = new AddressSchema(store, types, ui);
+		var customer = new CustomerSchema(store, types, ui);
+		var payment = new PaymentSchema(store, types, ui);
 
-		return ['Invoice', {
-
-			number: {
-				type: Number,
-				unique: true,
-				noedit: true,
-				default: -1
-			},
-			date: {
-
-				type: Date,
-				noedit: true,
-				width: 'short',
-				default: Date.now
-
-			},
-
-			total: {
-
-				type: types.Money,
-				default: '0.00',
-				noedit: true,
-				width: 'short'
-			}
-
-		}, 'Customer', {
-			customer: {
-				email: {
-					type: types.Email,
-					label: 'Email',
-					noedit: true,
-					width: 'short'
+		return ['Invoice',
+			invoice,
+			'Customer',
+                        {customer:customer},
+			'Billing Address', {
+				address: {
+					billing: address,
 				}
-			},
-		}, 'Billing Address', {
-			address: {
-				billing: address,
-			}
-		}, 'Shipping Address', {
-			address: {
-				shipping: address
-			}
-		}, 'Details', {
-			_items: {
-				type: types.Textarea,
-				label: 'Items'
-			},
-		}, 'Payment', {
-			payment: {
-				id: {
-					type: String,
-					width: 'short',
-					label: 'ID'
-
+			}, 'Shipping Address', {
+				address: {
+					shipping: address
+				}
+			}, 'Items', {
+				_items: {
+					type: types.Textarea,
+					width: 'medium',
+					label: 'Items'
 				},
-
-				type: {
-					type: String,
-					noedit: true,
-					label: 'Type',
-					width: 'short'
-
-				},
-				workflow: {
-					type: String,
-					hidden: true,
-					width: 'short',
-					noedit: 'true'
-				},
-
-				status: {
-					type: types.Select,
-					options: 'outstanding,paid,cancelled',
-					default: 'outstanding'
-				},
-
-			},
+			}, 'Payment', {
+				payment: payment
 
 
-		}];
+			}];
 
 	},
 	run: function(list, store, types) {
@@ -142,8 +92,7 @@ module.exports = {
 
 				this.items.forEach(function(item, key) {
 
-					t.cell('#', '[' + key + ']');
-					t.cell('id', item._id);
+					t.cell('#', '[' + key + ')');
 					t.cell('name', item.name);
 					t.cell('price', item.price);
 					t.cell('quantity', item.quantity);
@@ -169,7 +118,7 @@ module.exports = {
 	},
 
 	navigate: function(nav) {
-		nav.sales = ['invoices', 'transactions'];
+		nav.sales = ['invoices'];
 	}
 
 
