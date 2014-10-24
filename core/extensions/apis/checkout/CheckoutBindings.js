@@ -22,6 +22,7 @@ module.exports = function CheckoutBindings(store) {
 
 		app.post('/_/checkout/transactions', this.onCheckoutTransactionRequest);
 		app.get('/_/payments/options', this.onPaymentOptionsRequest);
+		app.get('/_/countries', this.onGetCountriesRequest);
 
 	};
 
@@ -103,6 +104,41 @@ module.exports = function CheckoutBindings(store) {
 	this.onPaymentOptionsRequest = function(req, res) {
 
 		res.json(store.gateways.list);
+
+	};
+
+
+	/**
+	 * onGetCountriesRequest
+	 *
+	 * @method GetCountriesRequest
+	 * @param {Object} req The express Request object.
+	 * @param {Object} res The express Response object.
+	 * @return
+	 *
+	 */
+	this.onGetCountriesRequest = function(req, res) {
+
+		store.keystone.list('Destination').model.
+		find(null, {
+			_id: false,
+			__v: false
+		}).
+		lean().
+		exec().
+		then(null, function(err) {
+			res.send(500);
+			console.log(err);
+
+		}).
+		then(function(list) {
+
+			res.json(list);
+
+
+		}).end();
+
+
 
 	};
 

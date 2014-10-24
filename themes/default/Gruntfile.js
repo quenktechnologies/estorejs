@@ -118,7 +118,7 @@ module.exports = function(grunt) {
 				tasks: ['browserify:install']
 			},
 			build: {
-				files: ['<%= config.focus+"/**/*.js" %>'],
+				files: ['<%= config.watch+"/**/*.js" %>'],
 				tasks: ['browserify:build']
 
 			},

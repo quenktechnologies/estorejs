@@ -24,10 +24,7 @@ module.exports = function Checkout($scope, cartService, configService, $window) 
 
 	this.SHIP_TO_BILLING = false;
 	this.paymentOptions = [];
-	this.countries = [{
-		name: 'Trinidad and Tobago'
-	}];
-
+	this.countries = [];
 	$scope.order = this.order;
 
 	/**
@@ -50,7 +47,7 @@ module.exports = function Checkout($scope, cartService, configService, $window) 
 			if (res.data.paymentUrl)
 				return $window.location.href = res.data.paymentUrl;
 
-				window.location = res.headers('x-checkout-url');
+			window.location = res.headers('x-checkout-url');
 
 		}).
 		then(null, function(res) {
