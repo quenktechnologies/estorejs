@@ -20,7 +20,7 @@
     "MONGO_URI": {
       "description": "The uri to the database to use.",
       "required": false,
-      "value": "none specified"
+      "value": ""
     }
    },
    "addons":["mongolab:sandbox"]
