@@ -1,6 +1,6 @@
 {
   "name": "estore",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "dependencies": {
     "bignumber.js": {
       "version": "1.4.1",
@@ -1438,6 +1438,11 @@
       "version": "0.5.1",
       "from": "mpromise@",
       "resolved": "https://registry.npmjs.org/mpromise/-/mpromise-0.5.1.tgz"
+    },
+    "node-uuid": {
+      "version": "1.4.1",
+      "from": "node-uuid@*",
+      "resolved": "https://registry.npmjs.org/node-uuid/-/node-uuid-1.4.1.tgz"
     },
     "nunjucks": {
       "version": "1.0.5",
