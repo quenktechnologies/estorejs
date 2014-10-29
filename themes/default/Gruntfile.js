@@ -18,12 +18,12 @@ module.exports = function(grunt) {
 			src: grunt.option('src'),
 			dest: grunt.option('dest'),
 			map: grunt.option('map'),
-			focus: grunt.option('focus'),
 			watch: grunt.option('watch'),
+			inspector: grunt.option('inspector')
 		},
 		debug: {
 			options: {
-				open: false // do not open node-inspector in Chrome automatically
+				open: '<%= config.inspector %>' || false
 			}
 		},
 		browserify: {
@@ -33,7 +33,6 @@ module.exports = function(grunt) {
 				},
 				options: {
 					debug: true,
-					watch: '<%= config.watch %>',
 					transform: [require('partialify')]
 				}
 			},
@@ -44,6 +43,8 @@ module.exports = function(grunt) {
 					]
 				},
 				options: {
+					debug: true,
+					transform: [require('partialify')],
 					plugin: [
 						['minifyify', {
 							map: grunt.option('map'),
@@ -59,42 +60,6 @@ module.exports = function(grunt) {
 
 
 		},
-		html2js: {
-			options: {
-
-				module: 'seller.templates',
-				base: 'public/',
-				quoteChar: '\'',
-				singleModule: true,
-				rename: function(n) {
-
-					return '/' + n;
-
-				},
-				collapseBooleanAttributes: true,
-				collapseWhitespace: true,
-				removeAttributeQuotes: true,
-				removeComments: true,
-				removeEmptyAttributes: true,
-				removeRedundantAttributes: true,
-				removeScriptTypeAttributes: true,
-				removeStyleLinkTypeAttributes: true
-
-
-			},
-			templates: {
-				src: ['public/assets/partials/seller/**/*.html'],
-				dest: 'scripts/templates/index.js'
-
-			},
-			main: {
-				files: ['<%= config.src+"/*/*.js" %>'],
-				dest: '<%= config.dest %>'
-			}
-
-
-
-		},
 		less: {
 			build: {
 				options: {
@@ -103,7 +68,7 @@ module.exports = function(grunt) {
 
 				files: {
 
-					"public/assets/css/main.css": "less/index.less"
+					'public/assets/css/main.css': 'less/index.less'
 
 				}
 
@@ -122,37 +87,15 @@ module.exports = function(grunt) {
 				tasks: ['browserify:build']
 
 			},
-			templates: {
-				files: ['public/assets/partials/seller/**/*.html'],
-				tasks: ['html2js:templates']
-
-			},
-			template: {
-
-				files: ['<%= config.src+"/*/*.js" %>'],
-				tasks: ['html2js:main'],
-
-			},
 			less: {
 				files: ['less/*.less'],
 				tasks: ['less:build']
 			}
 
 		},
-
-		concurrent: {
-			templates: {
-				tasks: ['watch:templates'],
-				options: {
-					logConcurrentOutput: true
-				}
-			}
-		},
 	});
 	grunt.option('stack', true);
-	grunt.loadNpmTasks('grunt-html2js');
 	grunt.loadNpmTasks('grunt-debug-task');
-	grunt.loadNpmTasks('grunt-concurrent');
 	grunt.registerTask('install', ['watch:install']);
 	grunt.registerTask('build', ['watch:build']);
 	grunt.registerTask('default', ['install']);
