@@ -8,6 +8,7 @@ var CompositeController = require('./core/util/CompositeController');
 var Installer = require('./core/util/Installer');
 var UIFactory = require('./core/util/UIFactory');
 var MainEventHandler = require('./core/util/MainEventHandler');
+var KeystoneProvider = require('./core/util/KeystoneProvider');
 
 /**
  * EStore is the main entry point for EStore
@@ -18,15 +19,13 @@ var MainEventHandler = require('./core/util/MainEventHandler');
  */
 module.exports = function EStore() {
 
-	//TODO: In future add support for popular mongodb hosting services.
-	var MONGO_URI = process.env.MONGO_URI || process.env.MONGOLAB_URI;
-	var COOKIE_SECRET = process.env.COOKIE_SECRET || require('crypto').randomBytes(64).toString('hex');
 
-	//Private
+
 	this.models = {};
 	this.settingFields = {};
 	this.runnableSettings = [];
 	this.daemons = [];
+	this.keystoneConfig = new KeystoneProvider();
 
 	//Settings
 	this.MAX_TRANSACTIONS_PROCESSED = 10;
@@ -212,7 +211,7 @@ module.exports = function EStore() {
 	 */
 	this._preloadSettings = function(cb) {
 
-		var db = require('mongojs')(MONGO_URI, ['settings']);
+		var db = require('mongojs')(this.keystoneConfig.mongoURI(), ['settings']);
 
 		db.settings.findOne(function(err, settings) {
 
@@ -299,13 +298,13 @@ module.exports = function EStore() {
 			'session': true,
 			'session store': 'mongo',
 			'auth': true,
-			'cookie secret': COOKIE_SECRET,
+			'cookie secret': this.keystoneConfig.cookieSecret(),
 			'view engine': 'html',
 			'views': this.theme.getTemplatePath(),
 			'static': this.theme.getStaticPath(),
 			'emails': this.theme.getEmailPath(),
 			'port': process.env.PORT || 3000,
-			'mongo': MONGO_URI,
+			'mongo': this.keystoneConfig.mongoURI(),
 			'custom engine': this.viewEngine.render,
 			'user model': 'User'
 
