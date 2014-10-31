@@ -35,9 +35,6 @@ module.exports = function CheckoutBindings(store) {
 	 */
 	this.onCheckoutSuccessPageRequest = function(req, res, next) {
 
-		//TODO
-		//In future do not query using mongo _ids
-
 		store.keystone.list('Transaction').model.findOne({
 			tid: req.params[0]
 		}).
@@ -55,11 +52,11 @@ module.exports = function CheckoutBindings(store) {
 			res.locals.$order = trn;
 
 			if (trn.invoice.payment.type !== 'card')
-				if (store.settings.payments[trn.type])
-					res.locals.$page = store.settings.payments[trn.type];
+				if (store.settings.payments[trn.invoice.payment.type])
+					res.locals.$page = store.settings.payments[trn.invoice.payment.type];
 
-                res.locals.$page = res.locals.$page || {};
-                res.locals.$page.title = 'Order #'+trn.invoice.number;
+			res.locals.$page = res.locals.$page || {};
+			res.locals.$page.title = 'Order #' + trn.invoice.number;
 			render('checkout/success.html')(req, res, next);
 
 		}).end();

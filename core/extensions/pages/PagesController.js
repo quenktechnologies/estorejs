@@ -78,7 +78,7 @@ module.exports = function PagesController(store) {
 		exec().
 		then(null, function(err) {
 
-			store.ebus.emit(store.SYSTEM_ERROR, err);
+			store.bus.emit(store.SYSTEM_ERROR, err);
 			next();
 
 		}).

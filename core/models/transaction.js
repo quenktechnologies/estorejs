@@ -109,7 +109,7 @@ module.exports = {
 					return q.ninvoke(f, 'exec').
 					then(function(product) {
 						if (product)
-							store.ebus.emit(store.PRODUCT_UPDATED_EVENT, product, this);
+							store.bus.emit(store.PRODUCT_UPDATED_EVENT, product, this);
 					});
 				}()));
 			}.bind(this));

@@ -7,6 +7,7 @@ var NunjucksMongoose = require('nunjucks-mongoose');
 var CompositeController = require('./core/util/CompositeController');
 var Installer = require('./core/util/Installer');
 var UIFactory = require('./core/util/UIFactory');
+var MainEventHandler = require('./core/util/MainEventHandler');
 
 /**
  * EStore is the main entry point for EStore
@@ -38,6 +39,7 @@ module.exports = function EStore() {
 	this.TRANSACTION_APPROVED = 'TRANSACTION_APPROVED';
 	this.TRANSACTION_DECLINED = 'TRANSACTION_DECLINED';
 	this.SYSTEM_ERROR = 'runtime error';
+	this.CATEGORY_CREATED = 'category created';
 
 	//Constants
 	this.STATUS_SYSTEM_ERROR = 503;
@@ -45,19 +47,29 @@ module.exports = function EStore() {
 	this.STATUS_OPERATION_COMPLETE = 201;
 
 	/**
+	 * locals
+	 *
+	 * @property
+	 * @type {Object}
+	 */
+	this.locals = {};
+
+
+	/**
 	 * theme
 	 *
 	 * @property theme
 	 * @type {Theme}
-	 *types.Technologiesthis.theme = undefined;
+	 */
+	this.theme = undefined;
 
 
 	/**
 	 *
-	 * @property {EventEmitter} ebus
+	 * @property {EventEmitter} bus
 	 *
 	 */
-	this.ebus = new EventEmitter();
+	this.bus = new EventEmitter();
 
 	/**
 	 * settings contains the settings
@@ -496,13 +508,8 @@ module.exports = function EStore() {
 	 */
 	this._eventRegistration = function() {
 
-		this.ebus.on(this.SYSTEM_ERROR, function(err) {
-
-			console.log(err);
-
-		});
-
-
+		var handler = new MainEventHandler(this);
+		handler.handleEvents(this.bus);
 
 	};
 
@@ -599,6 +606,7 @@ module.exports = function EStore() {
 			res.locals.$settings = this.settings;
 			res.locals.$query = req.query;
 			res.locals.$url = req.protocol + '://' + req.get('Host') + req.url;
+			res.locals.$categoryList = this.locals.categories;
 			res.locals.$navigation = this._navigation;
 			req.session.cart = req.session.cart || [];
 			res.locals.$cart = req.session.cart;
@@ -675,6 +683,28 @@ module.exports = function EStore() {
 	};
 
 	/**
+	 * _fetchCategories
+	 *
+	 * @method _fetchCategories
+	 * @return
+	 *
+	 */
+	this._fetchCategories = function() {
+
+		this.keystone.list('Category').model.
+		find().
+		lean().
+		exec().
+		then(function(categories) {
+
+			this.locals.categories = categories;
+
+		}.bind(this));
+
+	};
+
+
+	/**
 	 * mongooseError is called when uncaught errors are detected.
 	 *
 	 * @method mongooseError
@@ -716,6 +746,7 @@ module.exports = function EStore() {
 			this._startDaemons();
 			this.keystone.start();
 			this._fetchNavigationLinks();
+			this._fetchCategories();
 		}.bind(this));
 
 	};
