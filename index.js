@@ -21,7 +21,7 @@ module.exports = function EStore() {
 
 
 
-	this.models = {};
+	this.models = [];
 	this.settingFields = {};
 	this.runnableSettings = [];
 	this.daemons = [];
@@ -38,7 +38,7 @@ module.exports = function EStore() {
 	this.TRANSACTION_APPROVED = 'TRANSACTION_APPROVED';
 	this.TRANSACTION_DECLINED = 'TRANSACTION_DECLINED';
 	this.SYSTEM_ERROR = 'runtime error';
-	this.CATEGORY_CREATED = 'category created';
+	this.CATEGORY_pending = 'category pending';
 
 	//Constants
 	this.STATUS_SYSTEM_ERROR = 503;
@@ -342,6 +342,14 @@ module.exports = function EStore() {
 		this.extensions.push(require('./core/extensions/payments/cheque'));
 		this.extensions.push(require('./core/extensions/daemons/transaction'));
 		this.extensions.push(require('./core/extensions/engines/image'));
+		this.extensions.push(require('./core/models/user'));
+		this.extensions.push(require('./core/models/counter'));
+		this.extensions.push(require('./core/models/item'));
+		this.extensions.push(require('./core/models/invoice'));
+		this.extensions.push(require('./core/models/product'));
+		this.extensions.push(require('./core/models/category'));
+		this.extensions.push(require('./core/models/transaction'));
+		this.extensions.push(require('./core/models/country'));
 
 		if (this._extras.has('extensions'))
 			this.extensions.push.apply(this.extensions, this._extras.get('extensions', true));
@@ -401,14 +409,6 @@ module.exports = function EStore() {
 		var list = [];
 		var pkg = this.theme.getPackageFile().estore;
 
-		list.push(require('./core/models/user'));
-		list.push(require('./core/models/counter'));
-		list.push(require('./core/models/item'));
-		list.push(require('./core/models/invoice'));
-		list.push(require('./core/models/product'));
-		list.push(require('./core/models/category'));
-		list.push(require('./core/models/transaction'));
-		list.push(require('./core/models/destinations'));
 		list.push(require('./core/extensions/blog'));
 		list.push(require('./core/extensions/pages'));
 		list.push(require('./core/extensions/routes'));
@@ -476,33 +476,97 @@ module.exports = function EStore() {
 	this._modelRegistration = function() {
 
 		this.composite.modelRegistration(this.models);
-
+		var self = this;
 		var next;
-		var list;
+		var order = [];
+		var saved = {};
+		var current;
+		var noop = function() {};
+		var factory = new UIFactory(this.keystone.Field.Types);
 
-		Object.keys(this.models).forEach(function(key) {
+		self.models.forEach(function(next) {
 
-			next = this.models[key];
-			list = new this.keystone.List(next.name, next.options || {});
+			current = null;
+
+			if (saved.hasOwnProperty(next.name))
+				current = saved[next.name];
+
+			if ((!current) || (next.replace)) {
+				current = {
+					options: [],
+					model: [],
+					run: [],
+					nav: []
+				};
+
+				saved[next.name] = current;
+
+			}
+
+			if (next.options)
+				current.options.push(next.options);
 
 			if (next.defaultColumns)
-				list.defaultColumns = next.defaultColumns;
+				current.defaultColumns = next.defaultColumns;
 
-			list.add.apply(list, next.model(this, this.keystone.Field.Types,
-				new UIFactory(this.keystone.Field.Types)));
+			if (typeof next.model === 'function')
+				current.model.push(next.model.bind(next));
 
-			next.run && next.run(list, this, this.keystone.Field.Types);
-			next.navigate && next.navigate(this.navigation);
+			next.run = next.run || noop;
+			next.navigate = next.navigate || noop;
+			current.run.push(next.run.bind(next));
+			current.nav.push(next.navigate.bind(next));
+
+			var recorded = false;
+			order.forEach(function(entry) {
+
+				if (entry === next.name)
+					recorded = true;
+
+			});
+
+			if (order.indexOf(next.name) < 0)
+				order.push(next.name);
+
+		});
+
+		order.forEach(function(key) {
+
+			var options = {};
+			var list;
+			next = saved[key];
+
+			next.options.forEach(function(opt) {
+
+				for (var key in opt) {
+					if (opt.hasOwnProperty(key))
+						options[key] = opt[key];
+				}
+
+			});
+
+			list = new self.keystone.List(key, options);
+			list.defaultColumns = next.defaultColumns;
+
+			next.model.forEach(function(f) {
+				list.add.apply(list, f(self,
+					self.keystone.Field.Types, factory));
+			});
+
+			next.run.forEach(function(f) {
+				f(list, self, self.keystone.Field.Types);
+			});
+
+			next.nav.forEach(function(f) {
+				f(self.navigation);
+			});
 
 			list.register();
+			console.log('Registered List ' + key + '.');
 
-			console.log('Registered List ' + next.name + '.');
+		});
 
-
-
-		}.bind(this));
-
-		this.navigation.settings = ['settings', 'users', 'destinations', 'counters'];
+		this.navigation.settings = ['settings', 'users', 'countries', 'counters'];
 		this.keystone.set('nav', this.navigation);
 
 
