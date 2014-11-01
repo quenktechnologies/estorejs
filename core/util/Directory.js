@@ -44,10 +44,11 @@ module.exports = function Directory(path) {
 		var files = [];
 		list.forEach(function(file) {
 
-			if (file == '.gitkeep')
+			if (file === '.gitkeep')
 				return;
-
-			files.push(require(this._path + '/' + folder + '/' + file));
+			files.push(require(
+				require('path').dirname(require.main.filename) +
+				'/' + (this._path + '/' + folder + '/' + file)));
 
 		}.bind(this));
 

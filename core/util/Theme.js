@@ -60,24 +60,27 @@ module.exports = function Theme(base, theme) {
 	 */
 	this.getEmailPath = function() {
 
-		return this._path + '/emails';
+		if (this.has('emails'))
+			return this._path + '/emails';
+
+                return require('path').dirname(require.main.filename) +'/email';
 
 	};
 
 
-        /**
-         * getPackageFile returns the `package.json` file of the theme.
-         *
-         * @method getPackageFile
-         * @return {Object}
-         *
-         */
-        this.getPackageFile = function () {
+	/**
+	 * getPackageFile returns the `package.json` file of the theme.
+	 *
+	 * @method getPackageFile
+	 * @return {Object}
+	 *
+	 */
+	this.getPackageFile = function() {
 
-          return this.get('package.json');
+		return this.get('package.json');
 
 
-        };
+	};
 
 
 	/**

@@ -1,7 +1,15 @@
 var Controller = require('./Controller');
 
 /**
- * Installer installs the extensions into the main object.
+ * Installer installs the extensions the system will use.
+ *
+ * Each method here (except install) corresponds to a type of extension
+ * EStore supports.
+ *
+ * TODO:
+ * 1. Remove constructor args?
+ * 2. Let caller retrieve desired extensions?
+ *
  * @class Installer
  * @param {EStore} store
  * @constructor
@@ -11,7 +19,6 @@ module.exports = function Installer(store) {
 
 	var __Controller__ = new Controller();
 	var self = this;
-
 
 	/**
 	 * Controller
@@ -97,8 +104,48 @@ module.exports = function Installer(store) {
 	 */
 	this.daemon = function(ext) {
 
+		store.daemons.push(ext);
 
-          store.daemons.push(ext);
+	};
+
+	/**
+	 * service installs a service.
+	 *
+	 * Services are basically functions that listen for a specific event on the bus.
+	 *
+	 * example:
+	 *
+	 * ``module.exports = {
+	 *
+	 *    type: 'service',
+	 *    repeat: false,
+	 *    event: 'MY_EVENT',
+	 *    action: function() {
+	 *    }
+	 *
+	 *   };``
+	 *
+	 * TODO:
+	 * 1. Support async?
+	 * @method service
+	 * @param {Object} ext
+	 * @return
+	 *
+	 */
+	this.service = function(ext) {
+
+		var f = function() {
+			var args = Array.prototype.slice.call(arguments);
+			args.push(store);
+			ext.action.apply(ext, args);
+
+		};
+
+		if (ext.repeat)
+			return store.bus.on(ext.event, f);
+
+		store.bus.once(ext.event, f);
+
 
 	};
 
@@ -108,7 +155,7 @@ module.exports = function Installer(store) {
 	 * install an extension.
 	 *
 	 * @method install
-	 * @param {Object} ext An object declaring an extension.
+	 * @param {Object} ext
 	 * @return
 	 *
 	 */
@@ -116,11 +163,20 @@ module.exports = function Installer(store) {
 
 		var f = self[ext.type];
 
-		if (f)
-			f(ext);
+		if (this.hasOwnProperty(ext.type)) {
 
-		if (ext.settings)
-			self.settings(ext.settings);
+			if (ext.type !== 'install')
+				this[ext.type](ext);
+
+			if (ext.settings)
+				self.settings(ext.settings);
+
+			//Debug
+			console.log('Installed extension: ' + ext.name);
+
+		}
+
+
 
 
 	};
