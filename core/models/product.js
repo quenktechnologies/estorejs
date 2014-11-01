@@ -30,18 +30,7 @@ module.exports = {
 				})
 
 			},
-			'Description', {
-				description: {
-
-					brief: ui.TextBox({
-						label: 'Brief'
-					}),
-					full: ui.PageContentEditor({
-						label: 'Full'
-					})
-
-				}
-			}, 'Stock', {
+			'Stock', {
 
 				stock: {
 					isTangible: {
@@ -84,6 +73,9 @@ module.exports = {
 					min: ui.NumberField(1, null, {
 						default: 1,
 						collapse: true,
+						dependsOn: {
+							'stock.isTangible': true
+						},
 						label: 'Minimum'
 					}),
 					max: ui.NumberField(1, null, {
@@ -92,19 +84,34 @@ module.exports = {
 						label: 'Maximum'
 					}),
 					deliveryCharge: ui.PriceField({
-						label: 'Fixed delivery Charge',
-						dependsOn: {
-							'stock.isTangible': true
-						}
+						label: 'Delivery Charge',
 					})
 
 				}
 			},
+			'Description', {
+				description: {
+
+					brief: ui.TextBox({
+						label: 'Brief'
+					}),
+					full: ui.PageContentEditor({
+						label: 'Full'
+					})
+
+				}
+			}, {},
 			'Other', {
 				isFeatured: {
 					type: Boolean,
 					label: 'Feature this product?'
+				},
+				keywords: {
+
+					type: types.TextArray
+
 				}
+
 			}
 		];
 	},
