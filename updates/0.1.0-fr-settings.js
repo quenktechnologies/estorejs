@@ -5,7 +5,7 @@ exports.create = {
 		"site": {
 			"name": "EStore Demo"
 		},
-                "payment.cod.active": true
+		"payments.cod.active": true
 	}]
 
 };
