@@ -19,32 +19,22 @@ module.exports = {
 					required: true,
 					initial: true
 				}
-			},
-			'Details', {
+			}, {
 				image: {
-					type: types.Url,
-					collapse: true
+					type: store.engines.image(store)
 				}
 
 			},
-
 			'Description', {
 				description: {
 
-					short: {
-						type: types.Text,
-						label: 'Short',
-						width: 'long',
-						collapse: true
-					},
+					brief: ui.TextBox({
+						label: 'Brief'
+					}),
+					full: ui.PageContentEditor({
+						label: 'Full'
+					})
 
-					long: {
-						type: types.Markdown,
-						label: 'Long',
-						width: 'long',
-						height: 10,
-						collapse: true
-					}
 
 				}
 			}, 'Products', {
@@ -53,7 +43,7 @@ module.exports = {
 					type: types.Relationship,
 					ref: 'Product',
 					many: true,
-					label: 'member',
+					label: 'Click to select',
 					width: 'medium',
 					collapse: true
 
@@ -68,11 +58,11 @@ module.exports = {
 
 	run: function(list, store, types) {
 
-          list.schema.post('save', function(category) {
+		list.schema.post('save', function(category) {
 
-            store.bus.emit(store.CATEGORY_CREATED, category);
+			store.bus.emit(store.CATEGORY_CREATED, category);
 
-          });
+		});
 
 
 
