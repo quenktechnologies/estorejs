@@ -119,7 +119,7 @@ module.exports = function CheckoutBindings(store) {
 	 */
 	this.onGetCountriesRequest = function(req, res) {
 
-		store.keystone.list('Destination').model.
+		store.keystone.list('Country').model.
 		find(null, {
 			_id: false,
 			__v: false
