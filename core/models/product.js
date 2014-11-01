@@ -24,13 +24,7 @@ module.exports = {
 					required: true,
 					initial: true
 				}),
-				image: {
-					type: types.Url,
-					width: 'medium',
-					label: 'Image URL',
-					default: require('../util/DefaultImage'),
-					collapse: true
-				},
+				image: store.engines.image(store),
 				_keywords: ui.TextBox({
 					label: 'Keywords'
 				})
@@ -39,8 +33,12 @@ module.exports = {
 			'Description', {
 				description: {
 
-                                  brief: ui.TextBox({label:'Brief'}),
-					full: ui.PageContentEditor({label:'Full'})
+					brief: ui.TextBox({
+						label: 'Brief'
+					}),
+					full: ui.PageContentEditor({
+						label: 'Full'
+					})
 
 				}
 			}, 'Stock', {

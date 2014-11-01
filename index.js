@@ -123,6 +123,15 @@ module.exports = function EStore() {
 	};
 
 	/**
+	 * engines
+	 *
+	 * @property engines
+	 * @type
+	 */
+	this.engines = {};
+
+
+	/**
 	 * endpoints is an object with the api endpoints for the app.
 	 * TODO: In the future, this may be an external package so it can be reused onGateways
 	 * the client side.
@@ -332,11 +341,13 @@ module.exports = function EStore() {
 		this.extensions.push(require('./core/extensions/payments/bank'));
 		this.extensions.push(require('./core/extensions/payments/cheque'));
 		this.extensions.push(require('./core/extensions/daemons/transaction'));
+		this.extensions.push(require('./core/extensions/engines/image'));
 
 		if (this._extras.has('extensions'))
 			this.extensions.push.apply(this.extensions, this._extras.get('extensions', true));
 
 		this.extensions.forEach(function(ext) {
+
 			if (typeof ext.settings === 'object') {
 				this.installer.settings(ext.settings);
 
