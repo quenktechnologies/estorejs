@@ -546,7 +546,9 @@ module.exports = function EStore() {
 			});
 
 			list = new self.keystone.List(key, options);
-			list.defaultColumns = next.defaultColumns;
+
+			if (next.defaultColumns)
+				list.defaultColumns = next.defaultColumns;
 
 			next.model.forEach(function(f) {
 				list.add.apply(list, f(self,
