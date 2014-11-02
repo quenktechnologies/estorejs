@@ -27,6 +27,7 @@ module.exports = {
 			then(function(transactions) {
 				transactions.forEach(function(trn) {
 					console.log('Found approved transaction ' + trn._id + '.');
+                                        store.bus.emit(store.TRANSACTION_APPROVED, trn.toObject());
 					trn.invoice.items.forEach(invert);
 					trn.commit().
 					then(function() {

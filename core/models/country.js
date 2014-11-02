@@ -1,7 +1,7 @@
 module.exports = {
 
 	type: 'model',
-	name: 'Destination',
+	name: 'Country',
 	track: true,
 	model: function(store, types, ui) {
 

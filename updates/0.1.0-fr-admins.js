@@ -21,12 +21,17 @@ exports.create = {
 			return "password123";
 
 		},
-		"roles.canAccessKeystone": true,
-		"roles.author": true,
-                "roles.userManager": true,
-		"roles.productManager": true,
-		"roles.settingsManager": true
-
+		roles: ["keystone",
+			"users",
+			"settings",
+			"categories",
+			"products",
+			"posts",
+			"pages",
+			"counters",
+			"countries",
+			"transactions"
+		],
 	}]
 
 };

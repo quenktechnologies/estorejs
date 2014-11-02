@@ -41,7 +41,7 @@ module.exports = function Installer(store) {
 	 */
 	this.model = function(ext) {
 
-		store.models[ext.name] = ext;
+		store.models.push(ext);
 
 
 	};
@@ -149,6 +149,20 @@ module.exports = function Installer(store) {
 
 	};
 
+	/**
+	 * engine
+	 *
+	 * @method engine
+	 * @param {Object} ext
+	 * @return
+	 *
+	 */
+	this.engine = function(ext) {
+
+		store.engines[ext.id] = ext.engine;
+
+	};
+
 
 
 	/**
@@ -172,7 +186,7 @@ module.exports = function Installer(store) {
 				self.settings(ext.settings);
 
 			//Debug
-			console.log('Installed extension: ' + ext.name);
+			console.log('extension: ' + ext.name);
 
 		}
 

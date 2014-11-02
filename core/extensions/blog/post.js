@@ -21,7 +21,8 @@ module.exports = {
 		return [{
 				title: {
 					type: String,
-					required: true
+					required: true,
+                                        initial:true
 				},
 				state: {
 					type: types.Select,
