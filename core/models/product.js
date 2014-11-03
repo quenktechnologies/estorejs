@@ -73,10 +73,7 @@ module.exports = {
 					min: ui.NumberField(1, null, {
 						default: 1,
 						collapse: true,
-						dependsOn: {
-							'stock.isTangible': true
-						},
-						label: 'Minimum'
+									label: 'Minimum'
 					}),
 					max: ui.NumberField(1, null, {
 						default: 9999999999,
@@ -92,10 +89,10 @@ module.exports = {
 			'Description', {
 				description: {
 
-					brief: ui.TextBox({
+					short: ui.TextBox({
 						label: 'Brief'
 					}),
-					full: ui.PageContentEditor({
+					long: ui.PageContentEditor({
 						label: 'Full'
 					})
 
