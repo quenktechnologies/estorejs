@@ -57,6 +57,17 @@ module.exports = {
 						default: 'themes/default',
 						label: 'Select one:'
 					},
+					skin: {
+						type: types.Select,
+						options: ['cyborg', 'cerulean', 'cyborg', 'darkly', 'flatly',
+							'journal', 'lumen', 'paper', 'readable', 'sandstone',
+							'simplex', 'slate', 'spacelab',
+							'superhero', 'united', 'yeti'
+						],
+						label: 'Bootstrap Theme',
+						default: 'paper'
+
+					}
 				}
 			}, 'Credit Cards', {
 				payments: {
@@ -88,17 +99,6 @@ module.exports = {
 			return require('q').ninvoke(that, 'exec');
 
 		};
-
-
-		list.schema.pre('validate', function(conf, next) {
-
-			if (this._req_user)
-				if (!this._req_user.roles.settingsManager)
-					return next(new Error('You do not have the required permissions to do that!'));
-			next();
-
-
-		});
 
 		list.schema.post('save', function(conf) {
 
