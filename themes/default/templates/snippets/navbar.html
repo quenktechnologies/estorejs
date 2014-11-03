@@ -1,0 +1,81 @@
+{% macro navbar($cart, $categories, $settings) %}
+<div class="row">
+  <div class="col-md-6">
+    <a class="" href="/">
+      <h3><$ $settings.site.name $></h3>
+    </a>
+  </div>
+  <div class="col-md-6">
+    <a data-toggle="dropdown" class="dropdown-toggle pull-right" href="#">
+            TTD<b class="caret"></b>
+          </a>
+    <ul class="dropdown-menu pull-right">
+      <li>
+        <a href="#">
+          TTD
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <ul class="list-unstyled list-inline pull-right">
+      <li><a href="/">Home</a></li>
+      <li><a href="/categories/all">Shop</a>
+      </li>
+      <li><a href="/cart"><span class="glyphicon glyphicon-shopping-cart"></span> Cart (<$ $cart.length | int $>)</a>
+      </li>
+      {% if $cart.length > 0 %}
+      <li><a href="/checkout">Checkout &rightarrow; </a>
+      </li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="navbar navbar-inverse">
+      <div class="navbar-header">
+        <button data-target=".navbar-inverse-collapse" data-toggle="collapse" class="navbar-toggle" type="button">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+      <nav class="navbar-collapse collapse navbar-inverse-collapse">
+        <ul class="nav navbar-nav">
+          {% for cat in $categories %}
+          {% if cat.isFeatured %}
+          {% if cat.children.length > 0 %}
+          <li class="dropdown">
+            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+              <$ cat.name $><b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+              {% for sub in cat.children %}
+              <li>
+                <a href="/categories/<$ sub.name|lower $>">
+                  <$ cat.name $>
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+          </li>
+          {% else %}
+          <li>
+            <a href="/categories/<$ cat.name|lower $>">
+              <$ cat.name $>
+            </a>
+          </li>
+          {% endif %} {% endif %} {% endfor %}
+
+        </ul>
+        <form class="navbar-form navbar-left" action="/search" method="GET">
+          <input type="text" placeholder="Search" class="form-control col-md-8">
+        </form>
+      </nav>
+    </div>
+  </div>
+</div>
+{% endmacro %}

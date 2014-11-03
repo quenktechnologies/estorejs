@@ -1,0 +1,58 @@
+{% macro footer($networks) %}
+<footer>
+  <div class="row" style="margin-top:75px;">
+    <div class="col-md-4">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h5 class="text-white">Information</h5>
+        </div>
+        <div class="panel-body footBox">
+          <ul class="list-unstyled">
+            <li><a href="/pages/about">About Us</a>
+            </li>
+            <li><a href="/pages/delivery-guide">Getting your product</a>
+            </li>
+            <li><a href="/pages/terms-and-conditions">Terms &amp; Conditions</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h5 class="text-white">Links</h5>
+        </div>
+        <div class="panel-body footBox">
+          <ul class="list-unstyled">
+            <li><a href="/search">Search</a>
+            </li>
+            <li><a href="/categories/all">Catalog</a>
+            </li>
+            <li><a href="/blog">Blog</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h5 class="text-white">Connect with us</h5>
+          {% for network in $networks %}
+          <a class="<$ network.icon $>" href="<$ network.url $>"></a>
+          {% endfor %}
+        </div>
+        <div class="panel-body footBox">
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12 text-center">
+      <small>
+        This site powered by <a href="#">EStore</a>
+      </small>
+
+    </div>
+  </div>
+</footer>
+{% endmacro %}
