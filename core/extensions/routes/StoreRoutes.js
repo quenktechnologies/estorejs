@@ -22,9 +22,12 @@ module.exports = function StoreRoutes(store) {
 		app.get('/search', render('search.html'));
 		app.get('/cart', render('cart.html'));
 		app.post(/^\/cart\/items\/([\w]+(?:-[\w]+)*)$/, this.onAddItemToCartRequest);
+		app.put(/^\/cart\/items\/([\w]+(?:-[\w]+)*)$/, this.onAddItemToCartRequest);
 		app.get('/categories/all', this.onGetAllProductsRequest);
 		app.get(/^\/categories\/([\w]+(?:-[\w]+)*)$/, this.onShowCategoryPageRequest);
 		app.get(/^\/categories\/([\w]+(?:-[\w]+)*)\/products\/([\w]+(?:-[\w]+)*)$/,
+			this.onProductPageRequest);
+		app.get(/^\/(products)\/([\w]+(?:-[\w]+)*)$/,
 			this.onProductPageRequest);
 
 	};
@@ -40,18 +43,21 @@ module.exports = function StoreRoutes(store) {
 	 */
 	this.onAddItemToCartRequest = function(req, res, next) {
 
-          var item = req.body;
-
+		var item = req.body;
 		var _ = require('lodash');
+
 		item.quantity = Number(item.quantity);
 		if ((!_.isNumber(item.quantity)) || (_.isNaN(item.quantity))) {
 			console.log('Cannot add non number quantity to cart!');
+			res.status(409);
 			return next();
 		}
 
 		store.keystone.list('Product').
 		model.
-		findOne().
+		findOne({
+			_id: req.params[0]
+		}).
 		exec().
 		then(null, function(err) {
 
@@ -63,7 +69,10 @@ module.exports = function StoreRoutes(store) {
 
 			if (!product)
 				return next();
-			var addition = new CartAddition(product, new CartAdditionHandler(req, res, next));
+
+			var addition = new CartAddition(product,
+				new CartAdditionHandler(req, res, next));
+
 			item.slug = req.params[0];
 			addition.add(item);
 
@@ -86,7 +95,30 @@ module.exports = function StoreRoutes(store) {
 
 		res.locals.$currentCategory = req.params[0];
 
-		render('categories/category.html')(req, res, next);
+		store.keystone.list('Category').model.
+                  findOne({
+			name: req.params[0]
+		}).
+		populate('products').
+		lean().
+		exec().
+		then(null, function(err) {
+
+			console.log(err);
+			next();
+
+		}).
+		then(function(category) {
+
+			if (!category)
+				return next();
+
+			res.locals.$category = category;
+			render('categories/category.html')(req, res, next);
+
+
+		}).end();
+
 
 
 	};
@@ -119,7 +151,6 @@ module.exports = function StoreRoutes(store) {
 
 			res.locals.$currentCategory = req.params[0];
 			res.locals.$product = product;
-
 			render('categories/product.html')(req, res, next);
 
 

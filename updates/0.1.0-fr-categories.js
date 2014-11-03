@@ -2,7 +2,8 @@ exports.create = {
 
 	Category: [{
 
-		"name": "General"
+		"name": "general",
+                  "isFeatured": true
 	}]
 
 };

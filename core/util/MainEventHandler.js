@@ -33,7 +33,12 @@ module.exports = function MainEventHandler(store) {
 	 */
 	this.onNewCategoryCreated = function(category) {
 
-		store.locals.categories = store.locals.categories || [];
+          var _ = require('lodash');
+
+		store.locals.categories = _.reject(store.locals.categories, {
+			'name': category.name
+		});
+
 		store.locals.categories.push(category);
 
 	};

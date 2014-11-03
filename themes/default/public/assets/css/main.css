@@ -103,6 +103,20 @@ input.ng-valid.ng-dirty {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
+.rmar5 {
+  margin-right: 5px;
+}
+.lmar5 {
+  margin-left: 5px;
+}
+.text-white {
+  color: #fff;
+}
+@media (min-width: 768px) {
+  .dl-horizontal dt {
+    text-align: left;
+  }
+}
 .social-sharing {
   font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -315,9 +329,8 @@ body {
   /* Set the fixed height of the footer here */
   height: 20px;
 }
-.footBox h4 {
-  padding-bottom: 5px;
-  border-bottom: #dddddd solid 1px;
+.footBox {
+  min-height: 150px;
 }
 .loud {
   font-size: 25px;

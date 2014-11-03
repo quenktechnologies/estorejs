@@ -1,42 +1,53 @@
-{% extends "base.html" %} 
-{% block body %}
-<div class="row row-vertical-center" ng-controller="ProductPage as pctrl">
-      <div class="col-md-5">
-        <img alt="<$ $product.name $>" src="<$ $product.image $>" class="img center-block img-responsive">
+{% extends "base.html" %} {% block body %}
+<$ navbar($cart, $categories, $settings) $>
+  <div class="row">
+    <div class="col-md-12">
+      <h2><$ $product.name $></h2>
+      <hr>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-5">
+      <img alt="<$ $product.name $>" src="<$ $product.image $>" class="img center-block img-responsive">
+    </div>
+    <div class="col-md-7 pull-left">
+      <div class="panl">
+        <div class="pael-body">
+          <ul class="list-unstyled">
+            <li><strong>Price:</strong>  <span><$ $product._.price.format( '$0,00.00') $></span>
+            </li>
+            <li><strong>Product Code:</strong> 
+              <$ $product.sku $>
+            </li>
+            <li><strong>Stock: </strong>
+              <$ $product.stock.balance $>
+            </li>
+            <li><strong>Min Order: </strong>
+              <$ $product.order.min | int $>
+            </li>
+            <li><strong>Max Order: </strong>
+              <$ $product.order.max | int $>
+            </li>
+          </ul>
+        </div>
       </div>
-      <div class="col-md-7">
-        <div class="row product-profile">
-          <h2 class="product-name"><$ $product.name $></h2>
-          {% if $product.vendor %}
-          <p class="product-vendor">by
-          <$ $product.vendor $>
-          </p>
-          {% endif %}
-          <p class="product-price">
-          <$ $product._.price.format( '$0,00.00') $>
-          </p>
-          {% if $product.stock.balance > 0 %} 
-          {% if $product.stock.balance < 11 %}
-          <p> <$ $product.stock.balance $>left</p>
-          {% else %}
-          <p>In stock</p>
-          {% endif %} {% else %}
-          <p class="text-danger">Out of Stock</p>
-          {% endif %} {% if $product.stock.balance > 0 %}
-          <div class="row">
-            <div class="col-md-5">
-              <es-cart-adder id="<$ $product._id $>" add-success="pctrl.addSuccess()" add-failure="pctrl.addFailure()"></es-cart-adder>
+      <div class="row">
+        <div class="col-md-4">
+          {% if $product.stock.balance > 0 %}
+          <form name="cartAddition" action="/cart/items/<$ $product._id $>" method="POST">
+            <div class="input-group">
+              <input name="quantity" type="number" min="1" value="1" max="<$ $product.order.max $>" class="form-control input-small">
+              <input type="hidden" name="_csrf" value="<$ _csrf $>">
+              <span class="input-group-btn">
+              <button type="sumbit" class="btn btn-danger">Add to Cart</button>
+            </span>
             </div>
-          </div>
+          </form>
           {% endif %}
         </div>
-        {% if $product.description.long.html %}
-        <div class="row row-bordered">
-          <h3 class="product-heading">Description</h3>
-          <$ $product.description.long.html | safe $>
-        </div>
-        {% endif %}
-        <div class="row">
+      </div>
+      <div class="row">
+        <div class="col-md-12">
           <h3 class="product-heading">Share</h3>
           <div class="social-sharing is-large">
             <a class="share-facebook" href="//www.facebook.com/sharer.php?u=<$ $url $>/products/<$ $product.slug $>" target="_blank">
@@ -51,5 +62,20 @@
           <hr>
         </div>
       </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <ul id="product-breakdown" class="nav nav-tabs" role="tablist">
+        <li role="presentation" ><a href="#description" class="active"><h4>Description</h4></a>
+        </li>
+      </ul>
+      <div class="tab-content">
+        <div id="description" class="tab-pane fade" role="tabpanel" style="padding-top:10px">
+          <$ $product.description.long.html | safe $>
+        </div>
       </div>
+    </div>
+  </div>
+  <$ footer() $>
 {% endblock %}

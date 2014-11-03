@@ -1,15 +1,9 @@
-{% extends "base.html" %}
-{% block body %}
-
-<div class="container">
-  <div class="col-md-8 col-md-offset-2">
-    {% if $page.content.html %}
-    <$ $page.content.html| safe $>
-    {% else %}
-     <p class="text-center">This page can be edited from the 'Page' menu.</p>
-    {% endif %}
+{% extends "base.html" %} {% block body %}
+<$ navbar($cart, $categories, $settings) $>
+  <div class="row">
+    <div class="col-md-12">
+      <$ $page.content.html| safe $>
+    </div>
   </div>
-</div>
-
-
-{% endblock %}
+  <$ footer() $>
+    {% endblock %}

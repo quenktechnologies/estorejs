@@ -13,10 +13,10 @@
         <tbody>
         <tr ng-repeat="item in cart.items">
           <td class="cart_product">
-            <a href="/store/products/{{item.slug}}"><img ng-src="{{item.image}}" alt="item image"></a>
+            <a href="/products/{{item.slug}}"><img ng-src="{{item.image}}" alt="item image"></a>
           </td>
           <td class="cart_description">
-            <h4><a target="_blank" href="/store/products/{{item.slug}}">{{item.name }}</a></h4>
+            <h4><a target="_blank" href="/products/{{item.slug}}">{{item.name }}</a></h4>
           </td>
           <td class="cart_price">
             <h4>{{item.price | currency}}</h4>

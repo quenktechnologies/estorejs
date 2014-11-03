@@ -93,10 +93,15 @@ module.exports = function CartAdditionHandler(req, res, next, cb) {
 	 */
 	this.onItemCanBeAddedToCart = function(item) {
 
+		var _ = require('lodash');
+		req.session.cart = _.reject(req.session.cart, {
+			'_id': req.params[0]
+		});
+
 		req.session.cart.push(item);
 		if (cb) return cb();
-                res.status(201);
-                res.redirect('/cart');
+		res.status(201);
+		res.redirect('/cart');
 
 
 

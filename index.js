@@ -38,7 +38,7 @@ module.exports = function EStore() {
 	this.TRANSACTION_APPROVED = 'TRANSACTION_APPROVED';
 	this.TRANSACTION_DECLINED = 'TRANSACTION_DECLINED';
 	this.SYSTEM_ERROR = 'runtime error';
-	this.CATEGORY_pending = 'category pending';
+	this.CATEGORY_CREATED = 'category created';
 
 	//Constants
 	this.STATUS_SYSTEM_ERROR = 503;
@@ -701,12 +701,11 @@ module.exports = function EStore() {
 			res.locals.$settings = this.settings;
 			res.locals.$query = req.query;
 			res.locals.$url = req.protocol + '://' + req.get('Host') + req.url;
-			res.locals.$categoryList = this.locals.categories;
+			res.locals.$categories = this.locals.categories;
 			res.locals.$navigation = this._navigation;
 			req.session.cart = req.session.cart || [];
 			res.locals.$cart = req.session.cart;
 			req.session.pendingTransactions = req.session.pendingTransactions || [];
-
 			next();
 
 		}.bind(this));
@@ -789,11 +788,10 @@ module.exports = function EStore() {
 		this.keystone.list('Category').model.
 		find().
 		lean().
+		populate('children').
 		exec().
 		then(function(categories) {
-
 			this.locals.categories = categories;
-
 		}.bind(this));
 
 	};

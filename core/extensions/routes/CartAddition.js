@@ -20,7 +20,6 @@ module.exports = function CartAddition(product, handler) {
 
 		var Big = require('bignumber.js');
 
-
 		if (product.stock.balance < 1)
 			return handler.onProductOutOfStock(product);
 
@@ -30,9 +29,9 @@ module.exports = function CartAddition(product, handler) {
 		if (item.quantity < product.order.min)
 			return handler.onQuantityLessThanMin(item.quantity, product.order.min, product);
 
-
 		if (item.quantity > product.order.max)
 			return handler.onQuantityMoreThanMax(item.quantity, product.order.max, product);
+
 
 		handler.onItemCanBeAddedToCart({
 			_id: product._id,

@@ -1,64 +1,36 @@
-{% extends "base.html" %} 
-{% get 'product' from 'Product' using 'findOne' with {slug:$params[0]} %} {% done %} 
-{% block body %}
-
-{% if product %}
-      <div class="col-md-5">
-        <img alt="<$ product.name $>" src="<$ product.image $>" class="img center-block img-responsive">
-      </div>
-      <div class="col-md-0"></div>
-      <div class="col-md-7">
-        <div class="row product-profile">
-          <h2 class="product-name"><$ product.name $></h2>
-          {% if product.vendor %}
-          <p class="product-vendor">by
-          <$ product.vendor $>
-          </p>
-          {% endif %}
-          <p class="product-price">
-          <$ product._.price.format( '$0,00.00') $>
-          </p>
-          <hr>
-          {% if product.stock.balance > 0 %} 
-          {% if product.stock.balance < 11 %}
-          <p> <$ product.stock.balance $>left</p>
-          {% else %}
-          <p>In stock</p>
-          {% endif %} {% else %}
-          <p class="text-danger">Out of Stock</p>
-          {% endif %} {% if product.stock.balance > 0 %}
-          <div class="row">
-            <div class="col-md-6">
-              <es-cart-adder id="<$ product._id $>" add-success="pctrl.addSuccess()" add-failure="pctrl.addFailure()"></es-cart-adder>
-            </div>
+{% extends "base.html" %} {% block body %}
+<$ navbar($cart, $categories, $settings) $>
+  <div class="row">
+    <div class="col-md-12">
+      <h3 class=""><$ $category.name $></h3>
+    </div>
+  </div>
+  <div class="row" style="padding-top:35px;">
+    {% for product in $category.products %}
+    <div class="col-md-3">
+      <div class="thumbnail no-border">
+        <a href="/categories/<$ $currentCategory $>/products/<$ product.slug $>">
+          <img alt="<$ product.name $>" src="<$ product.image $>">
+        </a>
+        <div class="caption">
+          <div class="col-md-12">
+            <h6 class="product-title"><a  href="/categories/<$ $currentCategory $>/products/<$ product.slug $>"><$ product.name | truncate(128) $></a></h6>
           </div>
-          {% endif %}
-        </div>
-        <hr>
-
-        <div class="row">
-          <h3 class="product-heading">Description</h3>
-          <$ product.description.long.html | safe $>
-        </div>
-        <hr>
-        <div class="row">
-          <h3 class="product-heading">Share</h3>
-          <div class="social-sharing is-large">
-            <a class="share-facebook" href="//www.facebook.com/sharer.php?u=http://<$ DOMAIN $>/products/<$ product.slug $>" target="_blank">
-              <span class="fa fa-facebook-square"></span>
-              <span class="share-title">Share</span>
-            </a>
-            <a class="share-twitter" href="//twitter.com/share?url=http://<$ DOMAIN $>/products/<$ product.slug $>" target="_blank">
-              <span class="fa fa-twitter"></span>
-              <span class="share-title">Tweet</span>
-            </a>
+          <div class="col-md-12">
+            <span class="product-price">
+              $<$ product.price $>
+            </span>
           </div>
-          <hr>
+          <div class="col-md-12">
+            {% if product.stock.balance
+            < 1 %} <span class="text-danger">Out of Stock</span>
+              {% endif %}
+
+          </div>
         </div>
       </div>
     </div>
+    {% endfor %}
   </div>
-{% else %}
-
-{% endif %}
+  <$ footer() $>
 {% endblock %}

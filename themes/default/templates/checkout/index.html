@@ -1,13 +1,48 @@
-{% extends "checkout/base.html" %} {% include "snippets/billingForm.html" %} {% set DISABLE_NAV=true %} {% block body %}
+{% extends "base.html" %} {% include "snippets/billingForm.html" %} {% block body %}
 <div class="main" ng-controller="Checkout as checkout">
-    <div class="row text-center row-bordered" style="margin-bottom:50px">
+  <div class="row text-center" style="margin-bottom:50px">
+    <div class="col-md-12">
       <h2><$ $settings.site.name $></h2>
       <h4>Checkout</h4>
-        <a href="/" class="pull-left">&leftarrow; Back to <$ $settings.site.name $></a>
+      <a href="/" class="pull-left">&leftarrow; Back to <$ $settings.site.name $></a>
     </div>
     <div class="col-md-5">
-      <h2>Summary</h2>
-      <es-checkout-cart></es-checkout-cart>
+      <h4>Your Order</h4>
+      <div class="table-responsive cart_info">
+        <table class="table table-condensed">
+          <thead>
+            <tr class="cart_menu">
+              <td class="image">Item</td>
+              <td class="price">Price</td>
+              <td class="quantity">Quantity</td>
+              <td class="total">Total</td>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in $cart %}
+            <tr>
+              <td class="cart_product">
+                {{'
+                <$ item.name $>'| characters:30}}
+              </td>
+              <td class="cart_price">
+                <p>{{'
+                  <$ item.price $>' | currency}}</p>
+              </td>
+              <td class="cart_quantity">
+                {{'
+                <$ item.quantity $>'}}
+              </td>
+              <td class="cart_total">
+                <p class="cart_total_price">{{
+                  <$ item.price $>*
+                    <$ item.quantity $>| currency}}</p>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
     <div class="col-md-7">
       <div class="panel-body">
@@ -16,10 +51,10 @@
             <div class="row">
               <div class="panel panel-default">
                 <div class="panel-body">
-                  <h3>Contact Email</h3>
                   <div class="form-group">
-                    <div class="col-md-12">
-                      <input type="email" class="form-control input-md" name="email" ng-model="checkout.order.customer.email" required>
+                    <label class="col-md-2 control-label" for="order.email">Email*</label>
+                    <div class="col-md-10">
+                      <input id="order.email" type="email" class="form-control input-md" name="email" ng-model="checkout.order.customer.email" required>
                     </div>
                   </div>
                 </div>
@@ -35,14 +70,14 @@
               </div>
             </div>
             <span ng-if="!checkout.SHIP_TO_BILLING" class="animate-if">
-            <div class="row">
-              <div class="panel panel-default">
-                <div class="panel-body">
-                  <$ address('order.address.shipping', 'order[address][shipping]') $>
-        </div>
-        </div>
-        </div>
-          </span>
+              <div class="row">
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                    <$ address('order.address.shipping', 'order[address][shipping]') $>
+                  </div>
+                </div>
+              </div>
+            </span>
             <div class="row">
               <div class="panel panel-default">
                 <div class="panel-body">

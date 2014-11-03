@@ -26,13 +26,8 @@ exports.create = {
 			"order.max": 3,
 			isFeatured: true,
 			keywords: ["nokia", "cellphone", "phone", "smartphone", "test"],
-			description: {
-				short: "This product was created as a test.",
-				long: {
-					md: "This is the long description of this product",
-					html: "This is the long description of this product"
-				}
-			}
+			"description.short.md": "This product was created as a test.",
+			"description.long.md": "This is the long description of this product."
 
 
 		}, {

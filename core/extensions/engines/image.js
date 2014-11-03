@@ -13,9 +13,8 @@ module.exports = {
 			return {
 				type: store.keystone.Field.Types.Url,
 				width: 'medium',
-				label: 'Image URL',
+				label: 'Enter Image url',
 				default: require('./defaultImage'),
-				collapse: true
 			};
 	}
 

@@ -1,22 +1,32 @@
 {% extends "base.html" %} {% block body %}
-    <h1>Cart</h1>
-    <hr>
-    {% if CART_COUNT  < 1 %} 
-    <div>
-      <h1 class="lead">Your cart is currently empty!</h1>
-      <small>You can continue browsing <a href="/categories/all">here</a>.</small>
-    </div>
-    {% else %}
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <es-shopping-cart></es-shopping-cart>
+<$ navbar($cart, $categories, $settings) $>
+{% if $cartError %}
+<div class="alert alert-dismissable alert-warning">
+  <button type="button" class="close" data-dismiss="alert">×</button>
+  <h4>Wait!</h4>
+  <$ $cartError $>
+</div>
+{% endif %}
+  {% if $cart.length
+  < 1 %} <div>
+    <h3>Your cart empty!</h3>
+    <p><a class="btn btn-danger check_out" href="/categories/all">Continue Shopping</a> 
       </div>
-  </div>
-    <div class="heading">
-      <h3>What would you like to do next?</h3>
-      <p><a class="btn btn-fefault" href="/categories">Continue Shopping</a>
-      <a class="btn btn-danger check_out" href="/checkout">Check Out</a>  
-      </p>
-  </div>
-  {% endif %}
-{% endblock %}
+      {% else %}
+      <h2>Your Shopping Cart</h2>
+      <hr>
+
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <es-shopping-cart></es-shopping-cart>
+        </div>
+      </div>
+      <div class="heading">
+        <h3>What would you like to do next?</h3>
+        <p><a class="btn btn-fefault" href="/categories/all">Continue Shopping</a>
+          <a class="btn btn-danger check_out" href="/checkout">Check Out</a> 
+        </p>
+      </div>
+      {% endif %}
+      <$ footer() $>
+        {% endblock %}

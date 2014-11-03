@@ -18,13 +18,11 @@ module.exports = {
 					type: String,
 					required: true,
 					initial: true
-				}
-			}, {
-				image: {
-					type: store.engines.image(store)
-				}
+				},
+				image: store.engines.image(store)
 
 			},
+
 			'Description', {
 				description: {
 
@@ -37,17 +35,25 @@ module.exports = {
 
 
 				}
-			}, 'Products', {
+			}, {
 				products: {
 
 					type: types.Relationship,
 					ref: 'Product',
 					many: true,
-					label: 'Click to select',
+					label: 'Child products',
 					width: 'medium',
 					collapse: true
-
-
+				},
+				children: {
+					type: types.Relationship,
+					ref: 'Category',
+                                        label:'Child categories',
+					many: true,
+				}
+			}, {
+				isFeatured: {
+					type: Boolean
 				}
 			}
 
