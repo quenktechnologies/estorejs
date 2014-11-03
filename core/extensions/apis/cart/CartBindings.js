@@ -165,7 +165,7 @@ module.exports = function CartBindings(store) {
 				_id: product._id,
 				name: product.name,
 				price: product.price,
-				slug: product._id,
+				slug: product.slug,
 				stock: product.stock,
                           attributes: product.attributes,
 				image: product.image,
