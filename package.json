@@ -1,6 +1,6 @@
 {
   "name": "estore",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Run an e-store in the cloud using mongodb, keystone and nunjucks.",
   "keywords": [
     "ecommerce",
@@ -10,7 +10,7 @@
     "express",
     "nunjucks"
   ],
-  "repository": "https://github.com/quenktechnologies/estore",
+  "repository": "https://github.com/quenktechnologies/estorejs",
   "main": "run",
   "author": {
     "name": "Lasana Murray",

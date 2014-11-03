@@ -1,5 +1,5 @@
 {
-  "name": "Node estore",
+  "name": "estorejs",
   "description": "An ecommerce application built on nodejs.",
   "keywords": [
     "ecommerce",
@@ -9,8 +9,8 @@
     "express",
     "nunjucks"
   ],
-  "website":"https://github.com/quenktechnologies/estore",
-  "repository":"https://github.com/quenktechnologies/estore",
+  "website":"https://github.com/quenktechnologies/estorejs",
+  "repository":"https://github.com/quenktechnologies/estorejs",
   "env" : {
     "COOKIE_SECRET": {
       "description": "Secret for signing cookies",
