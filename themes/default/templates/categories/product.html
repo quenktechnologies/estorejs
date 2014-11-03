@@ -32,7 +32,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-5">
           {% if $product.stock.balance > 0 %}
           <form name="cartAddition" action="/cart/items/<$ $product._id $>" method="POST">
             <div class="input-group">
@@ -50,11 +50,11 @@
         <div class="col-md-12">
           <h3 class="product-heading">Share</h3>
           <div class="social-sharing is-large">
-            <a class="share-facebook" href="//www.facebook.com/sharer.php?u=<$ $url $>/products/<$ $product.slug $>" target="_blank">
+            <a class="share-facebook" href="//www.facebook.com/sharer.php?u=<$ $url $>" target="_blank">
               <span class="fa fa-facebook-square"></span>
               <span class="share-title">Share</span>
             </a>
-            <a class="share-twitter" href="//twitter.com/share?url=<$ $url $>/products/<$ $product.slug $>" target="_blank">
+            <a class="share-twitter" href="//twitter.com/share?url=<$ $url $>" target="_blank">
               <span class="fa fa-twitter"></span>
               <span class="share-title">Tweet</span>
             </a>

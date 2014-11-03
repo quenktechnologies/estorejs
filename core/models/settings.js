@@ -65,7 +65,7 @@ module.exports = {
 							'superhero', 'united', 'yeti'
 						],
 						label: 'Bootstrap Theme',
-						default: 'paper'
+						default: 'lumen'
 
 					}
 				}
