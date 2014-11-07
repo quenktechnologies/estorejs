@@ -705,6 +705,7 @@ module.exports = function EStore() {
 			res.locals.$navigation = this._navigation;
 			req.session.cart = req.session.cart || [];
 			res.locals.$cart = req.session.cart;
+			res.locals.$currency = this.settings.currency;
 			req.session.pendingTransactions = req.session.pendingTransactions || [];
 			next();
 

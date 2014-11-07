@@ -88,6 +88,14 @@ module.exports = {
 					}
 				}
 
+			},
+			'Currency', {
+				currency: {
+					type: types.Select,
+					options: require('currency-codes').codes(),
+					default: 'TTD',
+					label: 'Select default'
+				}
 			}];
 	},
 	run: function(list, store) {
@@ -104,6 +112,7 @@ module.exports = {
 
 			store.onSettingsChanged(conf);
 		});
+
 
 	}
 
