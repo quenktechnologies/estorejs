@@ -32,5 +32,29 @@
     </div>
     {% endfor %}
   </div>
+  <div class="row">
+    <div class="col-md-12 text-center">
+      <ul class="pagination">
+        {% if $pagination.previous > -1 %}
+        <li><a href="/categories/all/<$ $pagination.previous $>">&laquo; previous</a>
+        </li>
+        {% endif %} {% for page in $pagination.pages %} {% if $pagination.current == page %}
+        <li class="active">
+          {% else %}
+          <li>
+            {% endif %}
+            <a href="/categories/all/<$ page $>">
+              <$ page $>
+            </a>
+          </li>
+          {% endfor %} {% if $pagination.next > -1 %}
+          <li><a href="/categories/all/<$ $pagination.next $>">next &raquo;</a>
+          </li>
+          {% endif %}
+      </ul>
+
+
+    </div>
+  </div>
   <$ footer() $>
-{% endblock %}
+    {% endblock %}

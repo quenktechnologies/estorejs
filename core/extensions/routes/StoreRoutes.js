@@ -1,3 +1,4 @@
+var Paginator = require('../../util/Paginator');
 var render = require('./render');
 var CartAddition = require('./CartAddition');
 var CartAdditionHandler = require('./CartAdditionHandler');
@@ -21,10 +22,15 @@ module.exports = function StoreRoutes(store) {
 
 		app.get('/search', render('search.html'));
 		app.get('/cart', render('cart.html'));
+
 		app.post(/^\/cart\/items\/([\w]+(?:-[\w]+)*)$/, this.onAddItemToCartRequest);
 		app.put(/^\/cart\/items\/([\w]+(?:-[\w]+)*)$/, this.onAddItemToCartRequest);
-		app.get('/categories/all', this.onGetAllProductsRequest);
+
+		app.get(/^\/categories\/all(?:\/([\d]{1,9999}))?$/, this.onGetAllProductsRequest);
+		app.get(/^\/products\/(?:\/([\d]{1,9999}))?$/, this.onGetAllProductsRequest);
+
 		app.get(/^\/categories\/([\w]+(?:-[\w]+)*)$/, this.onShowCategoryPageRequest);
+
 		app.get(/^\/categories\/([\w]+(?:-[\w]+)*)\/products\/([\w]+(?:-[\w]+)*)$/,
 			this.onProductPageRequest);
 		app.get(/^\/(products)\/([\w]+(?:-[\w]+)*)$/,
@@ -96,7 +102,7 @@ module.exports = function StoreRoutes(store) {
 		res.locals.$currentCategory = req.params[0];
 
 		store.keystone.list('Category').model.
-                  findOne({
+		findOne({
 			name: req.params[0]
 		}).
 		populate('products').
@@ -171,25 +177,19 @@ module.exports = function StoreRoutes(store) {
 	 */
 	this.onGetAllProductsRequest = function(req, res, next) {
 
-		store.keystone.list('Product').
-		model.
-		find().
-		lean().
-		exec().
-		then(null, function(err) {
+		var pager = new Paginator(store.keystone.list('Product').model, 30);
 
-			console.log(err);
-			next();
-
-		}).
-		then(function(products) {
-
-			res.locals.$products = products;
+		pager.paginate(Number(req.params[0]) || 0).
+		then(function(pager) {
+			console.log(arguments);
+			res.locals.$pagination = pager;
+			res.locals.$products = pager.items;
 			res.locals.$currentCategory = 'all';
 			render('categories/all.html')(req, res, next);
-
-
-		}).end();
+		}).end(function(err) {
+			console.log(err);
+			next();
+		});
 
 
 	};
