@@ -55,8 +55,8 @@
             <ul class="dropdown-menu">
               {% for sub in cat.children %}
               <li>
-                <a href="/categories/<$ sub.name|lower $>">
-                  <$ cat.name $>
+                <a href="/categories/<$ sub.name $>">
+                  <$ cat.name | capitalize $>
                 </a>
               </li>
               {% endfor %}
@@ -64,8 +64,8 @@
           </li>
           {% else %}
           <li>
-            <a href="/categories/<$ cat.name|lower $>">
-              <$ cat.name $>
+            <a href="/categories/<$ cat.name $>">
+              <$ cat.name | capitalize $>
             </a>
           </li>
           {% endif %} {% endif %} {% endfor %}
