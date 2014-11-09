@@ -34,16 +34,20 @@ module.exports = function TransactionProcessor(store) {
 
 		}).
 		then(function(transaction) {
+
 			ctx.request.session.cart.length = 0;
 			ctx.request.session.pendingTransactions.length = 0;
 			var url = '/checkout/success/' + transaction[0].tid;
 			ctx.response.set('x-checkout-url', url);
 			ctx.response.redirect(204, url);
+
+			store.publish(store.TRANSACTION_APPROVED, transaction);
+
 		}).
 		then(null, function(err) {
 
 			console.log(err);
-                        ctx.response.redirect(409,'/checkout/error');
+			ctx.response.redirect(409, '/checkout/error');
 
 		});
 
@@ -70,6 +74,10 @@ module.exports = function TransactionProcessor(store) {
 
 			console.log(err);
 
+
+		}).
+		then(function() {
+			store.publish(store.TRANSACTION_DECLINED, arguments);
 		});
 
 	};

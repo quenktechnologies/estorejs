@@ -9,7 +9,7 @@
 module.exports = {
 
 	type: 'daemon',
-        interval: process.env.TRANSACTION_APPROVAL_INTERVAL || 10000,
+	interval: process.env.TRANSACTION_APPROVAL_INTERVAL || 10000,
 	exec: function(store) {
 
 		var invert = function(item) {
@@ -27,7 +27,7 @@ module.exports = {
 			then(function(transactions) {
 				transactions.forEach(function(trn) {
 					console.log('Found approved transaction ' + trn._id + '.');
-                                        store.bus.emit(store.TRANSACTION_APPROVED, trn.toObject());
+					store.bus.emit(store.TRANSACTION_APPROVED, trn.toObject());
 					trn.invoice.items.forEach(invert);
 					trn.commit().
 					then(function() {
@@ -43,6 +43,7 @@ module.exports = {
 								trn.set('status', 'committed');
 								var r = require('q').ninvoke(trn, 'save');
 								console.log('Transaction ' + trn._id + ' has been committed');
+								store.publish(store.TRANSACTION_COMMITED, trn.toObject());
 								return r;
 
 
