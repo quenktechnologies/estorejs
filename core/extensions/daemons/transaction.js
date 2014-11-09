@@ -30,25 +30,17 @@ module.exports = {
 					store.bus.emit(store.TRANSACTION_APPROVED, trn.toObject());
 					trn.invoice.items.forEach(invert);
 					trn.commit().
-					then(function() {
-						return trn.generateInvoiceNumber().
-						then(function(number) {
-							if (!number.next) throw new Error('No invoice number found!');
-							trn.invoice.items.forEach(invert);
-							trn.invoice.number = number.next;
-							console.log('Generating invoice number ' + number.next + '.');
-							return trn.generateInvoice().
-							then(function() {
-								//All products have been updated successfully.
-								trn.set('status', 'committed');
-								var r = require('q').ninvoke(trn, 'save');
-								console.log('Transaction ' + trn._id + ' has been committed');
-								store.publish(store.TRANSACTION_COMMITED, trn.toObject());
-								return r;
-
-
-							});
-
+					then(function(number) {
+						trn.invoice.items.forEach(invert);
+						console.log('Generating invoice number ' + trn.invoice.number + '.');
+						return trn.generateInvoice().
+						then(function() {
+							//All products have been updated successfully.
+							trn.set('status', 'committed');
+							var r = require('q').ninvoke(trn, 'save');
+							console.log('Transaction ' + trn._id + ' has been committed');
+							store.publish(store.TRANSACTION_COMMITED, trn.toObject());
+							return r;
 						});
 					}).done();
 				});
