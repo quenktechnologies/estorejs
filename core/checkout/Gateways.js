@@ -25,5 +25,17 @@ module.exports = function Gateways() {
 		return this.active.hasOwnProperty(key);
 	};
 
+	/**
+	 * getActive returns an active gateway
+	 *
+	 * @method getActive
+	 * @param {String} name
+	 * @return {Gateway}
+	 *
+	 */
+	this.getActive = function(name) {
+		return this.active[name];
+	};
+
 
 };

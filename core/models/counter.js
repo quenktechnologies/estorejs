@@ -6,78 +6,47 @@
  */
 module.exports = {
 
-  type: 'model',
-  name: 'Counter',
-  defaultColumns: 'name',
-  options:{
+	type: 'model',
+	name: 'Counter',
+	defaultColumns: 'name',
+	options: {
 		nocreate: true,
 		nodelete: true,
 	},
 
-  model: function(store, types, ui) {
+	model: function(store, types, ui) {
 
-    return [{
-		name: {
-			type: String,
-			noedit: true
+		return [{
+			name: {
+				type: String,
+				noedit: true
 
-		},
-		next: {
-			type: Number,
-			note: 'Do not change this unless you know what you are doing!'
-		}
-	}];
+			},
+			next: {
+				type: Number,
+				note: 'Do not change this unless you know what you are doing!'
+			}
+		}];
 
-  },
+	},
 
-  run: function(list) {
+	run: function(list) {
 
 
-		list.schema.methods.increment = function(id, qty) {
+		list.schema.methods.increment = function(name, qty) {
 
 			return this.model('Counter').findOneAndUpdate({
-				name: id
+				name: name
 			}, {
 				$inc: {
 					next: qty
 				}
-			}, {
-				new: true
-
-			}).exec().
-			onReject(function(err) {
-
-				console.log('Cannot query counters! ', err);
-
-			});
+			}).exec();
 		};
-
-		/**
-		 *
-		 *
-		 *  Like increment but does not return a Promise.
-		 *
-		 */
-		list.schema.methods.increase = function(id, qty, cb) {
-
-			return this.model('Counter').findOneAndUpdate({
-				name: id
-			}, {
-				$inc: {
-					next: qty
-				}
-			}, {
-				new: true
-
-			}).exec(cb);
-		};
-
-
-
 
 	}
 
 
-  
-  
+
+
 };

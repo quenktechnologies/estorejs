@@ -1,3 +1,7 @@
+var CheckoutAssistant = require('../../../checkout/CheckoutAssistant');
+var CheckoutHandlerWrapper = require('../../../checkout/CheckoutHandlerWrapper');
+var APICheckoutHandler = require('./APICheckoutHandler');
+
 /**
  * CheckoutBindings provides bindings for the checkout api.
  * @class CheckoutBindings
@@ -37,58 +41,14 @@ module.exports = function CheckoutBindings(store) {
 	 */
 	this.onCheckoutTransactionRequest = function(req, res) {
 
-		var Invoice = store.keystone.list('Invoice').model;
-		var Transaction = store.keystone.list('Transaction').model;
-		var TransactionProcessor = require('./TransactionProcessor');
-		var that = this;
-		var gateway;
+		var checkout = new CheckoutAssistant(store, new CheckoutHandlerWrapper(store,
+			new APICheckoutHandler(store, req, res)));
 
-		if ((!req.session.cart) || (req.session.cart.length < 1))
-			return res.send(400, 'The cart is empty!');
+		if (!checkout.hasItems(req.session.cart))
+			return res.send(400, 'Your cart is empty!');
 
-		if (store.gateways.active.hasOwnProperty(req.body.workflow))
-			gateway = store.gateways.active[req.body.workflow];
+		checkout.checkout(req.session.cart, req.body);
 
-		if (!gateway)
-			return res.send(400, 'Gateway not found!');
-
-
-		var invoice = new Invoice(req.body);
-		invoice.set({
-			items: req.session.cart,
-			payment: {
-				id: '',
-				type: req.body.workflow,
-				status: 'outstanding'
-			}
-		});
-
-		invoice.calculateTotals();
-
-		invoice.validate(function(err) {
-
-			//create transaction and save it, then seek approval.
-
-			if (err) return console.log(err) && res.send(400, 'There were validation errors!');
-
-			var transaction = new Transaction();
-			transaction.set('invoice', invoice.toObject());
-			transaction.
-			save(function(err, saved) {
-
-				if (err) return console.log(err) && res.send(500);
-				gateway.checkout({
-					transaction: saved,
-					model: new TransactionProcessor(store),
-					request: req,
-					response: res
-				});
-
-
-			});
-
-
-		});
 
 	};
 

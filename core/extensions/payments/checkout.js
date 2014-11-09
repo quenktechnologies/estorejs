@@ -1,8 +1,5 @@
+module.exports = function(ctx) {
 
-module.exports = function(ctx)
-{
-
-		ctx.model.approveTransaction(ctx).
-		done();
+	ctx.handler.onTransactionApproved(ctx.transaction);
 
 };

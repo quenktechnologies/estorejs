@@ -1,4 +1,7 @@
 var render = require('./render');
+var CheckoutAssistant = require('../../checkout/CheckoutAssistant');
+var CheckoutHandlerWrapper = require('../../checkout/CheckoutHandlerWrapper');
+var PullCheckoutHandler = require('./PullCheckoutHandler');
 
 /**
  * CheckoutBindings
@@ -80,5 +83,26 @@ module.exports = function CheckoutBindings(store) {
 			return res.redirect('/cart');
 
 		render('checkout/index.html')(req, res, next);
+	};
+
+	/**
+	 * onCheckoutTransactionRequest
+	 *
+	 * @method CheckoutTransactionRequest
+	 * @param {Object} req The express Request object.
+	 * @param {Object} res The express Response object.
+	 * @return
+	 *
+	 */
+	this.onCheckoutTransactionRequest = function(req, res, next) {
+
+		var checkout = new CheckoutAssistant(store, new CheckoutHandlerWrapper(store,
+			new PullCheckoutHandler(req, res, next)));
+
+		if (!checkout.hasItems(req.session.cart))
+			return res.redirect('/cart');
+
+		checkout.checkout(req.session.cart, req.body);
+
 	};
 };

@@ -15,8 +15,6 @@ module.exports = function InvoiceSchema(store, types, ui) {
 		number: {
 			type: Number,
 			unique: true,
-			noedit: true,
-			default: -1
 		},
 		date: {
 
