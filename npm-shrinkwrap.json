@@ -1,6 +1,6 @@
 {
   "name": "estore",
-  "version": "0.2.3",
+  "version": "0.2.8",
   "dependencies": {
     "bignumber.js": {
       "version": "1.4.1",
@@ -28,6 +28,23 @@
               "resolved": "https://registry.npmjs.org/kerberos/-/kerberos-0.0.3.tgz"
             }
           }
+        }
+      }
+    },
+    "currency-codes": {
+      "version": "1.1.0",
+      "from": "currency-codes@*",
+      "resolved": "https://registry.npmjs.org/currency-codes/-/currency-codes-1.1.0.tgz",
+      "dependencies": {
+        "first-match": {
+          "version": "0.0.1",
+          "from": "first-match@>=0.0.1 <0.1.0",
+          "resolved": "https://registry.npmjs.org/first-match/-/first-match-0.0.1.tgz"
+        },
+        "nub": {
+          "version": "0.0.0",
+          "from": "nub@>=0.0.0 <0.1.0",
+          "resolved": "https://registry.npmjs.org/nub/-/nub-0.0.0.tgz"
         }
       }
     },

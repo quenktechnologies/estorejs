@@ -1,6 +1,6 @@
 {
   "name": "estore",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Run an e-store in the cloud using mongodb, keystone and nunjucks.",
   "keywords": [
     "ecommerce",
@@ -22,6 +22,7 @@
   "dependencies": {
     "bignumber.js": "1.4.x",
     "connect-mongo": "0.4.x",
+    "currency-codes": "^1.1.0",
     "dotenv": "0.0.x",
     "easy-table": "^0.3.0",
     "express": "3.3.x",
