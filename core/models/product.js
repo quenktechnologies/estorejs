@@ -73,7 +73,7 @@ module.exports = {
 					min: ui.NumberField(1, null, {
 						default: 1,
 						collapse: true,
-									label: 'Minimum'
+						label: 'Minimum'
 					}),
 					max: ui.NumberField(1, null, {
 						default: 9999999999,
@@ -133,9 +133,8 @@ module.exports = {
 
 		list.schema.pre('save', function(next) {
 
-			if (this._keywords)
-				this.set('keywords', this._keywords.toLowerCase().split(','));
-
+			var nameSplit = this.name.split(' ');
+			this.keywords = this.keywords.concat(this.name.split(' ').concat([this.name]));
 			next();
 
 		});
@@ -215,7 +214,7 @@ module.exports = {
 			keywords = keywords || '';
 
 			skip = skip || 0;
-			limit = limit || 50;
+			limit = limit || 30;
 
 			keywords = keywords.toLowerCase().split(',');
 
