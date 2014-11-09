@@ -20,6 +20,7 @@ module.exports = function MainEventHandler(store) {
 	this.handleEvents = function(em) {
 
 		em.on(store.CATEGORY_CREATED, this.onNewCategoryCreated);
+                em.on(store.SETTINGS_CHANGED, this.onSettingsChanged);
 	};
 
 
@@ -33,7 +34,7 @@ module.exports = function MainEventHandler(store) {
 	 */
 	this.onNewCategoryCreated = function(category) {
 
-          var _ = require('lodash');
+		var _ = require('lodash');
 
 		store.locals.categories = _.reject(store.locals.categories, {
 			'name': category.name
@@ -43,7 +44,18 @@ module.exports = function MainEventHandler(store) {
 
 	};
 
-
+	/**
+	 * onSettingsChanged is called when the settings data has changed.
+	 *
+	 * @method onSettingsChanged
+	 * @param {Object} settings The settings object.
+	 * @return
+	 *
+	 */
+	this.onSettingsChanged = function(settings) {
+		store.settings = settings;
+		store._buildGatewayList();
+	};
 
 
 

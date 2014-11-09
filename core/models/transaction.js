@@ -42,6 +42,7 @@ module.exports = {
 		invoice.address.shipping = address;
 		invoice.customer = customer;
 		invoice.payment = payment;
+                invoice.number.unique = false;
 
 		return [{
 			tid: {

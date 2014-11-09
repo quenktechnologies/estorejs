@@ -25,6 +25,9 @@
           <tbody>
             {% for item in $cart %}
             <tr>
+              <td class="cart_image">
+                <img src="<$ item.image $>" alt="<$ item.name $> image">
+              </td>
               <td class="cart_product">
                 {{'
                 <$ item.name $>'| characters:30}}

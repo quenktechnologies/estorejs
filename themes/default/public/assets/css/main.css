@@ -342,3 +342,7 @@ body {
 #contentPane {
   padding-top: 30px;
 }
+.carousel-caption {
+  bottom: -77px;
+  color: #fff;
+}

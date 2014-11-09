@@ -108,9 +108,9 @@ module.exports = {
 
 		};
 
-		list.schema.post('save', function(conf) {
+		list.schema.post('save', function(settings) {
 
-			store.onSettingsChanged(conf);
+			store.publish(store.SETTINGS_CHANGED, settings);
 		});
 
 

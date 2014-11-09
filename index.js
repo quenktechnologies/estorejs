@@ -9,9 +9,16 @@ var Installer = require('./core/util/Installer');
 var UIFactory = require('./core/util/UIFactory');
 var MainEventHandler = require('./core/util/MainEventHandler');
 var KeystoneProvider = require('./core/util/KeystoneProvider');
+var Gateways = require('./core/checkout/Gateways');
 
 /**
- * EStore is the main entry point for EStore
+ * EStore is the main object for the system.
+ *
+ * This object is passed around to other objects like a singleton and
+ * has many useful purposes.
+ * TODO: In future all external access should be done via getters and factory
+ * methods. This will allow some of the uses to be placed in less complicated 
+ * objects.
  * @class EStore
  * @param {Object} nunjucks
  * @constructor
@@ -115,13 +122,7 @@ module.exports = function EStore() {
 	 * @property gateways
 	 * @type {Object}
 	 */
-	this.gateways = {
-		available: [],
-		other: [],
-		active: {},
-		list: []
-	};
-
+	this.gateways = new Gateways();
 	/**
 	 * engines
 	 *
@@ -299,30 +300,28 @@ module.exports = function EStore() {
 
 		this.theme.exists() || this.theme.use('default');
 
-		var defaults = {
+		this.keystone.init();
+		this.keystone.set('name', process.env.DOMAIN || 'Estore');
+		this.keystone.set('brand', process.env.DOMAIN || 'Estore');
+		this.keystone.set('auto update', true);
+		this.keystone.set('session', true);
+		this.keystone.set('session store', 'mongo');
+		this.keystone.set('auth', true);
+		this.keystone.set('cookie secret', this.keystoneConfig.cookieSecret());
+		this.keystone.set('view engine', 'html');
+		this.keystone.set('views', this.theme.getTemplatePath());
+		this.keystone.set('static', this.theme.getStaticPath());
+		this.keystone.set('emails', this.theme.getEmailPath());
+		this.keystone.set('port', process.env.PORT || 3000);
+		this.keystone.set('mongo', this.keystoneConfig.mongoURI());
+		this.keystone.set('custom engine', this.viewEngine.render);
+		this.keystone.set('user model', 'User');
 
-			'name': process.env.DOMAIN || 'Estore',
-			'brand': process.env.DOMAIN || 'Estore',
-			'auto update': true,
-			'session': true,
-			'session store': 'mongo',
-			'auth': true,
-			'cookie secret': this.keystoneConfig.cookieSecret(),
-			'view engine': 'html',
-			'views': this.theme.getTemplatePath(),
-			'static': this.theme.getStaticPath(),
-			'emails': this.theme.getEmailPath(),
-			'port': process.env.PORT || 3000,
-			'mongo': this.keystoneConfig.mongoURI(),
-			'custom engine': this.viewEngine.render,
-			'user model': 'User'
-
-		};
-
-		this.keystone.init(defaults);
 		this.keystone.mongoose.connection.on('error', this.mongooseError);
+
 		this.viewEngine.addExtension('NunjucksMongoose',
 			new NunjucksMongoose(this.keystone.mongoose, 'get'));
+
 		this.keystone.connect(this.app);
 
 
@@ -859,19 +858,78 @@ module.exports = function EStore() {
 
 	};
 
+        /**
+         * addListener puts a callback on the internal
+         * event bus.
+         *
+         * @method addListener
+         * @param {String} event 
+         * @param {Function} cb 
+         * @return 
+         *
+         */
+        this.addListener = function (event, cb) {
 
+          this.bus.on(event , cb);
+          return this;
+
+        };
 	/**
-	 * onSettingsChanged is called when the settings data has changed.
+	 * publish an event on the internal bus.
 	 *
-	 * @method onSettingsChanged
-	 * @param {Object} settings The settings object.
+	 * TODO: Stop using bus.emit and use this instead.
+	 * @method publish
 	 * @return
 	 *
 	 */
-	this.onSettingsChanged = function(settings) {
-		this.settings = settings;
-		this._buildGatewayList();
+	this.publish = function() {
+
+		this.bus.emit.apply(this.bus, arguments);
 	};
+
+	/**
+	 * getDataModel is a factory method for getting a model from keystone.
+	 *
+	 * @method getDataModel
+	 * @param {String} name Name of the model.
+	 * @return {Function}
+	 *
+	 */
+	this.getDataModel = function(name) {
+
+		return this.keystone.list(name).model;
+
+	};
+
+
+	/**
+	 * createDataModel is like getDataModel except it instatiates a new instance.
+	 *
+	 * @method createDataModel
+	 * @param {String} name Name of the model
+	 * @param {Object} args Arguments to create the object with.
+	 * @return {Object}
+	 *
+	 */
+	this.createDataModel = function(name, args) {
+
+		var Model = this.getDataModel(name);
+		return new Model(args);
+	};
+
+
+	/**
+	 * getGateways returns the list of gateways in a helpful wrapper.
+	 *
+	 * @method getGateways
+	 * @return
+	 *
+	 */
+	this.getGateways = function() {
+
+		return this.gateways;
+	};
+
 
 
 

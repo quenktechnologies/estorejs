@@ -16,6 +16,8 @@ module.exports = {
 
 				name: {
 					type: String,
+                                        lowercase:true,
+                                        trim: true,
 					required: true,
 					initial: true
 				},

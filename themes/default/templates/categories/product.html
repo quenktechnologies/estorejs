@@ -14,7 +14,7 @@
       <div class="panl">
         <div class="pael-body">
           <ul class="list-unstyled">
-            <li><strong>Price:</strong>  <span><$ $product._.price.format( '$0,00.00') $></span>
+            <li><strong>Price:</strong>  <span><$ $product._.price.format('$0,00.00') $></span>
             </li>
             <li><strong>Product Code:</strong> 
               <$ $product.sku $>
@@ -28,7 +28,12 @@
             <li><strong>Max Order: </strong>
               <$ $product.order.max | int $>
             </li>
-          </ul>
+            {% if $product.order.deliveryCharge %}
+            <li><strong>Delivery Charge: </strong>
+            {{ <$ $product.order.deliveryCharge $> | currency }}
+            </li>
+            {% endif %}
+ </ul>
         </div>
       </div>
       <div class="row">

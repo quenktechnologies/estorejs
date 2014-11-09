@@ -7,12 +7,12 @@
   </div>
   <div class="col-md-6">
     <a data-toggle="dropdown" class="dropdown-toggle pull-right" href="#">
-            TTD<b class="caret"></b>
-          </a>
+      <$ $settings.currency $><b class="caret"></b>
+    </a>
     <ul class="dropdown-menu pull-right">
       <li>
         <a href="#">
-          TTD
+          <$ $settings.currency $>
         </a>
       </li>
     </ul>
@@ -21,7 +21,8 @@
 <div class="row">
   <div class="col-md-12">
     <ul class="list-unstyled list-inline pull-right">
-      <li><a href="/">Home</a></li>
+      <li><a href="/">Home</a>
+      </li>
       <li><a href="/categories/all">Shop</a>
       </li>
       <li><a href="/cart"><span class="glyphicon glyphicon-shopping-cart"></span> Cart (<$ $cart.length | int $>)</a>
@@ -45,9 +46,7 @@
       </div>
       <nav class="navbar-collapse collapse navbar-inverse-collapse">
         <ul class="nav navbar-nav">
-          {% for cat in $categories %}
-          {% if cat.isFeatured %}
-          {% if cat.children.length > 0 %}
+          {% for cat in $categories %} {% if cat.isFeatured %} {% if cat.children.length > 0 %}
           <li class="dropdown">
             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
               <$ cat.name $><b class="caret"></b>
@@ -71,8 +70,13 @@
           {% endif %} {% endif %} {% endfor %}
 
         </ul>
-        <form class="navbar-form navbar-left" action="/search" method="GET">
-          <input type="text" placeholder="Search" class="form-control col-md-8">
+        <form class="navbar-form navbar-left pull-right" action="/search" method="GET">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search here." name="q" id="srch-term">
+            <span class="input-group-btn">
+          <button class="btn btn-warning" type="submit">Go</button>
+          </span>
+          </div>
         </form>
       </nav>
     </div>
