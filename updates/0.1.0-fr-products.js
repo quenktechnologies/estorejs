@@ -1,8 +1,33 @@
 exports.create = {
+	Category: [{
 
+			"name": "nokia",
+			"isFeatured": true,
+			"products": ["nokia"]
+		}, {
+
+			"name": "samsung",
+			"isFeatured": true,
+			"products": "samsung"
+
+		}, {
+
+			"name": "sony",
+			"isFeatured": true,
+			"products": "sony"
+
+		}, {
+
+			"name": "cases",
+			"isFeatured": true,
+			"products": ["case0", "case1"]
+
+		}
+
+	],
 	Product: [{
 
-			name: "Galaxy Phone X",
+			name: "galaxy phone X",
 			price: "23.99",
 			image: "/assets/images/product1.jpg",
 			"stock.sku": "gpx",
@@ -12,7 +37,8 @@ exports.create = {
 			isFeatured: true,
 			keywords: ["samsung", "galaxy", "android", "phone", "smartphone", "test"],
 			"description.short.md": "This product was created as a test.",
-			"description.long.md": "This is the long description of this product."
+			"description.long.md": "This is the long description of this product.",
+			__ref: "samsung"
 
 
 
@@ -27,7 +53,8 @@ exports.create = {
 			isFeatured: true,
 			keywords: ["nokia", "cellphone", "phone", "smartphone", "test"],
 			"description.short.md": "This product was created as a test.",
-			"description.long.md": "This is the long description of this product."
+			"description.long.md": "This is the long description of this product.",
+			__ref: "nokia"
 
 
 		}, {
@@ -45,7 +72,8 @@ exports.create = {
 				max: 30
 			},
 			"description.short.md": "This product was created as a test.",
-			"description.long.md": "This is the long description of this product."
+			"description.long.md": "This is the long description of this product.",
+			__ref: "case0"
 
 		},
 
@@ -64,7 +92,8 @@ exports.create = {
 				max: 3
 			},
 			"description.short.md": "This product was created as a test.",
-			"description.long.md": "This is the long description of this product."
+			"description.long.md": "This is the long description of this product.",
+			"__ref": "sony"
 
 
 		}, {
@@ -82,7 +111,8 @@ exports.create = {
 				max: 30
 			},
 			"description.short.md": "This product was created as a test.",
-			"description.long.md": "This is the long description of this product."
+			"description.long.md": "This is the long description of this product.",
+			__ref: "case1"
 
 
 
