@@ -133,8 +133,9 @@ module.exports = {
 
 		list.schema.pre('save', function(next) {
 
-			var nameSplit = this.name.split(' ');
-			this.keywords = this.keywords.concat(this.name.split(' ').concat([this.name]));
+			var nameSplit = this.name.toLowerCase().split(' ');
+			this.keywords = require('lodash').unique(
+				this.keywords.concat(this.name.split(' ').concat([this.name.toLowerCase()])));
 			next();
 
 		});
