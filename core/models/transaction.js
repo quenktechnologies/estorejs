@@ -47,6 +47,7 @@ module.exports = {
 		return [{
 			tid: {
 				type: String,
+                                  unique:true,
 				default: require('node-uuid').v4
 
 			},
