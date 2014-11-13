@@ -45,19 +45,38 @@
  */
 module.exports = function Controller(store) {
 
-  /**
-   * keystoneConfiguration is called during keystone configuration.
-   *
-   * @method keystoneConfiguration
-   * @param {Object} config An object to be used to configure keystone.
-   * @return 
-   *
-   */
-  this.keystoneConfiguration = function () {
+	/**
+	 * keystoneConfiguration is called during keystone configuration.
+	 *
+	 * @method keystoneConfiguration
+	 * @param {Object} config An object to be used to configure keystone.
+	 * @return
+	 *
+	 */
+	this.keystoneConfiguration = function() {
 
 
 
-  };
+	};
+
+	/**
+	 * preRouteRegistration is called prior to the keystone routing.
+	 *
+	 * @method preRouteRegistration
+	 * @instance
+	 * @param {external:Request} req
+	 * @param {external: Response} res
+	 * @param {Function} next
+	 * @return undefined
+	 *
+	 */
+	this.preRouteRegistration = function(req, res, next) {
+
+
+
+	};
+
+
 
 	/**
 	 * routeRegistration is called to setup routes.
