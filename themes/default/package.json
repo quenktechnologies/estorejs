@@ -10,6 +10,9 @@
       "cart": true,
       "checkout": true
     },
+    "supports": {
+      "users":true
+    },
     "pages": {
       "enabled": "true",
       "templates": {

@@ -30,7 +30,8 @@ exports.create = {
 			"pages",
 			"counters",
 			"countries",
-			"transactions"
+			"transactions",
+                        "customers"
 		],
 	}]
 

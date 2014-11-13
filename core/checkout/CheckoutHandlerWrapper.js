@@ -43,7 +43,7 @@ module.exports = function CheckoutHandlerWrapper(store, handler) {
 	 */
 	this.onTransactionApproved = function(trn) {
 
-		store.createDataModel('Counter').
+		store.getDataModel('Counter', true).
 		increment('invoices', 1).
 		then(null, function(err) {
 			if (err)

@@ -1,3 +1,7 @@
+/**
+ * @module
+ */
+
 var Controller = require('./Controller');
 
 /**
@@ -6,13 +10,13 @@ var Controller = require('./Controller');
  * Each method here (except install) corresponds to a type of extension
  * EStore supports.
  *
- * TODO:
+ * @todo
  * 1. Remove constructor args?
  * 2. Let caller retrieve desired extensions?
  *
- * @class Installer
- * @param {EStore} store
  * @constructor
+ * @param {EStore} store
+ * @alias Installer
  *
  */
 module.exports = function Installer(store) {
@@ -36,6 +40,7 @@ module.exports = function Installer(store) {
 	 * Model
 	 *
 	 * @method Model
+	 * @instance
 	 * @return
 	 *
 	 */
