@@ -1,0 +1,31 @@
+{
+  "tags": {
+    "allowUnknownTags": true
+  },
+  "source": {
+    "includePattern": ".+\\.js(doc)?$",
+    "excludePattern": "(^|\\/|\\\\)_",
+    "include":["index.js", "core/"],
+    "exclude":["themes"]
+  },
+  "plugins": ["plugins/markdown"],
+  "markdown":{
+    "parser":"gfm",
+    "githubReponame":"estorejs",
+    "githubRepoOwner":"quenktechnologies"
+  },
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false,
+    "default": {
+      "outputSourceFiles": true
+    },
+
+    "systemName"            : "estorejs",
+    "copyright"             :  "estorejs team and collaborators.",
+    "theme"                 : "amelia",
+    "linenums"              : "true",
+    "outputSourceFiles"     : "true" ,
+    "highlightTutorialCode" : "true"
+  }
+}
