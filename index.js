@@ -11,21 +11,23 @@ var MainEventHandler = require('./core/util/MainEventHandler');
 var KeystoneProvider = require('./core/util/KeystoneProvider');
 var Gateways = require('./core/checkout/Gateways');
 
+/**@module*/
+
 /**
- * EStore is the main object for the system.
+ * EStore is the main constructor for the system.
  *
- * This object is passed around to other objects like a singleton and
- * has many useful purposes.
- * TODO: In future all external access should be done via getters and factory
- * methods. This will allow some of the uses to be placed in less complicated 
- * objects.
- * @class EStore
- * @param {Object} nunjucks
+ * The object from this constructor is currently passed around everywhere
+ * and maybe abused in various places.
+ *
+ * @todo
+ * 1 Turn the object into a factory class to avoid leaking abstraction.
+ * 2 Pass more work to smaller enscapulated object.
+ *
  * @constructor
+ * @alias EStore
  *
  */
 module.exports = function EStore() {
-
 
 
 	this.models = [];
@@ -46,6 +48,9 @@ module.exports = function EStore() {
 	this.TRANSACTION_DECLINED = 'TRANSACTION_DECLINED';
 	this.SYSTEM_ERROR = 'runtime error';
 	this.CATEGORY_CREATED = 'category created';
+	this.CUSTOMER_CREATED = 'customer create';
+	this.CUSTOMER_ACTIVATED = 'customer activated';
+	this.CUSTOMER_SIGNED_IN = 'customer signed in';
 
 	//Constants
 	this.STATUS_SYSTEM_ERROR = 503;
@@ -424,6 +429,14 @@ module.exports = function EStore() {
 				list.push(require('./core/extensions/apis/cart'));
 		}
 
+		if (pkg.supports) {
+			if (pkg.supports.users)
+				list.push(require('./core/extensions/customers'));
+
+
+
+		}
+
 		this.extensions.unshift.apply(this.extensions, list);
 
 		this.extensions.forEach(function(ext) {
@@ -696,7 +709,8 @@ module.exports = function EStore() {
 		this.keystone.pre('routes', function(req, res, next) {
 
 			//Set some useful variables.
-			res.locals.user = req.session.user;
+			res.locals.$user = req.session.user;
+			res.locals.$customer = req.session.customer;
 			res.locals.$settings = this.settings;
 			res.locals.$query = req.query;
 			res.locals.$url = req.protocol + '://' + req.get('Host') + req.url;
@@ -858,65 +872,71 @@ module.exports = function EStore() {
 
 	};
 
-        /**
-         * addListener puts a callback on the internal
-         * event bus.
-         *
-         * @method addListener
-         * @param {String} event 
-         * @param {Function} cb 
-         * @return 
-         *
-         */
-        this.addListener = function (event, cb) {
-
-          this.bus.on(event , cb);
-          return this;
-
-        };
 	/**
-	 * publish an event on the internal bus.
+	 * addEventListener puts a callback on the internal
+	 * event bus.
 	 *
-	 * TODO: Stop using bus.emit and use this instead.
-	 * @method publish
+	 * @method addEventListener
+	 * @param {String} event
+	 * @param {Function} cb
 	 * @return
 	 *
 	 */
-	this.publish = function() {
+	this.addEventListener = function(event, cb) {
+
+		this.bus.on(event, cb);
+		return this;
+
+	};
+
+	/**
+	 * broadcast an event on the internal bus.
+	 *
+	 * TODO: Stop using bus.emit and use this instead.
+	 * @method broadcast
+	 * @return
+	 *
+	 */
+	this.broadcast = function() {
 
 		this.bus.emit.apply(this.bus, arguments);
 	};
 
 	/**
-	 * getDataModel is a factory method for getting a model from keystone.
+	 * getKeystone returns the keystonejs singleton.
 	 *
-	 * @method getDataModel
-	 * @param {String} name Name of the model.
-	 * @return {Function}
+	 * @method getKeystone
+	 * @instance
+	 * @return {external:Keystone}
 	 *
 	 */
-	this.getDataModel = function(name) {
+	this.getKeystone = function() {
 
-		return this.keystone.list(name).model;
+		return this.keystone;
+
 
 	};
 
 
 	/**
-	 * createDataModel is like getDataModel except it instatiates a new instance.
+	 * getDataModel is a factory method for getting a model from keystone.
 	 *
-	 * @method createDataModel
-	 * @param {String} name Name of the model
-	 * @param {Object} args Arguments to create the object with.
-	 * @return {Object}
+	 * @method getDataModel
+	 * @param {String} name
+	 * @param {Boolean} create
+	 * @param {Object} args
+	 * @return {Function}
 	 *
 	 */
-	this.createDataModel = function(name, args) {
+	this.getDataModel = function(name, create, args) {
+
+		if (!create)
+			return this.keystone.list(name).model;
 
 		var Model = this.getDataModel(name);
 		return new Model(args);
-	};
 
+	};
 
 	/**
 	 * getGateways returns the list of gateways in a helpful wrapper.
@@ -929,6 +949,21 @@ module.exports = function EStore() {
 
 		return this.gateways;
 	};
+
+	/**
+	 * getRenderCallback provides a handy callback for rendering templates.
+	 *
+	 * @method getRenderCallback
+	 * @instance
+	 * @return {Function}
+	 *
+	 */
+	this.getRenderCallback = function() {
+
+		return require('./core/util/render');
+
+	};
+
 
 
 
