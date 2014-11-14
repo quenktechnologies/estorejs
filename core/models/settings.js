@@ -110,7 +110,7 @@ module.exports = {
 
 		list.schema.post('save', function(settings) {
 
-			store.publish(store.SETTINGS_CHANGED, settings);
+			store.broadcast(store.SETTINGS_CHANGED, settings);
 		});
 
 

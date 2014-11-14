@@ -169,9 +169,9 @@ module.exports = {
 		};
 
 
-		list.schema.statics.getProductList = function(offset, max, cb) {
+		list.schema.statics.getProductList = function(offset, max) {
 
-			this.model('Product').
+			return this.model('Product').
 			find({}, {
 				name: true,
 				_id: true,
@@ -182,7 +182,7 @@ module.exports = {
 			lean(true).
 			skip(offset).
 			limit(max).
-			exec(cb);
+			exec();
 
 
 		};
