@@ -50,7 +50,7 @@ module.exports = function Paginator(model, maxItems) {
 			for (var i = 0; i < pager.total.pages; i++)
 				pager.pages.push(i);
 
-			return model.find(query).skip(current * maxItems).limit(maxItems).lean().exec();
+			return model.find(query).skip(current * maxItems).limit(maxItems).exec();
 
 		}).
 		then(function(results) {
