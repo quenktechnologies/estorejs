@@ -28,7 +28,6 @@ module.exports = function Paginator(model, maxItems) {
 
 		return model.
 		find(query, select).
-		lean().
 		count().
 		exec().
 		then(function(count) {
