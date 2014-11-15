@@ -11,7 +11,7 @@
       "checkout": true
     },
     "supports": {
-      "users":false,
+      "customers":false,
       "blog":true ,
       "pages": {
         "templates": {
