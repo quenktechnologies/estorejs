@@ -1,28 +1,23 @@
 {
   "name": "seller",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Default theme for estore.",
-  "author": "Lasana Murray <lmurray@quenk.com> (http://blog.quenk.com/)",
+  "author": "Lasana Murray <lmurray@quenk.com> (http://quenk.com)",
   "license": "Apache2",
   "estore": {
     "ajax": {
-      "product": true,
+      "product": false,
       "cart": true,
       "checkout": true
     },
     "supports": {
-      "users":true
-    },
-    "pages": {
-      "enabled": "true",
-      "templates": {
-        "default": "pages/default.html",
-        "about": "pages/about.html",
-        "guide": "pages/guide.html"
+      "users":true,
+      "blog":true ,
+      "pages": {
+        "templates": {
+          "default": "pages/default.html"
+        }
       }
-    },
-    "blog": {
-      "enabled": "true"
     }
   },
   "devDependencies": {

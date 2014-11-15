@@ -413,8 +413,12 @@ module.exports = function EStore() {
 		var list = [];
 		var pkg = this.theme.getPackageFile().estore;
 
-		list.push(require('./core/extensions/blog'));
-		list.push(require('./core/extensions/pages'));
+		if (pkg.supports.blog)
+			list.push(require('./core/extensions/blog'));
+
+		if (pkg.supports.pages)
+			list.push(require('./core/extensions/pages'));
+
 		list.push(require('./core/extensions/routes'));
 
 		if (pkg.ajax) {
@@ -457,23 +461,23 @@ module.exports = function EStore() {
 	 */
 	this._scanPages = function() {
 
-		var pkg = this.theme.getPackageFile().estore;
+		var pages = this.theme.getPackageFile().estore.supports.pages;
 
-		var routes = pkg.pages.templates;
-		this.pages = pkg.pages;
+		if (!pages)
+			return;
+
+		this.pages = pages;
 		this.pages.templates = [];
+		var self = this;
 
-		Object.keys(routes).forEach(function(key) {
+		Object.keys(pages.templates).forEach(function(key) {
 
-			this.pages.templates.push({
-				value: routes[key],
+			self.pages.templates.push({
+				value: pages.templates[key],
 				label: key
 			});
 
-
-		}.bind(this));
-
-
+		});
 
 	};
 
@@ -756,39 +760,6 @@ module.exports = function EStore() {
 
 	};
 
-	/**
-	 * _fetchNavigationLinks
-	 *
-	 * @method _fetchNavigationLinks
-	 * @return
-	 *
-	 */
-	this._fetchNavigationLinks = function(cb) {
-
-		this.keystone.list('Page').model.find({
-			navigation: true
-		}, {
-			_id: false,
-			slug: true,
-			index: true
-		}).
-		exec().
-		then(null, function(err) {
-
-			console.log(err);
-
-		}).
-		then(function(links) {
-
-			if (!links)
-				links = [];
-
-			this._navigation = links;
-
-		}).end();
-
-
-	};
 
 	/**
 	 * _fetchCategories
@@ -835,7 +806,6 @@ module.exports = function EStore() {
 			this._routeRegistration();
 			this._startDaemons();
 			this.keystone.start();
-			this._fetchNavigationLinks();
 			this._fetchCategories();
 		}.bind(this));
 
