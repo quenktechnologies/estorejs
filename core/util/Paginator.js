@@ -1,18 +1,17 @@
+/** @module */
 /**
  * Paginator provides an api for paging list type pages.
- * @class Paginator
- * @param {Object} model The model to page.
+ * @alias Paginator
+ * @param {external:Model} model The model to page.
  * @param {Number} maxItems The max number of items to display on a page.
  * @constructor
  *
  */
 module.exports = function Paginator(model, maxItems) {
 
-
 	/**
 	 * paginate performs the actual pagination logic.
 	 *
-	 * @method paginate
 	 * @param {Number} current
 	 * @param {Object} query
 	 * @return {Promise} mongoose style
