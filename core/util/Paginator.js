@@ -17,7 +17,7 @@ module.exports = function Paginator(model, maxItems) {
 	 * @return {Promise} mongoose style
 	 *
 	 */
-	this.paginate = function(current, query) {
+	this.paginate = function(current, query, select) {
 
 		query = query || {};
 
@@ -27,7 +27,7 @@ module.exports = function Paginator(model, maxItems) {
 		};
 
 		return model.
-		find().
+		find(query, select).
 		lean().
 		count().
 		exec().

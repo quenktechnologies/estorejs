@@ -433,13 +433,9 @@ module.exports = function EStore() {
 				list.push(require('./core/extensions/ajax/cart'));
 		}
 
-		if (pkg.supports) {
-			if (pkg.supports.users)
+		if (pkg.supports) 
+			if (pkg.supports.customers)
 				list.push(require('./core/extensions/customers'));
-
-
-
-		}
 
 		this.extensions.unshift.apply(this.extensions, list);
 

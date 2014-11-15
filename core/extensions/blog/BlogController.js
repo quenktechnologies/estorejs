@@ -1,20 +1,17 @@
+/** @module **/
+var Paginator = require('../../util/Paginator');
 /**
- * BlogsController is the controller for the pages feature.
- * @class BlogsController
+ * BlogRouteController is the controller for the pages feature.
+ * @alias BlogRouteController
  * @param {EStore} estore
  * @constructor
+ * @extends {Controller}
  *
  */
-module.exports = function BlogsController(store) {
+module.exports = function BlogRouteControllerr(store) {
 
+	var render = store.getRenderCallback();
 
-	/**
-	 * routeRegistration
-	 *
-	 * @method routeRegistration
-	 * @return
-	 *
-	 */
 	this.routeRegistration = function(app) {
 		app.get('/blog', this.onGetBlogIndexRequest);
 		app.get(/^\/blog\/posts\/([\w]+(?:-[\w]+)*)$/, this.onGetBlogPageRequest);
@@ -24,10 +21,8 @@ module.exports = function BlogsController(store) {
 	/**
 	 * onGetBlogPageRequest
 	 *
-	 * @method GetBlogPageRequest
 	 * @param {Object} req The express Request object.
 	 * @param {Object} res The express Response object.
-	 * @return
 	 *
 	 */
 	this.onGetBlogPageRequest = function(req, res, next) {
@@ -51,7 +46,7 @@ module.exports = function BlogsController(store) {
 				return next();
 
 			res.locals.$post = post;
-			res.render('blog/post.html');
+			render('blog/post.html')(req, res, next);
 
 		}).end();
 
@@ -63,39 +58,27 @@ module.exports = function BlogsController(store) {
 	/**
 	 * onGetBlogIndexRequest
 	 *
-	 * @method GetBlogIndexRequest
 	 * @param {Object} req The express Request object.
 	 * @param {Object} res The express Response object.
-	 * @return
 	 *
 	 */
 	this.onGetBlogIndexRequest = function(req, res, next) {
 
-		store.keystone.list('Post').
-		model.
-		find({
+		var pager = new Paginator(store.getDataModel('Post'), 30);
+
+		pager.paginate(Number(req.params[0]) || 0, {
 			state: 'published'
 		}).
-		limit(20).
-		lean().
-		exec().
-		then(null, function(err) {
+		then(function(pager) {
+                  console.log(pager);
+			res.locals.$pagination = pager;
+			res.locals.$posts = pager.items;
+			render('blog/index.html')(req, res, next);
 
+		}).end(function(err) {
 			console.log(err);
 			next();
-
-		}).
-		then(function(posts) {
-
-			if (posts.length < 1)
-				return next();
-
-			res.locals.$posts = posts;
-			res.render('blog/index.html');
-
-		}).end();
-
-
+		});
 
 	};
 
