@@ -41,6 +41,7 @@
  * @class Controller
  * @param {Estore} store
  * @constructor
+ * @abstract
  *
  */
 module.exports = function Controller(store) {

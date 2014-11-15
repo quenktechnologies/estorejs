@@ -22,7 +22,7 @@
     },
 
     "systemName"            : "estorejs",
-    "copyright"             :  "estorejs team and collaborators.",
+    "copyright"             : "estorejs team and collaborators.",
     "theme"                 : "amelia",
     "linenums"              : "true",
     "outputSourceFiles"     : "true" ,

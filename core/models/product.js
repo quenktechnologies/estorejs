@@ -187,9 +187,14 @@ module.exports = {
 
 		};
 
-		list.schema.statics.applyTransaction = function(id, item) {
+		list.schema.statics.applyTransaction = function(id, item, invert) {
 
-			console.log('Applying Transaction ' + id + ' to ' + this.name + '.');
+			var quantity = item.quantity;
+
+			if (invert)
+				quantity = quantity * -1;
+
+			console.log('Applying Transaction ' + id + ' to ' + item.name + '.');
 			return this.model('Product').findOneAndUpdate({
 
 				_id: item._id,
@@ -198,7 +203,7 @@ module.exports = {
 				}
 			}, {
 				$inc: {
-					'stock.balance': item.quantity
+					'stock.balance': quantity
 				},
 				$push: {
 					transactions: id

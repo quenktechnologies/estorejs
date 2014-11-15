@@ -1,7 +1,7 @@
 var EventEmitter = require('events').EventEmitter;
 var Theme = require('./core/util/Theme');
 var Extras = require('./core/util/Extras');
-var Endpoints = require('./core/extensions/apis/Endpoints');
+var Endpoints = require('./core/extensions/ajax/Endpoints');
 var Express = require('express');
 var NunjucksMongoose = require('nunjucks-mongoose');
 var CompositeController = require('./core/util/CompositeController');
@@ -51,6 +51,7 @@ module.exports = function EStore() {
 	this.CUSTOMER_CREATED = 'customer create';
 	this.CUSTOMER_ACTIVATED = 'customer activated';
 	this.CUSTOMER_SIGNED_IN = 'customer signed in';
+	this.QUERY_ERROR = 'query error';
 
 	//Constants
 	this.STATUS_SYSTEM_ERROR = 503;
@@ -322,7 +323,6 @@ module.exports = function EStore() {
 		this.keystone.set('custom engine', this.viewEngine.render);
 		this.keystone.set('user model', 'User');
 
-		this.keystone.mongoose.connection.on('error', this.mongooseError);
 
 		this.viewEngine.addExtension('NunjucksMongoose',
 			new NunjucksMongoose(this.keystone.mongoose, 'get'));
@@ -417,16 +417,16 @@ module.exports = function EStore() {
 		list.push(require('./core/extensions/pages'));
 		list.push(require('./core/extensions/routes'));
 
-		if (pkg.apis) {
+		if (pkg.ajax) {
 
-			if (pkg.apis.checkout)
-				list.push(require('./core/extensions/apis/checkout'));
+			if (pkg.ajax.checkout)
+				list.push(require('./core/extensions/ajax/checkout'));
 
-			if (pkg.apis.products)
-				list.push(require('./core/extensions/apis/products'));
+			if (pkg.ajax.products)
+				list.push(require('./core/extensions/ajax/products'));
 
-			if (pkg.apis.cart)
-				list.push(require('./core/extensions/apis/cart'));
+			if (pkg.ajax.cart)
+				list.push(require('./core/extensions/ajax/cart'));
 		}
 
 		if (pkg.supports) {
@@ -810,23 +810,6 @@ module.exports = function EStore() {
 
 	};
 
-
-	/**
-	 * mongooseError is called when uncaught errors are detected.
-	 *
-	 * @method mongooseError
-	 *  @param {Error} err
-	 * @return
-	 *
-	 */
-	this.mongooseError = function(err) {
-
-		console.log('Uncaught mongoose error detected!', err);
-		process.exit(-1);
-
-	};
-
-
 	/**
 	 * start will start the server
 	 *
@@ -913,8 +896,6 @@ module.exports = function EStore() {
 	this.getKeystone = function() {
 
 		return this.keystone;
-
-
 	};
 
 
@@ -961,6 +942,21 @@ module.exports = function EStore() {
 	this.getRenderCallback = function() {
 
 		return require('./core/util/render');
+
+	};
+
+
+	/**
+	 * getViewEngine returns the installed view engine.
+	 *
+	 * @method getViewEngine
+	 * @instance
+	 * @return {Object}
+	 *
+	 */
+	this.getViewEngine = function() {
+
+		return this.viewEngine;
 
 	};
 

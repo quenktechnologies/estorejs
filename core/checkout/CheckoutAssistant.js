@@ -35,7 +35,7 @@ module.exports = function CheckoutAssistant(store, handler) {
 		if (!gateways.hasActive(checkout.workflow))
 			return handler.onGatewayNotFound();
 
-		var invoice = store.createDataModel('Invoice', true, checkout);
+		var invoice = store.getDataModel('Invoice', true, checkout);
 		invoice.set({
 			items: cart,
 			payment: {
@@ -50,7 +50,7 @@ module.exports = function CheckoutAssistant(store, handler) {
 			if (err)
 				return handler.onValidationError(err);
 
-			var transaction = store.createDataModel('Transaction');
+			var transaction = store.getDataModel('Transaction', true);
 			transaction.set('invoice', invoice.toObject());
 			transaction.
 			save(function(err, saved) {

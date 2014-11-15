@@ -1,3 +1,6 @@
+/** @module */
+
+var TransactionCallbacks = require('./TransactionCallbacks');
 /**
  *
  * This daemon polls (every 10 seconds by default) to find a list
@@ -5,6 +8,7 @@
  *
  * It then commits the transactions and changes the transaction state to commited.
  *
+ * @returns {Function}
  */
 module.exports = {
 
@@ -12,41 +16,27 @@ module.exports = {
 	interval: process.env.TRANSACTION_APPROVAL_INTERVAL || 10000,
 	exec: function(store) {
 
-		var invert = function(item) {
-
-			item.quantity = item.quantity * -1;
-
-		};
+		var callbacks = new TransactionCallbacks(store);
 
 		return function() {
 
-			//TODO: Fix callback soup
-			store.keystone.
-			list('Transaction').model.
-			getApproved(process.env.MAX_TRANSACTIONS_PROCESSED || 10).
-			then(function(transactions) {
-				transactions.forEach(function(trn) {
-					console.log('Found approved transaction ' + trn._id + '.');
-					store.bus.emit(store.TRANSACTION_APPROVED, trn.toObject());
-					trn.invoice.items.forEach(invert);
-					trn.commit().
-					then(function(number) {
-						trn.invoice.items.forEach(invert);
-						console.log('Generating invoice number ' + trn.invoice.number + '.');
-						return trn.generateInvoice().
-						then(function() {
-							//All products have been updated successfully.
-							trn.set('status', 'committed');
-							var r = require('q').ninvoke(trn, 'save');
-							console.log('Transaction ' + trn._id + ' has been committed');
-							store.publish(store.TRANSACTION_COMMITED, trn.toObject());
-							return r;
-						});
-					}).done();
-				});
+			store.getDataModel('Transaction').
+			find({
+				status: 'approved'
+			}).
+			limit(process.env.MAX_TRANSACTIONS_PROCESSED || 10).
+			exec(function(err, transactions) {
 
-			}).done();
+				if (err)
+					return console.log(err);
+
+				transactions.forEach(
+					callbacks.getProductUpdateCallback(
+						callbacks.getInvoiceNumberCallback(
+							callbacks.getSaveInvoiceCallback(
+								callbacks.
+                                                                getSaveCommittedTransactionCallback()))));
+			});
 		};
 	}
-
 };

@@ -33,7 +33,7 @@ module.exports = {
 	run: function(list) {
 
 
-		list.schema.methods.increment = function(name, qty) {
+		list.schema.statics.increment = function(name, qty) {
 
 			return this.model('Counter').findOneAndUpdate({
 				name: name
