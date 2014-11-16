@@ -433,7 +433,7 @@ module.exports = function EStore() {
 				list.push(require('./core/extensions/ajax/cart'));
 		}
 
-		if (pkg.supports) 
+		if (pkg.supports)
 			if (pkg.supports.customers)
 				list.push(require('./core/extensions/customers'));
 
@@ -462,18 +462,18 @@ module.exports = function EStore() {
 		if (!pages)
 			return;
 
-		this.pages = pages;
-		this.pages.templates = [];
-		var self = this;
+		this.pages = {
+			templates: []
+		};
 
 		Object.keys(pages.templates).forEach(function(key) {
 
-			self.pages.templates.push({
+			this.pages.templates.push({
 				value: pages.templates[key],
 				label: key
 			});
 
-		});
+		}.bind(this));
 
 	};
 
