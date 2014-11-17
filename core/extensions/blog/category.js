@@ -18,9 +18,8 @@ module.exports = {
 					type: String,
 					required: true,
 					initial: true
-				}
-			},
-			'Posts', {
+				},
+				image: store.engines.image(store),
 				posts: {
 
 					type: types.Relationship,
@@ -28,8 +27,6 @@ module.exports = {
 					many: true,
 					label: 'member',
 					collapse: true
-
-
 				}
 			}
 

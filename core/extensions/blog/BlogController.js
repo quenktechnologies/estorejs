@@ -70,7 +70,6 @@ module.exports = function BlogRouteControllerr(store) {
 			state: 'published'
 		}).
 		then(function(pager) {
-                  console.log(pager);
 			res.locals.$pagination = pager;
 			res.locals.$posts = pager.items;
 			render('blog/index.html')(req, res, next);

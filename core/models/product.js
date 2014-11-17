@@ -25,10 +25,6 @@ module.exports = {
 					initial: true
 				}),
 				image: store.engines.image(store),
-				_keywords: ui.TextBox({
-					label: 'Keywords'
-				})
-
 			},
 			'Stock', {
 

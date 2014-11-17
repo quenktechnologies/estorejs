@@ -22,7 +22,7 @@ module.exports = {
 				title: {
 					type: String,
 					required: true,
-                                        initial:true
+					initial: true
 				},
 				state: {
 					type: types.Select,
@@ -47,7 +47,15 @@ module.exports = {
 						wysiwyg: true,
 						height: 400
 					}
-				}
+				},
+				isFeatured: {
+					type: Boolean
+				},
+                                keywords: {
+
+                                  type: types.TextArray
+
+                                }
 			}
 
 		];
