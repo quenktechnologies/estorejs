@@ -24,10 +24,10 @@ module.exports = function KeystoneProvider() {
 	 */
 	this.mongoURI = function() {
 
-	var uri = process.env.MONGO_URI ||
-		process.env.MONGO_URL ||
-		process.env.MONGOLAB_URI;
-	return uri;
+		var uri = process.env.MONGO_URI ||
+			process.env.MONGO_URL ||
+			process.env.MONGOLAB_URI;
+		return uri;
 
 	};
 
@@ -41,8 +41,12 @@ module.exports = function KeystoneProvider() {
 	 */
 	this.cookieSecret = function() {
 
-  var secret = process.env.COOKIE_SECRET || new RandomHexString(64);
-  return secret;
+		var secret = process.env.COOKIE_SECRET;
+
+		if (!secret)
+			return new RandomHexString(64);
+
+		return secret;
 
 	};
 
