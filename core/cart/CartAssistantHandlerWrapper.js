@@ -41,14 +41,24 @@ module.exports = function CartAssistantHandlerWrapper(session, handler) {
 
 	};
 
-	this.onItemCanBeAddedToCart = function(item) {
+	this.onItemMustBeRemoved = function(item) {
 
 		session.cart = _.reject(session.cart, {
 			'_id': item._id
 		});
-		session.cart.push(item);
-		handler.onItemCanBeAddedToCart(item);
 
+		handler.onItemMustBeRemoved(item);
+	};
+
+	this.onItemCanBeAddedToCart = function(item) {
+
+		session.cart = _.reject(session.cart, {
+			_id: item._id
+		});
+
+		session.cart.push(item);
+
+		handler.onItemCanBeAddedToCart(item);
 	};
 
 };

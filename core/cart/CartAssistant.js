@@ -22,11 +22,16 @@ module.exports = function CartAssistant(handler) {
 
 		var Big = require('bignumber.js');
 
+		//@todo this is temporary to support standard cart forms
+		//In future we will remove items from the cart only through DELETE requests
+		//either through method overloading or actual DELETEs.
+		//
+		if ((_.isNaN(item.quantity)) || (item.quantity === 0))
+			return handler.onItemMustBeRemoved(item);
+
 		if (product.stock.balance < 1)
 			return handler.onProductOutOfStock(product);
 
-		if ((_.isNaN(item.quantity)) || (item.quantity === 0))
-			item.quantity = 1;
 
 		if (item.quantity > product.stock.balance)
 			return handler.onQuantityMoreThanBalance(item.quantity,

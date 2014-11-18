@@ -1,8 +1,8 @@
 /** @module */
 
 /**
- * AjaxCartAssistantHandler is the CartAssistantHandler for ajax requests. 
- * 
+ * AjaxCartAssistantHandler is the CartAssistantHandler for ajax requests.
+ *
  * @alias AjaxCartAssistantHandler
  * @param {Response} res
  * @constructor
@@ -47,6 +47,13 @@ module.exports = function AjaxCartAssistantHandler(res) {
 	this.onItemCanBeAddedToCart = function(item) {
 
 		res.status(201);
+
+	};
+
+
+	this.onItemMustBeRemoved = function(item) {
+
+		res.status(204);
 
 	};
 

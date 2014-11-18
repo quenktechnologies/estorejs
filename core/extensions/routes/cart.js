@@ -60,6 +60,7 @@ module.exports = {
 			findOne({
 				_id: req.params[0]
 			}).
+			lean().
 			exec().
 			then(null, function(err) {
 
@@ -76,7 +77,7 @@ module.exports = {
 					new CartAssistantHandlerWrapper(req.session,
 						new StandardCartAssistantHandler(res)));
 
-				item.slug = req.params[0];
+				item._id = req.params[0];
 				assistant.addToCart(item, product);
 
 			}).end();

@@ -47,7 +47,15 @@ CartAssistantHandler.prototype.onQuantityMoreThanMax = function(qty, max, produc
  * onItemCanBeAddedToCart is called when we determine it is safe to add the
  * item to the cart.
  *
- * @param {Product} item
+ * @param {Item} item
  *
  */
 CartAssistantHandler.prototype.onItemCanBeAddedToCart = function(item) {};
+
+
+/**
+ * onItemMustBeRemoved is called when an item must be removed form the cart.
+ *
+ * @param {Item} item 
+ */
+CartAssistantHandler.onItemMustBeRemoved = function () {};

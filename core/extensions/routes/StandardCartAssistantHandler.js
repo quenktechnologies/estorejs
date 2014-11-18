@@ -54,4 +54,11 @@ module.exports = function StandardCartAssistantHandler(res) {
 
 	};
 
+	this.onItemMustBeRemoved = function(item) {
+
+		res.status(204);
+		res.redirect('/cart');
+
+	};
+
 };
