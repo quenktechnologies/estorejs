@@ -327,6 +327,8 @@ module.exports = function EStore() {
 		this.viewEngine.addExtension('NunjucksMongoose',
 			new NunjucksMongoose(this.keystone.mongoose, 'get'));
 
+		this.viewEngine.addFilter('subotal', require('./core/filters/subtotal'));
+
 		this.keystone.connect(this.app);
 
 
