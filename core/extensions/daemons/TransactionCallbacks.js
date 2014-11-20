@@ -36,25 +36,28 @@ module.exports = function TransactionCallbacks(store) {
 			console.log('DEBUG: updating products');
 
 			transaction.invoice.items.forEach(function(item) {
+console.log(item);
+				if (item.stock)
+					if (item.stock.track)
 
-				list.push(
+						list.push(
 
-					q.ninvoke(store.getDataModel('Product').
+							q.ninvoke(store.getDataModel('Product').
 
-						findOneAndUpdate({
+								findOneAndUpdate({
 
-							_id: item._id,
-							transactions: {
-								$ne: transaction._id
-							}
-						}, {
-							$inc: {
-								'stock.balance': item.quantity * -1
-							},
-							$push: {
-								transactions: transaction._id
-							}
-						}), 'exec'));
+									_id: item._id,
+									transactions: {
+										$ne: transaction._id
+									}
+								}, {
+									$inc: {
+										'stock.balance': item.quantity * -1
+									},
+									$push: {
+										transactions: transaction._id
+									}
+								}), 'exec'));
 
 
 			});

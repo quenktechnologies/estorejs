@@ -8,6 +8,7 @@ var _ = require('lodash');
  * CartAssistantHandlerWrapper wraps other CartAssistantHandlers to give
  * them common functionality.
  *
+ * @todo casts to string on object ids are temporary until we start using slugs instead.
  * @alias CartAssistantHandlerWrapper
  * @param {Object} session
  * @param {CartAssistantHandler} name description
@@ -43,8 +44,9 @@ module.exports = function CartAssistantHandlerWrapper(session, handler) {
 
 	this.onItemMustBeRemoved = function(item) {
 
+		console.log(item._id);
 		session.cart = _.reject(session.cart, {
-			'_id': item._id
+			'_id': String(item._id)
 		});
 
 		handler.onItemMustBeRemoved(item);
@@ -52,8 +54,10 @@ module.exports = function CartAssistantHandlerWrapper(session, handler) {
 
 	this.onItemCanBeAddedToCart = function(item) {
 
-		session.cart = _.reject(session.cart, {
-			_id: item._id
+		session.cart = _.reject(session.cart, function(cartItem) {
+
+			return (String(item._id) === String(cartItem._id));
+
 		});
 
 		session.cart.push(item);

@@ -25,8 +25,7 @@ module.exports = function CartAssistant(handler) {
 		//@todo this is temporary to support standard cart forms
 		//In future we will remove items from the cart only through DELETE requests
 		//either through method overloading or actual DELETEs.
-		//
-		if ((_.isNaN(item.quantity)) || (item.quantity === 0))
+		if ((_.isNaN(item.quantity)) || (item.quantity === 0) || (_.isArray(item.quantity)))
 			return handler.onItemMustBeRemoved(item);
 
 		if (product.stock.balance < 1)

@@ -11,17 +11,17 @@ var Big = require('bignumber.js');
  * @param {Array} items
  *
  */
-module.exports = function delivery(item) {
+module.exports = function delivery(items) {
 
 	var total = new Big(0);
 
 	items.forEach(function(item) {
 
-		if (Object.hasOwnProperty(item.order, 'delivery'))
-			total = total.plus(item[key]);
+		if (item.order.delivery)
+			total = total.plus(item.order.delivery);
 	});
 
-	return total;
+	return total.toString();
 
 
 };

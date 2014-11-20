@@ -29,7 +29,7 @@ exports.create = {
 
 			name: "galaxy phone X",
 			price: "23.99",
-			image: "/assets/images/product1.jpg",
+			"image.url": "/assets/images/product1.jpg",
 			"stock.sku": "gpx",
 			"stock.balance": 100,
 			"order.min": 1,
@@ -46,7 +46,7 @@ exports.create = {
 
 			name: "Nokia Phone Z",
 			price: "13.99",
-			image: "/assets/images/product2.jpg",
+			"image.url": "/assets/images/product2.jpg",
 			"stock.balance": 100,
 			"order.min": 1,
 			"order.max": 3,
@@ -61,7 +61,7 @@ exports.create = {
 
 			name: "Generic Case",
 			price: "5.25",
-			image: "/assets/images/product3.jpg",
+			"image.url": "/assets/images/product3.jpg",
 			"stock.balance": 100,
 			"order.min": 1,
 			"order.max": 3,
@@ -81,7 +81,7 @@ exports.create = {
 
 			name: "Sony Phone R",
 			price: "53.99",
-			image: "/assets/images/product4.jpg",
+			"image.url": "/assets/images/product4.jpg",
 			"stock.balance": 100,
 			"order.min": 1,
 			"order.max": 3,
@@ -100,7 +100,7 @@ exports.create = {
 
 			name: "Very Generic Case",
 			price: "15.25",
-			image: "/assets/images/product3.jpg",
+			"image.url": "/assets/images/product3.jpg",
 			"stock.balance": 100,
 			"order.min": 1,
 			"order.max": 3,

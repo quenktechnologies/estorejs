@@ -6,49 +6,30 @@ module.exports = {
 	options: {
 		nocreate: true,
 		nodelete: true,
-		map: {
-			name: '_id'
-		}
-
 	},
 	model: function(store, types, ui) {
 
-		return ['Site Details', {
-				site: {
+		return [{
+				name: {
+					type: String,
+					default: 'General',
+					noedit: true
+				}
+			}, 'Brand', {
+				brand: {
 					name: {
 						type: String,
 						label: 'Name',
 						width: 'medium'
-					},
-					meta: {
-
-						description: {
-							type: types.Textarea,
-							label: 'Meta Description',
-							note: 'Used by some search engines to summarize the site.'
-						},
-						title: {
-
-							type: String,
-							label: 'Meta title',
-							width: 'medium',
-
-						}
-
 					}
-
 				}
+			}, 'Main Address', {
 
-			},
-			'Store Address', {
-				store: {
-
+				brand: {
 					address: address(store, types, ui)
-
 				}
+
 			},
-
-
 			'Theme', {
 				theme: {
 					current: {
@@ -65,8 +46,8 @@ module.exports = {
 							'superhero', 'united', 'yeti'
 						],
 						label: 'Bootstrap Theme',
+						note: 'May not be supported by all themes.',
 						default: 'lumen'
-
 					}
 				}
 			}, 'Credit Cards', {

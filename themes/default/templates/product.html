@@ -8,7 +8,7 @@
   </div>
   <div class="row">
     <div class="col-md-5">
-      <img alt="<$ $product.name $>" src="<$ $product.image $>" class="img center-block img-responsive">
+      <img alt="<$ $product.name $>" src="<$ $product.image.url $>" class="img center-block img-responsive">
     </div>
     <div class="col-md-7 pull-left">
       <div class="panl">
@@ -19,15 +19,19 @@
             <li><strong>Product Code:</strong> 
               <$ $product.sku $>
             </li>
+            {% if $product.stock.isDisplayed %}
             <li><strong>Stock: </strong>
               <$ $product.stock.balance $>
             </li>
+            {% endif %}
+            {% if $product.stock.hasConstraint %}
             <li><strong>Min Order: </strong>
               <$ $product.order.min | int $>
             </li>
             <li><strong>Max Order: </strong>
               <$ $product.order.max | int $>
             </li>
+            {% endif %}
             {% if $product.order.deliveryCharge %}
             <li><strong>Delivery Charge: </strong>
             {{ <$ $product.order.deliveryCharge $> | currency }}
@@ -38,7 +42,6 @@
       </div>
       <div class="row">
         <div class="col-md-5">
-          {% if $product.stock.balance > 0 %}
           <form name="cartAddition" action="/cart/items/<$ $product._id $>" method="POST">
             <div class="input-group">
               <input name="quantity" type="number" min="1" value="1" max="<$ $product.order.max $>" class="form-control input-small">
@@ -48,7 +51,6 @@
             </span>
             </div>
           </form>
-          {% endif %}
         </div>
       </div>
       <div class="row">

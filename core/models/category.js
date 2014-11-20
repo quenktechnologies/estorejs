@@ -16,27 +16,24 @@ module.exports = {
 
 				name: {
 					type: String,
-                                        lowercase:true,
-                                        trim: true,
+					lowercase: true,
+					trim: true,
 					required: true,
 					initial: true
 				},
+
+				isFeatured: {
+					type: Boolean,
+					initial: true
+				},
+
 				image: store.engines.image(store)
 
 			},
 
-			'Description', {
-				description: {
+			{
+				description: ui.PageContentEditor()
 
-					brief: ui.TextBox({
-						label: 'Brief'
-					}),
-					full: ui.PageContentEditor({
-						label: 'Full'
-					})
-
-
-				}
 			}, {
 				products: {
 
@@ -50,15 +47,10 @@ module.exports = {
 				children: {
 					type: types.Relationship,
 					ref: 'Category',
-                                        label:'Child categories',
+					label: 'Child categories',
 					many: true,
 				}
-			}, {
-				isFeatured: {
-					type: Boolean
-				}
 			}
-
 
 		];
 

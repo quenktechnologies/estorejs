@@ -20,88 +20,130 @@ module.exports = {
 					required: true,
 					initial: true
 				}),
+				description: ui.PageContentEditor()
+			}, 'Details', {
 				price: ui.PriceField({
 					required: true,
 					initial: true
 				}),
-				image: store.engines.image(store),
+
+				vendor: {
+					type: String,
+					width: 'short'
+				},
+				isFeatured: {
+					type: Boolean,
+					label: 'Featured product?'
+				},
+				isTangible: {
+					type: Boolean,
+					label: 'Physical product?',
+					default: true,
+					initial: true
+				},
+				weight: {
+					type: Number,
+					min: 0,
+					label: 'Weight (lbs)',
+					dependsOn: {
+						'isTangible': true
+					},
+				},
+				image: {
+					url: store.engines.image(store)
+				},
+
 			},
 			'Stock', {
 
 				stock: {
-					isTangible: {
+					sku: {
+						type: String,
+						label: 'SKU',
+						width: 'short',
+						note: 'Optional Stock Keeping Unit code',
+						dependsOn: {
+							'isTangible': true
+						}
+					},
+					track: {
 						type: Boolean,
-						label: 'This product is tangible?',
+						label: 'Track the number of this product in stock?',
+						dependsOn: {
+							'isTangible': true
+						},
 						default: true
 					},
-
-					sku: ui.ShortTextField({
-						label: 'SKU',
-						collapse: true,
-					}),
 					balance: ui.NumberField(0, null, {
-						label: 'Inventory',
+						label: 'Inventory Balance',
 						dependsOn: {
-							'stock.isTangible': true
+							'isTangible': true,
+							'stock.track': true
 						},
 						default: 0,
 						initial: true
 					}),
-				}
-
-			},
-			'Attributes', {
-
-				attributes: {
-
-					weight: ui.NumberField(0.00000001, null, {
-						label: 'Weight',
+					isDisplayed: {
+						type: Boolean,
+						label: 'Display stock balance?',
 						dependsOn: {
-							'stock.isTangible': true
-						}
-					})
+							'isTangible': true,
+						},
+						default: true
+					},
+
 				}
 
-
 			},
-			'Order', {
+			'Ordering', {
 				order: {
+					hasConstraints: {
+						type: Boolean,
+						label: 'Set min/max order quantities?'
+					},
 					min: ui.NumberField(1, null, {
 						default: 1,
-						collapse: true,
+						dependsOn: {
+							'order.hasConstraints': true
+						},
 						label: 'Minimum'
 					}),
 					max: ui.NumberField(1, null, {
 						default: 9999999999,
-						collapse: true,
+						dependsOn: {
+							'order.hasConstraints': true
+						},
 						label: 'Maximum'
-					}),
-					deliveryCharge: ui.PriceField({
-						label: 'Delivery Charge',
 					})
 
+				}
+			}, 'Charges', {
+
+				charges: {
+
+					delivery: {
+						type: types.Money,
+						label: 'Delivery',
+						dependsOn: {
+							'isTangible': true,
+						},
+						note: 'Assign a fixed charge for delivering this product.'
+					}
 				}
 			},
-			'Description', {
-				description: {
-
-					short: ui.TextBox({
-						label: 'Brief'
-					}),
-					long: ui.PageContentEditor({
-						label: 'Full'
-					})
-
+			'SEO', {
+				meta: {
+					type: types.Textarea,
+					width: 'medium',
+					label: 'SEO Description',
+					note: 'Used by search engines such as Google.'
 				}
-			}, {},
-			'Other', {
-				isFeatured: {
-					type: Boolean,
-					label: 'Feature this product?'
-				},
-				keywords: {
 
-					type: types.TextArray
+			},
+			'Keywords', {
+				keywords: {
+					type: types.TextArray,
+					label: 'Terms'
 
 				}
 

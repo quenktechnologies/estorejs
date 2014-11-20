@@ -29,24 +29,23 @@ module.exports = {
 					required: true
 
 				},
-				author: ui.TextField('Meta Author'),
-				description: ui.TextBox('Meta Description'),
 				content: ui.PageContentEditor(),
-			}, 'Options', {
+				meta: {
+					author: ui.TextField('Meta Author'),
+					description: ui.TextBox('Meta Description'),
+
+				}
+			}, {
 				isIndex: {
 					type: Boolean,
 					default: false,
-					label: 'Use as front page?'
+					label: 'Use for site index?'
 
 				},
-				navigation: {
-
+				isNav: {
 					type: Boolean,
 					default: false,
 					label: 'Include in navigation menu?'
-
-
-
 				}
 			}
 

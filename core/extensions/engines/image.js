@@ -10,12 +10,11 @@ module.exports = {
 	id: 'image',
 	name: 'Default Image Engine',
 	engine: function(store) {
-			return {
-				type: store.keystone.Field.Types.Url,
-				width: 'medium',
-				label: 'Enter Image url',
-				default: require('./defaultImage'),
-			};
+		return {
+			type: store.keystone.Field.Types.Url,
+			width: 'medium',
+			label: 'Image URL',
+		};
 	}
 
 };

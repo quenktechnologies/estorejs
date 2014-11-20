@@ -1,7 +1,7 @@
 /**
  * UIFactory is an factory object used to keep the keystone field elements
  * somewhat DRY.
- * @class UIFactory
+ * @alias UIFactory
  * @param {Object} types The keystone.Field.Types object.
  * @constructor
  *

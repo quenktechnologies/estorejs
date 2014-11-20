@@ -15,7 +15,7 @@ module.exports = function total(cart) {
 
 	var t = new Big(0);
 	t = t.plus(subtotal(cart));
-	t = t.plus(delivery(cart));
+		t = t.plus(delivery(cart));
 	return t.toString();
 
 };

@@ -50,8 +50,6 @@ beforeEach(function() {
 
 });
 
-
-
 describe('on checking out a transaction', function(done) {
 
 	it('must not be allowed without a valid CSRF token', function(done) {

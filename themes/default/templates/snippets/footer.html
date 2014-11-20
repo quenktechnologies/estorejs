@@ -1,60 +1,19 @@
 {% macro footer($networks) %}
-<footer>
-  <div class="row" style="margin-top:75px;">
-    <div class="col-md-4">
-      <div class="panel panel-primary">
-        <div class="panel-heading">
-          <h5 class="text-white">Information</h5>
-        </div>
-        <div class="panel-body footBox">
-          <ul class="list-unstyled">
-            <li><a href="/pages/about">About Us</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="panel panel-primary">
-        <div class="panel-heading">
-          <h5 class="text-white">Links</h5>
-        </div>
-        <div class="panel-body footBox">
-          <ul class="list-unstyled">
-            <li><a href="/search">Search</a>
-            </li>
-            <li><a href="/categories/all">Catalog</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="panel panel-primary">
-        <div class="panel-heading">
-          <h5 class="text-white">Connect with us</h5>
-          {% for network in $networks %}
-          <a class="<$ network.icon $>" href="<$ network.url $>"></a>
-          {% endfor %}
-        </div>
-        <div class="panel-body footBox">
-          <ul class="list-unstyled list-inline">
-            <li>
-            <a href="#" target="_blank"><h1><span class="fa fa-facebook-square"></span></h1></a>
-            </li>
-            <li>
-<a href="https://github.com/quenktechnologies/estorejs" target="_blank"><h1><span class="fa fa-github-alt"></span></h1></a>
-</li>
-</ul>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-12 text-center">
-      <small>
-        This site powered by <a href="#">EStore</a>
-      </small>
-
-    </div>
+<div class="row" style="margin-top:55px">
+  <div class="col-md-12 text-center">
+    <ul class="list-inline list-unstyled">
+      <li><a href="/pages/about"><span>About</span></a>
+      </li>
+      <li><a href="/pages/shipping"><span>Shipping Info</span></a>
+      </li>
+      <li><a href="/pages/faq"><span>FAQ</span></a>
+      </li>
+      <li><a href="/pages/contact"><span>Contact</span></a>
+      </li>
+    </ul>
   </div>
-</footer>
+  <div class="col-md-12 text-center">
+    <p>Copyright Somebody 2014 | This site powered by <a href="http://vendorlize.com">Vendorlize</a>.</p>
+  </div>
+</div>
 {% endmacro %}

@@ -279,7 +279,6 @@ module.exports = function EStore() {
 	this._bootstrapNunjucks = function() {
 
 		var nunjucks = require('nunjucks');
-
 		this.viewEngine = new nunjucks.Environment(
 			new nunjucks.FileSystemLoader(this.theme.getTemplatePath()), {
 				autoescape: true,
@@ -289,6 +288,9 @@ module.exports = function EStore() {
 				}
 			});
 
+		this.viewEngine.addFilter('subtotal', require('./core/filters/subtotal'));
+		this.viewEngine.addFilter('delivery', require('./core/filters/delivery'));
+		this.viewEngine.addFilter('total', require('./core/filters/total'));
 		this.viewEngine.express(this.app);
 
 
@@ -326,8 +328,6 @@ module.exports = function EStore() {
 
 		this.viewEngine.addExtension('NunjucksMongoose',
 			new NunjucksMongoose(this.keystone.mongoose, 'get'));
-
-		this.viewEngine.addFilter('subotal', require('./core/filters/subtotal'));
 
 		this.keystone.connect(this.app);
 
@@ -420,6 +420,9 @@ module.exports = function EStore() {
 
 		if (pkg.supports.pages)
 			list.push(require('./core/extensions/pages'));
+
+                if(pkg.supports.contact)
+                  list.push(require('./core/extensions/contact'));
 
 		list.push(require('./core/extensions/routes'));
 
