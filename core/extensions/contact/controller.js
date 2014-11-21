@@ -26,7 +26,7 @@ module.exports = {
 			app.get('/contact/success', render('contact/success.html'));
 			app.post('/contact', this.onContactEnquiryRequest);
 
-                        store.addEventListener(store.ENQUIRY, this.onEnquiry);
+			store.addEventListener(store.ENQUIRY, this.onEnquiry);
 
 		};
 
@@ -90,6 +90,7 @@ module.exports = {
 					name: notice.name.full,
 					email: notice.email
 				};
+
 				store.broadcast(store.SEND_EMAIL, 'enquiry', notice, store);
 
 			}).
