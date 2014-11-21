@@ -36,6 +36,11 @@ module.exports = {
 					default: ['products', 'categories', 'transactions']
 
 				}
+			},
+{
+				notifications: {
+					type: types.TextArray
+				}
 			}
 		];
 

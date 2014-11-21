@@ -147,7 +147,7 @@ module.exports = {
 
 				}
 
-			}
+			}, 
 		];
 	},
 	run: function(list, store, types, ui) {

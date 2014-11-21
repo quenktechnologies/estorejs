@@ -1,6 +1,6 @@
 /**
  * MainEventHandler handles events for the main application.
- * @class MainEventHandler
+ * @alias MainEventHandler
  * @param {EStore} store
  * @constructor
  *
@@ -12,24 +12,20 @@ module.exports = function MainEventHandler(store) {
 	/**
 	 * handleEvents registers the handlers for the events.
 	 *
-	 * @method handleEvents
-	 * @param {EventEmitter} em
-	 * @return
 	 *
 	 */
-	this.handleEvents = function(em) {
+	this.handleEvents = function() {
 
-		em.on(store.CATEGORY_CREATED, this.onNewCategoryCreated);
-                em.on(store.SETTINGS_CHANGED, this.onSettingsChanged);
+		store.addEventListener(store.CATEGORY_CREATED, this.onNewCategoryCreated);
+		store.addEventListener(store.SETTINGS_CHANGED, this.onSettingsChanged);
+		store.addEventListener(store.NOTIFICATION, this.onNotification);
 	};
 
 
 	/**
 	 * onNewCategoryCreated
 	 *
-	 * @method onNewCategoryCreated
 	 * @param {Object} category
-	 * @return
 	 *
 	 */
 	this.onNewCategoryCreated = function(category) {
@@ -47,14 +43,52 @@ module.exports = function MainEventHandler(store) {
 	/**
 	 * onSettingsChanged is called when the settings data has changed.
 	 *
-	 * @method onSettingsChanged
 	 * @param {Object} settings The settings object.
-	 * @return
 	 *
 	 */
 	this.onSettingsChanged = function(settings) {
 		store.settings = settings;
 		store._buildGatewayList();
+	};
+
+
+	/**
+	 * onNotification is called when we need to notify the site owner.
+	 *
+	 * @param {Notification} notice
+	 *
+	 */
+	this.onNotification = function(notice) {
+
+		var _ = require('lodash');
+		store.getDataModel('User').
+		find({
+			'notices': {
+				$in: [notice.type]
+			}
+		}).
+		limit(5).
+		exec().
+		then(function(users) {
+
+			notice.to = _.pluck(users, 'email');
+			notice.from = {
+				name: 'EStore Alerts',
+				email: 'no-reply@' + process.env.DOMAIN
+			};
+			store.broadcast(store.SEND_EMAIL, 'notification', notice, store);
+
+		}).
+		end(function(err) {
+
+			if (err)
+				console.log(err);
+
+		});
+
+
+
+
 	};
 
 

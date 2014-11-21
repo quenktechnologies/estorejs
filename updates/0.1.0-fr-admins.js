@@ -31,8 +31,9 @@ exports.create = {
 			"counters",
 			"countries",
 			"transactions",
-                        "customers"
+			"customers",
 		],
+                notifications:["all"]
 	}]
 
 };

@@ -61,9 +61,9 @@ module.exports = function Theme(base, theme) {
 	this.getEmailPath = function() {
 
 		if (this.has('emails'))
-			return this._path + '/emails';
+			return this._path + '/email';
 
-                return require('path').dirname(require.main.filename) +'/email';
+		return require('path').dirname(require.main.filename) + '/themes/default/templates/email';
 
 	};
 

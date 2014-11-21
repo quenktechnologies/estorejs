@@ -52,6 +52,9 @@ module.exports = function EStore() {
 	this.CUSTOMER_ACTIVATED = 'customer activated';
 	this.CUSTOMER_SIGNED_IN = 'customer signed in';
 	this.QUERY_ERROR = 'query error';
+	this.NOTIFICATION = 'notify';
+	this.SEND_EMAIL = 'SEND_EMAIL';
+        this.ENQUIRY = 'ENQUIRY';
 
 	//Constants
 	this.STATUS_SYSTEM_ERROR = 503;
@@ -421,8 +424,8 @@ module.exports = function EStore() {
 		if (pkg.supports.pages)
 			list.push(require('./core/extensions/pages'));
 
-                if(pkg.supports.contact)
-                  list.push(require('./core/extensions/contact'));
+		if (pkg.supports.contact)
+			list.push(require('./core/extensions/contact'));
 
 		list.push(require('./core/extensions/routes'));
 

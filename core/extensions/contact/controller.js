@@ -26,6 +26,8 @@ module.exports = {
 			app.get('/contact/success', render('contact/success.html'));
 			app.post('/contact', this.onContactEnquiryRequest);
 
+                        store.addEventListener(store.ENQUIRY, this.onEnquiry);
+
 		};
 
 
@@ -41,33 +43,68 @@ module.exports = {
 
 			var contact = store.getDataModel('Enquiry', true, req.body);
 
-			contact.validate(function(err) {
+			contact.save(function(err, enquiry) {
 
 				if (err) {
+					console.log(err);
 					res.locals.$errors = err;
 					render('contact/index.html')(req, res, next);
-					return;
-
+					return next();
 				}
 
-				contact.save(function(err, enquiry) {
+				res.redirect('contact/success');
+				store.broadcast(store.ENQUIRY, enquiry);
 
-					if (err) {
-						console.log(err);
-						return next();
-
-					}
-
-					res.redirect('contact/success');
-					store.broadcast(store.NOTIFICATION, enquiry);
-
-				});
 
 
 			});
 
 
 		};
+
+		/**
+		 * onEnquiry sends the message to the site owner.
+		 *
+		 * @param {Notification} notice
+		 *
+		 */
+		this.onEnquiry = function(notice) {
+
+			var _ = require('lodash');
+			store.getDataModel('User').
+			find({
+				'notices': {
+					$in: [notice.type]
+				}
+			}).
+			limit(5).
+			exec().
+			then(function(users) {
+
+				notice.to = _.pluck(users, 'email');
+
+				if (notice.to.length < 1)
+					return;
+
+				notice.from = {
+					name: notice.name.full,
+					email: notice.email
+				};
+				store.broadcast(store.SEND_EMAIL, 'enquiry', notice, store);
+
+			}).
+			end(function(err) {
+
+				if (err)
+					console.log(err);
+
+			});
+
+
+
+
+		};
+
 
 	}
 
