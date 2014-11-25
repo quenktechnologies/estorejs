@@ -1,5 +1,5 @@
 var EventEmitter = require('events').EventEmitter;
-var Theme = require('./core/util/Theme');
+var Theme = require('./core/sys/Theme');
 var Extras = require('./core/util/Extras');
 var Endpoints = require('./core/extensions/ajax/Endpoints');
 var Express = require('express');
@@ -10,6 +10,8 @@ var UIFactory = require('./core/util/UIFactory');
 var MainEventHandler = require('./core/util/MainEventHandler');
 var KeystoneProvider = require('./core/util/KeystoneProvider');
 var Gateways = require('./core/checkout/Gateways');
+var DynamicFileSystemLoader = require('./core/loader/DynamicFileSystemLoader');
+var Directory = require('./core/sys/Directory');
 
 /**@module*/
 
@@ -28,7 +30,6 @@ var Gateways = require('./core/checkout/Gateways');
  *
  */
 module.exports = function EStore() {
-
 
 	this.models = [];
 	this.settingFields = {};
@@ -54,7 +55,9 @@ module.exports = function EStore() {
 	this.QUERY_ERROR = 'query error';
 	this.NOTIFICATION = 'notify';
 	this.SEND_EMAIL = 'SEND_EMAIL';
-        this.ENQUIRY = 'ENQUIRY';
+	this.ENQUIRY = 'ENQUIRY';
+	this.SERVER_STARTED = 'SERVER_STARTED';
+
 
 	//Constants
 	this.STATUS_SYSTEM_ERROR = 503;
@@ -151,15 +154,6 @@ module.exports = function EStore() {
 	this.endpoints = new Endpoints();
 
 	/**
-	 * _extras represents the contents of the _extras folder.
-	 *
-	 * @property Extras
-	 * @type {Extras}
-	 *
-	 */
-	this._extras = new Extras('extras');
-
-	/**
 	 * extensions
 	 *
 	 * @property extensions
@@ -204,16 +198,15 @@ module.exports = function EStore() {
 	 */
 	this._preloadThemes = function() {
 
-		var fs = require('fs');
+		var themes = new Directory(__dirname + '/themes');
 		this._templates = [];
 
-		fs.readdirSync('themes').forEach(function(file) {
+		themes.forEachDirectory(function(path, file) {
 
-			if (fs.statSync('themes/' + file).isDirectory())
-				this._templates.push({
-					value: 'themes/' + file,
-					label: file
-				});
+			this._templates.push({
+				value: 'themes/' + file,
+				label: file
+			});
 
 		}.bind(this));
 
@@ -228,25 +221,20 @@ module.exports = function EStore() {
 	 * @return  {Promise}
 	 *
 	 */
-	this._preloadSettings = function(cb) {
+	this._preloadSettings = function() {
 
-		var db = require('mongojs')(this.keystoneConfig.mongoURI(), ['settings']);
+		var db = require('promised-mongo')(this.keystoneConfig.mongoURI(), ['settings']);
+		var self = this;
 
-		db.settings.findOne(function(err, settings) {
-
-			if (err) throw err;
+		return db.settings.findOne().
+		then(function(settings) {
 
 			if (!settings)
 				settings = {};
 
-			this.settings = settings;
+			self.settings = settings;
 
-			cb();
-
-
-		}.bind(this));
-
-
+		});
 
 	};
 
@@ -259,16 +247,15 @@ module.exports = function EStore() {
 	 */
 	this._bootstrapTheme = function() {
 
-		var theme;
+		var path;
 
 		if (this.settings.theme)
-			theme = this.settings.theme.current;
+			path = this.settings.theme.current;
 
-		if (!theme)
-			theme = 'themes/default';
+		if (!path)
+			path = 'themes/default';
 
-		this.theme = new Theme(require('path').dirname(
-			require.main.filename), theme);
+		this.theme = new Theme(__dirname + '/' + path);
 
 	};
 
@@ -282,8 +269,9 @@ module.exports = function EStore() {
 	this._bootstrapNunjucks = function() {
 
 		var nunjucks = require('nunjucks');
+		this.loader = new DynamicFileSystemLoader(this.theme);
 		this.viewEngine = new nunjucks.Environment(
-			new nunjucks.FileSystemLoader(this.theme.getTemplatePath()), {
+			this.loader, {
 				autoescape: true,
 				tags: {
 					variableStart: '<$',
@@ -309,8 +297,6 @@ module.exports = function EStore() {
 	 */
 	this._boostrapKeystone = function() {
 
-		this.theme.exists() || this.theme.use('default');
-
 		this.keystone.init();
 		this.keystone.set('name', process.env.DOMAIN || 'Estore');
 		this.keystone.set('brand', process.env.DOMAIN || 'Estore');
@@ -320,14 +306,14 @@ module.exports = function EStore() {
 		this.keystone.set('auth', true);
 		this.keystone.set('cookie secret', this.keystoneConfig.cookieSecret());
 		this.keystone.set('view engine', 'html');
-		this.keystone.set('views', this.theme.getTemplatePath());
-		this.keystone.set('static', this.theme.getStaticPath());
-		this.keystone.set('emails', this.theme.getEmailPath());
+		//	this.keystone.set('views', this.theme.templates());
+		this.keystone.set('static', this.theme.statics());
+		this.keystone.set('emails', this.theme.emails());
 		this.keystone.set('port', process.env.PORT || 3000);
 		this.keystone.set('mongo', this.keystoneConfig.mongoURI());
-		this.keystone.set('custom engine', this.viewEngine.render);
+		//		this.keystone.set('custom engine', this.viewEngine.render);
 		this.keystone.set('user model', 'User');
-
+console.log('cookie secret is ', this.keystoneConfig.cookieSecret());
 
 		this.viewEngine.addExtension('NunjucksMongoose',
 			new NunjucksMongoose(this.keystone.mongoose, 'get'));
@@ -360,8 +346,12 @@ module.exports = function EStore() {
 		this.extensions.push(require('./core/models/transaction'));
 		this.extensions.push(require('./core/models/country'));
 
-		if (this._extras.has('extensions'))
-			this.extensions.push.apply(this.extensions, this._extras.get('extensions', true));
+		var extras = new Directory(__dirname + '/extras/extensions');
+		extras.forEachDirectory(function(path) {
+
+			this.extensions.push(require(path));
+
+		}.bind(this));
 
 		this.extensions.forEach(function(ext) {
 
@@ -371,7 +361,6 @@ module.exports = function EStore() {
 			}
 
 		}.bind(this));
-
 
 
 
@@ -416,7 +405,7 @@ module.exports = function EStore() {
 	this._processExtensions = function() {
 
 		var list = [];
-		var pkg = this.theme.getPackageFile().estore;
+		var pkg = this.theme.require('package.json').estore;
 
 		if (pkg.supports.blog)
 			list.push(require('./core/extensions/blog'));
@@ -465,7 +454,7 @@ module.exports = function EStore() {
 	 */
 	this._scanPages = function() {
 
-		var pages = this.theme.getPackageFile().estore.supports.pages;
+		var pages = this.theme.require('package.json').estore.supports.pages;
 
 		if (!pages)
 			return;
@@ -735,13 +724,6 @@ module.exports = function EStore() {
 		this.keystone.set('routes', function(app) {
 
 			this.composite.routeRegistration(app);
-			this._extras.get('apps', true).
-			forEach(function(config) {
-				if (typeof config === 'object')
-					return app.use(config.mount, config.controller);
-				app.use(config);
-
-			}.bind(this));
 
 		}.bind(this));
 
@@ -786,32 +768,41 @@ module.exports = function EStore() {
 	};
 
 	/**
-	 * start will start the server
-	 *
+	 * start estore
 	 * @method start
-	 * @param {Object} keystone
 	 * @return
 	 *
 	 */
-	this.start = function() {
+	this.start = function(cb) {
 
-		this._preloadThemes();
-		this._preloadSettings(function() {
-			this._bootstrapTheme();
-			this._bootstrapNunjucks();
-			this._boostrapKeystone();
-			this._gatherExtensions();
-			this._registerSettingsDataModel();
-			this._processExtensions();
-			this._scanPages();
-			this._modelRegistration();
-			this._buildGatewayList();
-			this._eventRegistration();
-			this._routeRegistration();
-			this._startDaemons();
-			this.keystone.start();
-			this._fetchCategories();
-		}.bind(this));
+		var self = this;
+		self._preloadThemes();
+
+		return self._preloadSettings().
+		then(function() {
+			self._bootstrapTheme();
+			self._bootstrapNunjucks();
+			self._boostrapKeystone();
+			self._gatherExtensions();
+			self._registerSettingsDataModel();
+			self._processExtensions();
+			self._scanPages();
+			self._modelRegistration();
+			self._buildGatewayList();
+			self._eventRegistration();
+			self._routeRegistration();
+			self._startDaemons();
+			self.keystone.start(function() {
+
+				self._fetchCategories();
+				self.broadcast(self.SERVER_STARTED, self);
+				if (cb) cb();
+
+			});
+
+		}).done(function(err) {
+			if (err) throw err;
+		});
 
 	};
 
@@ -855,7 +846,6 @@ module.exports = function EStore() {
 	 *
 	 */
 	this.broadcast = function() {
-
 		this.bus.emit.apply(this.bus, arguments);
 	};
 

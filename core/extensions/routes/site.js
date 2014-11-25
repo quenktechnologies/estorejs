@@ -23,7 +23,7 @@ module.exports = {
 
       var route;
       var routes = [];
-      var theme = store.theme.getPackageFile().estore;
+      var theme = store.theme.require('package.json').estore;
 
       app.get('/', this.onIndexPageRequest);
 
