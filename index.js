@@ -313,7 +313,6 @@ module.exports = function EStore() {
 		this.keystone.set('mongo', this.keystoneConfig.mongoURI());
 		//		this.keystone.set('custom engine', this.viewEngine.render);
 		this.keystone.set('user model', 'User');
-console.log('cookie secret is ', this.keystoneConfig.cookieSecret());
 
 		this.viewEngine.addExtension('NunjucksMongoose',
 			new NunjucksMongoose(this.keystone.mongoose, 'get'));
