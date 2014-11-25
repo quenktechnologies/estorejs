@@ -1,4 +1,4 @@
-var RandomHexString = require('./RandomHexString');
+var Randomness = require('./Randomness');
 /**
  * KeystoneProvider provides certain config values for keystone.
  * @class KeystoneProvider
@@ -44,7 +44,7 @@ module.exports = function KeystoneProvider() {
 		var secret = process.env.COOKIE_SECRET;
 
 		if (!secret)
-			return new RandomHexString(64);
+			return Randomness.getString(64);
 
 		return secret;
 
