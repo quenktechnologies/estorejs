@@ -9,12 +9,6 @@ pids
 logs
 results
 node_modules
-themes/*
-!themes/default
-updates/*
-!updates/[0-9].[0-9].[0-9]-demo.js
-!updates/[0-9].[0-9].[0-9]-fr-*.js
-extras
 npm-debug.log
 .mongo
 .trash
