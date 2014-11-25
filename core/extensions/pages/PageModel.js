@@ -26,6 +26,7 @@ module.exports = {
 					type: types.Select,
 					options: store.pages.templates,
 					initial: true,
+					default: store.pages.templates[0].value,
 					required: true
 
 				},
