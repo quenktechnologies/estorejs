@@ -13,6 +13,12 @@ var nunjucks = require('nunjucks');
  */
 module.exports = function DynamicFileSystemLoader(theme) {
 
+	//@todo inject the loader, listen for THEME_CHANGE_EVENT?
+
+	var loader = new nunjucks.FileSystemLoader(theme.templates());
+
+	if (loader.on)
+		this.on = loader.on.bind(loader);
 
 	/**
 	 * getSource returns the template asked for.
@@ -21,9 +27,7 @@ module.exports = function DynamicFileSystemLoader(theme) {
 	 * @return {Object}
 	 */
 	this.getSource = function(tmpl) {
-
-		return (new nunjucks.FileSystemLoader(theme.templates())).getSource(tmpl);
-
+		return loader.getSource(tmpl);
 	};
 
 
