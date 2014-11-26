@@ -37,7 +37,8 @@
     "nunjucks-mongoose": "0.2.x",
     "passport": "0.2.x",
     "passport-local": "^1.0.0",
-    "q": "1.0.x"
+    "q": "1.0.x",
+    "promised-mongo": "^0.11.1"
   },
   "engines": {
     "node": "0.10.x",
@@ -47,7 +48,6 @@
     "grunt-supervisor": "^0.2.4",
     "mocha": "^1.21.4",
     "must": "^0.12.0",
-    "promised-mongo": "^0.11.1",
     "supertest": "^0.13.0",
     "supertest-as-promised": "^1.0.0"
   }
