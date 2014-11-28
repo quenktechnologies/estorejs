@@ -63,8 +63,12 @@ module.exports = function CustomerController(store) {
 			session: false
 		}, function(err, customer, msg) {
 
-			if (err)
-				return next(err);
+			if (err) {
+
+                          console.log(err);
+				res.locals.$errors = err.errors;
+				res.render('customers/signup.html');
+			}
 
 			if (!customer)
 				return res.render('customers/signup.html', {
@@ -180,7 +184,7 @@ module.exports = function CustomerController(store) {
 		then(function(saved) {
 
 			res.redirect('/signin');
-store.broadcast(store.CUSTOMER_ACTIVATED, saved);
+			store.broadcast(store.CUSTOMER_ACTIVATED, saved);
 
 
 		}).

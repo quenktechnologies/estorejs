@@ -11,7 +11,7 @@ beforeEach(function() {
 
 	stack = [];
 	model = {};
-	syntax = new ModelCompilerSyntax(model, stack);
+	syntax = new ModelCompilerSyntax();
 
 	source = {
 		options: {
@@ -41,7 +41,15 @@ beforeEach(function() {
 
 		}
 
+
 	};
+
+	syntax.newRound({
+		options: {},
+		navigation: {},
+		stack: []
+	});
+
 
 });
 
@@ -52,6 +60,7 @@ describe('ModelCompilerSyntax', function() {
 		it('must set the options on the model', function() {
 
 			syntax.options(source);
+			model = syntax.getTree();
 			demand(model.options).eql(source.options);
 
 		});
@@ -63,6 +72,7 @@ describe('ModelCompilerSyntax', function() {
 		it('must set the navigation on the model', function() {
 
 			syntax.navigation(source);
+			model = syntax.getTree();
 			demand(model.navigation).eql(source.navigation);
 
 		});
@@ -74,6 +84,7 @@ describe('ModelCompilerSyntax', function() {
 		it('must set the defaultColumns on the model', function() {
 
 			syntax.defaultColumns(source);
+			model = syntax.getTree();
 			demand(model.defaultColumns).eql(source.defaultColumns);
 
 		});
@@ -86,7 +97,9 @@ describe('ModelCompilerSyntax', function() {
 		it('must set the model\'s fields', function() {
 
 			syntax.model(source);
-			stack.pop().must.be.instanceOf(FieldsMethod);
+
+			model = syntax.getTree();
+			model.stack.pop().must.be.instanceOf(FieldsMethod);
 
 		});
 
@@ -98,7 +111,8 @@ describe('ModelCompilerSyntax', function() {
 		it('must add to the model\'s document methods', function() {
 
 			syntax.methods(source);
-			stack.pop().must.be.instanceOf(DocumentMethod);
+			model = syntax.getTree();
+			model.stack.pop().must.be.instanceOf(DocumentMethod);
 
 		});
 
@@ -109,7 +123,8 @@ describe('ModelCompilerSyntax', function() {
 		it('must add to the model\'s document methods', function() {
 
 			syntax.methods(source);
-			stack.pop().must.be.instanceOf(DocumentMethod);
+			model = syntax.getTree();
+			model.stack.pop().must.be.instanceOf(DocumentMethod);
 
 		});
 
@@ -120,7 +135,8 @@ describe('ModelCompilerSyntax', function() {
 		it('must add to the model\'s run methods', function() {
 
 			syntax.run(source);
-			stack.pop().must.be.instanceOf(RunMethod);
+			model = syntax.getTree();
+		model.	stack.pop().must.be.instanceOf(RunMethod);
 
 		});
 
