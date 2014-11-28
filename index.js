@@ -12,7 +12,8 @@ var KeystoneProvider = require('./core/util/KeystoneProvider');
 var Gateways = require('./core/checkout/Gateways');
 var DynamicFileSystemLoader = require('./core/loader/DynamicFileSystemLoader');
 var Directory = require('./core/sys/Directory');
-
+var ModelCompiler = require('./core/models/ModelCompiler');
+var ModelCompilerSyntax = require('./core/models/ModelCompilerSyntax');
 /**@module*/
 
 /**
@@ -30,6 +31,8 @@ var Directory = require('./core/sys/Directory');
  *
  */
 module.exports = function EStore() {
+
+	var modelCompiler = new ModelCompiler(new ModelCompilerSyntax());
 
 	this.models = [];
 	this.settingFields = {};
@@ -185,7 +188,7 @@ module.exports = function EStore() {
 	 * @property installer
 	 * @type {Installer}
 	 */
-	this.installer = new Installer(this);
+	this.installer = new Installer(this, modelCompiler);
 
 
 
@@ -336,14 +339,14 @@ module.exports = function EStore() {
 		this.extensions.push(require('./core/extensions/payments/cheque'));
 		this.extensions.push(require('./core/extensions/daemons/transaction'));
 		this.extensions.push(require('./core/extensions/engines/image'));
-		this.extensions.push(require('./core/models/user'));
-		this.extensions.push(require('./core/models/counter'));
-		this.extensions.push(require('./core/models/item'));
-		this.extensions.push(require('./core/models/invoice'));
-		this.extensions.push(require('./core/models/product'));
-		this.extensions.push(require('./core/models/category'));
-		this.extensions.push(require('./core/models/transaction'));
-		this.extensions.push(require('./core/models/country'));
+		this.extensions.push(require('./core/extensions/models/user'));
+		this.extensions.push(require('./core/extensions/models/counter'));
+		this.extensions.push(require('./core/extensions/models/item'));
+		this.extensions.push(require('./core/extensions/models/invoice'));
+		this.extensions.push(require('./core/extensions/models/product'));
+		this.extensions.push(require('./core/extensions/models/category'));
+		this.extensions.push(require('./core/extensions/models/transaction'));
+		this.extensions.push(require('./core/extensions/models/country'));
 
 		var extras = new Directory(__dirname + '/extras/extensions');
 		extras.forEachDirectory(function(path) {
@@ -374,7 +377,7 @@ module.exports = function EStore() {
 	 */
 	this._registerSettingsDataModel = function() {
 
-		var settings = require('./core/models/settings');
+		var settings = require('./core/extensions/models/settings');
 		var fields = settings.model(this, this.keystone.Field.Types);
 
 		fields.push.apply(this.settingFields);
@@ -483,118 +486,9 @@ module.exports = function EStore() {
 	 */
 	this._modelRegistration = function() {
 
-		this.composite.modelRegistration(this.models);
-		var self = this;
-		var next;
-		var order = [];
-		var saved = {};
-		var current;
-		var noop = function() {};
-		var factory = new UIFactory(this.keystone.Field.Types);
+		//	this.composite.modelRegistration(this.models);
 
-		self.models.forEach(function(next) {
-
-			current = null;
-
-			if (saved.hasOwnProperty(next.name))
-				current = saved[next.name];
-
-			if ((!current) || (next.replace)) {
-				current = {
-					options: [],
-					model: [],
-					run: [],
-					nav: []
-				};
-
-				saved[next.name] = current;
-
-			}
-
-			if (next.options)
-				current.options.push(next.options);
-
-			if (next.defaultColumns)
-				current.defaultColumns = next.defaultColumns;
-
-			if (typeof next.model === 'function')
-				current.model.push(next.model.bind(next));
-
-			next.run = next.run || noop;
-			next.navigate = next.navigate || noop;
-			current.run.push(next.run.bind(next));
-			current.nav.push(next.navigate.bind(next));
-
-			var recorded = false;
-			order.forEach(function(entry) {
-
-				if (entry === next.name)
-					recorded = true;
-
-			});
-
-			if (order.indexOf(next.name) < 0)
-				order.push(next.name);
-
-		});
-
-		order.forEach(function(key) {
-
-			var options = {};
-			var list;
-			next = saved[key];
-
-			next.options.forEach(function(opt) {
-
-				for (var key in opt) {
-					if (opt.hasOwnProperty(key))
-						options[key] = opt[key];
-				}
-
-			});
-
-			list = new self.keystone.List(key, options);
-
-			if (next.defaultColumns)
-				list.defaultColumns = next.defaultColumns;
-
-			next.model.forEach(function(f) {
-				list.add.apply(list, f(self,
-					self.keystone.Field.Types, factory));
-			});
-
-			next.run.forEach(function(f) {
-				f(list, self, self.keystone.Field.Types);
-			});
-
-			next.nav.forEach(function(f) {
-				f(self.navigation);
-			});
-
-			list.schema.pre('validate', function(user, next, done) {
-
-				if (this._req_user) {
-
-					var collection = this.constructor.collection.name;
-
-					if (this._req_user.roles.indexOf(collection) < 0)
-						return next(new Error(
-							'You do not have the' +
-							' required permissions ' +
-							'to edit the ' +
-							collection + ' collection!'));
-
-
-				}
-
-				next();
-			});
-
-			list.register();
-			console.log('Registered List ' + key + '.');
-
-		});
-
+		modelCompiler.compile(this);
 		this.navigation.settings = ['settings', 'users', 'countries', 'counters'];
 		this.keystone.set('nav', this.navigation);
 

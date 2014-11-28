@@ -16,10 +16,11 @@ var Controller = require('./Controller');
  *
  * @constructor
  * @param {EStore} store
+ * @param {ModelCompiler} modelCompiler
  * @alias Installer
  *
  */
-module.exports = function Installer(store) {
+module.exports = function Installer(store, modelCompiler) {
 
 	var __Controller__ = new Controller();
 	var self = this;
@@ -46,8 +47,7 @@ module.exports = function Installer(store) {
 	 */
 	this.model = function(ext) {
 
-		store.models.push(ext);
-
+		modelCompiler.parse(ext);
 
 	};
 
