@@ -44,7 +44,7 @@ module.exports = function ModelCompiler(syntax) {
 
 		tree.stack.push(new PreMethod({
 
-			validate: function(user, next, done) {
+			validate: function(next) {
 
 				if (this._req_user) {
 
