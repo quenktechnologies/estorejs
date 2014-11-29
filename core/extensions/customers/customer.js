@@ -54,12 +54,9 @@ module.exports = {
 		];
 
 	},
-	navigate: function(nav) {
+	navigation: {
 
-		if (nav.settings) {
-			var index = nav.indexOf('users') + 1;
-			nav.splice(index, 0, 'customers');
-		}
+		customers: ['customers']
 
 
 	}

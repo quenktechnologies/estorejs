@@ -36,7 +36,7 @@ module.exports = function TransactionCallbacks(store) {
 			console.log('DEBUG: updating products');
 
 			transaction.invoice.items.forEach(function(item) {
-console.log(item);
+
 				if (item.stock)
 					if (item.stock.track)
 
@@ -172,11 +172,11 @@ console.log(item);
 	 * the commited transaction.
 	 *
 	 * It is meant to be the finally action.
-	 *
+	 * @param {Function} cb Optional callback called when committing is done.
 	 * @return {continueCallback}
 	 *
 	 */
-	this.getSaveCommittedTransactionCallback = function() {
+	this.getSaveCommittedTransactionCallback = function(cb) {
 
 		return function(transaction) {
 
@@ -191,6 +191,8 @@ console.log(item);
 			done(function(saved) {
 
 				console.log('Transaction ' + transaction._id + ' committed successfully');
+				if (cb)
+					cb(saved);
 			});
 
 		};

@@ -51,18 +51,18 @@ module.exports = {
 				isFeatured: {
 					type: Boolean
 				},
-                                keywords: {
+				keywords: {
 
-                                  type: types.TextArray
+					type: types.TextArray
 
-                                }
+				}
 			}
 
 		];
 
 	},
-	navigate: function(nav) {
-		nav.blog = ['posts', 'post-categories'];
+	navigation: {
+		blog: ['posts', 'post-categories']
 	}
 
 

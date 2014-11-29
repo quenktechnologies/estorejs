@@ -30,7 +30,7 @@ module.exports = function CheckoutAssistant(store, handler) {
 	 *
 	 */
 	this.checkout = function(cart, checkout) {
-console.log(checkout);
+
 		var gateways = store.getGateways();
 		if (!gateways.hasActive(checkout.workflow))
 			return handler.onGatewayNotFound();

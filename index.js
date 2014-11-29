@@ -485,14 +485,7 @@ module.exports = function EStore() {
 	 *
 	 */
 	this._modelRegistration = function() {
-
-		//	this.composite.modelRegistration(this.models);
-
 		modelCompiler.compile(this);
-		this.navigation.settings = ['settings', 'users', 'countries', 'counters'];
-		this.keystone.set('nav', this.navigation);
-
-
 	};
 
 

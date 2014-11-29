@@ -79,6 +79,7 @@ module.exports = function ModelCompiler(syntax) {
 
 		var tree;
 		var types = store.keystone.Field.Types;
+		var nav = {};
 		fields = new UIFactory(types);
 
 		for (var key in trees)
@@ -91,9 +92,13 @@ module.exports = function ModelCompiler(syntax) {
 					tree.stack.pop().execute(list, types, fields, store);
 
 				list.register();
+				_.merge(nav, tree.navigation);
 				console.log('Registered List ' + key + '.');
 
 			}
+		nav.settings = ['settings', 'users', 'countries', 'counters'];
+		store.keystone.set('nav', nav);
+
 	};
 
 };

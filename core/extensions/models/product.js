@@ -273,9 +273,9 @@ module.exports = {
 
 
 	},
-	navigate: function(nav) {
+	navigation: {
 
-		nav.products = ['products', 'categories'];
+          products : ['products', 'categories']
 
 	}
 

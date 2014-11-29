@@ -54,8 +54,8 @@ module.exports = {
 
 	},
 
-	navigate: function(nav) {
-		nav.pages = ['pages'];
+	navigation: {
+		pages: ['pages']
 	}
 
 

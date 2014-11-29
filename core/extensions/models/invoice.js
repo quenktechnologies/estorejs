@@ -27,8 +27,9 @@ module.exports = {
 
 		return ['Invoice',
 			invoice,
-			'Customer',
-                        {customer:customer},
+			'Customer', {
+				customer: customer
+			},
 			'Billing Address', {
 				address: {
 					billing: address,
@@ -69,10 +70,6 @@ module.exports = {
 			});
 
 			this.total = total.toString();
-
-
-
-
 
 		};
 
@@ -117,8 +114,8 @@ module.exports = {
 
 	},
 
-	navigate: function(nav) {
-		nav.sales = ['invoices'];
+	navigation:  {
+          sales : ['invoices']
 	}
 
 

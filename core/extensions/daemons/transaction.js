@@ -14,7 +14,7 @@ module.exports = {
 
 	type: 'daemon',
 	interval: process.env.TRANSACTION_APPROVAL_INTERVAL || 10000,
-	exec: function(store) {
+	exec: function(store, cb) {
 
 		var callbacks = new TransactionCallbacks(store);
 
@@ -34,8 +34,8 @@ module.exports = {
 					callbacks.getProductUpdateCallback(
 						callbacks.getInvoiceNumberCallback(
 							callbacks.getSaveInvoiceCallback(
-								callbacks.
-                                                                getSaveCommittedTransactionCallback()))));
+								callbacks.getSaveCommittedTransactionCallback(cb)
+							))));
 			});
 		};
 	}
