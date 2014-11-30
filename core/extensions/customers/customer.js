@@ -12,18 +12,14 @@ module.exports = {
 	track: true,
 	model: function(store, types, ui) {
 
-		return [
-
-			{
+		return [{
 				name: {
 					type: types.Name,
-					required: true,
 					initial: true,
 				},
 				email: {
 					type: types.Email,
 					initial: true,
-					required: true,
 				},
 				password: {
 					type: types.Password,
@@ -51,14 +47,24 @@ module.exports = {
 					ref: 'Invoice'
 				}
 			}
+
 		];
 
 	},
+	validation: {
+
+		email: {
+			presence: true
+		},
+		password: {
+			presence: true,
+			length: {
+				minimum: 8,
+				message: 'must be at least 8 characters'
+			}
+		}
+	},
 	navigation: {
-
 		customers: ['customers']
-
-
 	}
-
 };

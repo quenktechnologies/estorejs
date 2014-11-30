@@ -3,7 +3,6 @@
  */
 var _ = require('lodash');
 var ModelCompilerSyntax = require('./ModelCompilerSyntax');
-var PreMethod = require('./PreMethod');
 var UIFactory = require('./UIFactory');
 
 /**
@@ -42,28 +41,6 @@ module.exports = function ModelCompiler(syntax) {
 
 		var tree = syntax.getTree();
 
-		tree.stack.push(new PreMethod({
-
-			validate: function(next) {
-
-				if (this._req_user) {
-
-					var collection =
-						this.constructor.collection.name;
-
-					if (this._req_user.roles.indexOf(collection) < 0)
-						return next(new Error(
-							'You do not have the' +
-							' required permissions ' +
-							'to edit the ' +
-							collection + ' collection!'));
-				}
-
-				next();
-			}
-
-		}));
-
 		trees[source.name] = tree;
 
 
@@ -89,7 +66,7 @@ module.exports = function ModelCompiler(syntax) {
 				var list = store.keystone.List(key, tree.options);
 				list.defaultColumns = tree.defaultColumns;
 				while (tree.stack.length > 0)
-					tree.stack.pop().execute(list, types, fields, store);
+					tree.stack.pop().execute(key, list, types, fields, store);
 
 				list.register();
 				_.merge(nav, tree.navigation);

@@ -190,6 +190,8 @@ module.exports = function EStore() {
 	 */
 	this.installer = new Installer(this, modelCompiler);
 
+	this.validators = [];
+
 
 
 	/**

@@ -33,12 +33,13 @@
     "lodash": "2.4.x",
     "mongojs": "^0.15.1",
     "node-uuid": "^1.4.1",
-    "promised-mongo": "^0.11.1",
     "nunjucks": "1.0.x",
     "nunjucks-mongoose": "0.2.x",
     "passport": "0.2.x",
     "passport-local": "^1.0.0",
-    "q": "1.0.x"
+    "promised-mongo": "^0.11.1",
+    "q": "1.0.x",
+    "validate.js": "^0.3.2"
   },
   "engines": {
     "node": "0.10.x",

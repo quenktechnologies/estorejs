@@ -10,6 +10,7 @@ var FieldsMethod = require('./FieldsMethod');
 var PreMethod = require('./PreMethod');
 var PostMethod = require('./PostMethod');
 var RunMethod = require('./RunMethod');
+var ValidationMethod = require('./ValidationMethod');
 
 /**
  * sourceCompilerSyntax contains the steps involved in compiling a source.
@@ -82,6 +83,10 @@ module.exports = function ModelCompilerSyntax() {
 	this.run = function(source) {
 		stack.push(new RunMethod(source.run));
 	};
+
+        this.validation = function(source) {
+stack.push(new ValidationMethod(source.validation));
+        };
 
 
 };
