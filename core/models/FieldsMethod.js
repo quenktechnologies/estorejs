@@ -19,7 +19,7 @@ module.exports = function FieldsMethod(f) {
 
 module.exports.prototype = {
 
-	execute: function(list, types, fields, store) {
+	execute: function(name, list, types, fields, store) {
 		list.add.apply(list, this.f(store, types, fields));
 	}
 };

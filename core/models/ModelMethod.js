@@ -20,7 +20,7 @@ module.exports = function ModelMethod(m) {
 
 module.exports.prototype = {
 
-	execute: function(list) {
+	execute: function(name, list) {
 
 		for (var key in this.methods)
 			if (this.methods.hasOwnProperty(key)) {

@@ -1,4 +1,3 @@
-
 /**
  * @module
  */
@@ -12,10 +11,10 @@
  * @constructor
  *
  */
-module.exports = function DocumentMethod (m) {
+module.exports = function DocumentMethod(m) {
 
-  this.methods = m;
-  
+	this.methods = m;
+
 
 };
 
@@ -23,18 +22,17 @@ module.exports = function DocumentMethod (m) {
 module.exports.prototype = {
 
 
-  execute: function(list) {
+	execute: function(name, list) {
 
-    for(var key in this.methods)
-      if(this.methods.hasOwnProperty(key)) {
+		for (var key in this.methods)
+			if (this.methods.hasOwnProperty(key)) {
 
-        list.schema.methods[key] = this.methods[key];
+				list.schema.methods[key] = this.methods[key];
 
-      }
+			}
 
 
 
-  }
+	}
 
 };
-
