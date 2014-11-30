@@ -47,14 +47,13 @@ module.exports = {
 					ref: 'Invoice'
 				}
 			}
-
 		];
 
 	},
 	validation: {
-
 		email: {
-			presence: true
+			presence: true,
+			email: true
 		},
 		password: {
 			presence: true,
