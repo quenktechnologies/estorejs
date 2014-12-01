@@ -259,7 +259,7 @@ module.exports = function EStore() {
 			path = this.settings.theme.current;
 
 		if (!path)
-			path = 'themes/default';
+			path = process.env.DEFAULT_THEME || 'themes/default';
 
 		this.theme = new Theme(__dirname + '/' + path);
 
@@ -812,25 +812,6 @@ module.exports = function EStore() {
 		return this.viewEngine;
 
 	};
-
-
-	/**
-	 * set overrides the value of current settings
-	 *
-	 * @param {Object} conf An object that will be merged with the settings.
-	 * @todo something better
-	 *
-	 */
-	this.set = function(conf) {
-
-		_.merge(this.settings, conf);
-		return this;
-
-
-	};
-
-
-
 
 
 };
