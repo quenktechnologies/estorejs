@@ -35,7 +35,7 @@ module.exports = {
 					current: {
 						type: types.Select,
 						options: store._templates,
-						default: 'themes/default',
+						default: process.env.DEFAULT_THEME || 'themes/default',
 						label: 'Select one:'
 					},
 					skin: {
