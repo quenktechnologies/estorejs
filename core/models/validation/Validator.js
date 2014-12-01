@@ -3,6 +3,7 @@
  */
 
 var vjs = require('validate.js');
+var unique = require('./unique');
 vjs.Promise = require('q').Promise;
 
 /**
@@ -11,11 +12,13 @@ vjs.Promise = require('q').Promise;
  * All validation is done using the async api.
  * @alias Validator
  * @param {Object} cons The constraints in validate.js syntax.
+ * @param {EStore} store
  * @constructor
  *
  */
-module.exports = function Validator(cons) {
+module.exports = function Validator(cons, store) {
 	this._cons = cons;
+	vjs.validators.unique = unique(store);
 };
 
 module.exports.prototype = {

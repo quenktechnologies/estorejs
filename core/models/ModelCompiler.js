@@ -3,7 +3,10 @@
  */
 var _ = require('lodash');
 var ModelCompilerSyntax = require('./ModelCompilerSyntax');
+var SaveQStyleMethod = require('./SaveQStyleMethod');
+var QModelMethod = require('./QModelMethod');
 var UIFactory = require('./UIFactory');
+var q = require('q');
 
 /**
  * ModelCompiler is responsible for compiling model extensions.
@@ -39,9 +42,7 @@ module.exports = function ModelCompiler(syntax) {
 				if (syntax.hasOwnProperty(key))
 					syntax[key](source);
 
-		var tree = syntax.getTree();
-
-		trees[source.name] = tree;
+		trees[source.name] = syntax.getTree();
 
 
 	};
@@ -65,6 +66,11 @@ module.exports = function ModelCompiler(syntax) {
 				tree = trees[key];
 				var list = store.keystone.List(key, tree.options);
 				list.defaultColumns = tree.defaultColumns;
+
+				tree.stack.push(new QModelMethod('find'));
+				tree.stack.push(new QModelMethod('findOne'));
+				tree.stack.push(new SaveQStyleMethod());
+
 				while (tree.stack.length > 0)
 					tree.stack.pop().execute(key, list, types, fields, store);
 

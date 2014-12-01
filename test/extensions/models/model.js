@@ -16,28 +16,35 @@ before(function(done) {
 	store.start(done);
 });
 
-describe('saveAsync()', function() {
+beforeEach(function(done) {
+
+	return store.getDataModel('Mock').
+	remove({}, function(err) {
+		done(err);
+	});
+});
+
+describe('saveQStyle()', function() {
 
 	it('should work', function(done) {
 
-		this.timeout(300000);
+		this.timeout(30000);
 
 		store.getDataModel('Mock', true, {
 			name: 'Elis',
 			uid: 4,
 			active: true
 		}).
-		saveAsync().
+		saveQStyle().
 		then(function(mock) {
 			demand(mock).exist();
 			done();
 		}).
 		then(null, function(err) {
-
-			demand(err).must.be.true();
+			demand(err).exist();
 			done();
 		}).
-		end();
+		done();
 	});
 
 });

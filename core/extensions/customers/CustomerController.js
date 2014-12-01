@@ -59,27 +59,29 @@ module.exports = function CustomerController(store) {
 	 */
 	this.onSignUpRequest = function(req, res, next) {
 
-		passport.authenticate('local-signup', {
+		var opts = {
 			session: false
-		}, function(err, customer, msg) {
+		};
 
-			if (err) {
+		res.locals.$submit = req.body;
 
-                          console.log(err);
-				res.locals.$errors = err.errors;
-				res.render('customers/signup.html');
+		var cb = function(err, customer, msg) {
+
+			if (err) 
+				return next(err);
+
+			if (!customer) {
+				return res.render('customers/signup.html', {
+					$errors: msg
+				});
 			}
 
-			if (!customer)
-				return res.render('customers/signup.html', {
-					message: msg
-				});
-
 			res.redirect('/signup/validate');
-
 			store.broadcast(store.CUSTOMER_CREATED, customer);
 
-		})(req, res, next);
+		};
+
+		passport.authenticate('local-signup', opts, cb)(req, res, next);
 
 
 	};

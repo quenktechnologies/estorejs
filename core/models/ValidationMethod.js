@@ -3,6 +3,7 @@
  */
 
 var Validator = require('./validation/Validator');
+var fieldValidate = require('./validation/fieldValidate');
 
 /**
  * ValidationMethod sets up the validation for the model.
@@ -36,23 +37,28 @@ module.exports.prototype = {
 
 		list.schema.methods.validateAsync = function() {
 
-			var validator = new Validator(this.constraints);
-			return validator.validate(this.toObject());
+			var validator = new Validator(this.constraints, store);
+			var promise = validator.validate(this.toObject());
+			return promise;
+
 
 		};
 
 		for (var key in m)
 			if (m.hasOwnProperty(key)) {
 
-				var field = list.schema.path(key);
+				var field = {};
+				field[key] = {};
+
+				//list.schema.path(key);
 
 				if (!field)
 				// throw new store.errors.SchemaFieldDoesNotExistError();
-					throw new Error('Field ' + field + ' does not exist!');
+					throw new Error('Field ' + key + ' does not exist!');
 
 				var target = {};
 				target[key] = store.validators[name];
-				field.validate(fieldValidate(key, new Validator(target)));
+				field[key].valdidate = fieldValidate(key, new Validator(target));
 
 			}
 	}

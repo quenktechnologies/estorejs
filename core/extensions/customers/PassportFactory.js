@@ -24,52 +24,74 @@ module.exports = function PassportFactory(passport) {
 	 */
 	this.getLocalSignupStrategy = function(store) {
 
-		return new LocalStrategy({
-				usernameField: 'email',
-				passwordField: 'password',
-			},
+		var opts = {
+			usernameField: 'email',
+			passwordField: 'password',
+		};
+
+		var stop;
+
+		return new LocalStrategy(opts,
+
 			function(email, password, done) {
 
-				store.getDataModel('Customer').findOne({
+				store.getDataModel('Customer').
+				findOneQStyle({
 					email: email
 				}).
-				exec().
+				then(null, function(err) {
+					done(err);
+				}).
 				then(function(customer) {
 
 					if (customer) {
-						done(null, false, 'That email is already registered!');
-
+						done(null, false, {
+							email: 'That email already exists!'
+						});
+						return false;
 					} else {
 
-						var newCustomer = store.getDataModel('Customer', true);
-						newCustomer.set({
+						return store.getDataModel('Customer', true, {
 							email: email,
 							password: password,
-						});
-						console.log(newCustomer);
-						newCustomer.save(function(err, saved) {
-
-							if (err)
-								throw err;
-
-							done(null, saved);
-
-						});
-
+						}).
+						validateAsync();
 					}
+
 				}).
-				end(function(err) {
+				then(null, function(errors) {
+					done(null, false, errors);
+					return false;
+				}).
+				then(function(unique) {
 
-					if (err) {
-						console.log(err);
-						done(err);
-					}
+                                  if(unique === false)
+                                  return unique;
 
-				});
+
+					return store.getDataModel('Customer', true, {
+						email: email,
+						password: password,
+					}).saveQStyle();
+
+				}).
+				then(null, function(err) {
+
+					done(err);
+
+
+				}).
+				then(function(customer) {
+
+                                  if(customer === false)
+                                  return customer;
+
+					done(null, customer);
+
+				}).done();
+
 			});
-
 	};
-
 
 	/**
 	 * getLocalSigninStrategy provides a method for authenticating users.
@@ -124,19 +146,19 @@ module.exports = function PassportFactory(passport) {
 
 	};
 
-        /**
-         * getLocalActivateStrategy does the activation of a user account.
-         *
-         * @method getLocalActivateStrategy
-         * @instance
-         * @param {EStore} store 
-         *
-         */
-        this.getLocalActivateStrategy = function (store) {
+	/**
+	 * getLocalActivateStrategy does the activation of a user account.
+	 *
+	 * @method getLocalActivateStrategy
+	 * @instance
+	 * @param {EStore} store
+	 *
+	 */
+	this.getLocalActivateStrategy = function(store) {
 
 
 
-        };
+	};
 
 
 
