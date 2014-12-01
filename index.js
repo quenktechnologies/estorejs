@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var EventEmitter = require('events').EventEmitter;
 var Theme = require('./core/sys/Theme');
 var Extras = require('./core/util/Extras');
@@ -809,6 +810,22 @@ module.exports = function EStore() {
 	this.getViewEngine = function() {
 
 		return this.viewEngine;
+
+	};
+
+
+	/**
+	 * set overrides the value of current settings
+	 *
+	 * @param {Object} conf An object that will be merged with the settings.
+	 * @todo something better
+	 *
+	 */
+	this.set = function(conf) {
+
+		_.merge(this.settings, conf);
+		return this;
+
 
 	};
 
