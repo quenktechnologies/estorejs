@@ -65,7 +65,9 @@ module.exports = function ModelCompiler(syntax) {
 
 				tree = trees[key];
 				var list = store.keystone.List(key, tree.options);
-				list.defaultColumns = tree.defaultColumns;
+
+				if (tree.defaultColumns)
+					list.defaultColumns = tree.defaultColumns;
 
 				tree.stack.push(new QModelMethod('find'));
 				tree.stack.push(new QModelMethod('findOne'));
