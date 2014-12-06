@@ -1,8 +1,8 @@
-/**
- * @module
- */
 var passport = require('passport');
-var PassportFactory = require('./PassportFactory');
+var PassportFactory = require('../../customers/PassportFactory');
+var SignUpCallbacks = require('../../customers/signup/SignUpCallbacks');
+var SignUpAssistant = require('../../customers/signup/SignUpAssistant');
+var StandardSignUpAssistantCallbacks = require('./StandardSignUpAssistantCallbacks');
 
 /**
  * CustomerController is the controller for the customer account feature.
@@ -28,7 +28,9 @@ module.exports = function CustomerController(store) {
 		var provider = new PassportFactory(passport);
 		var render = store.getRenderCallback();
 
-		passport.use('local-signup', provider.getLocalSignupStrategy(store));
+		passport.use('local-signup', provider.getLocalSignupStrategy(
+			new SignUpCallbacks(store)));
+
 		passport.use('local-signin', provider.getLocalSigninStrategy(store));
 
 		//Actual routes
@@ -53,36 +55,23 @@ module.exports = function CustomerController(store) {
 	 *
 	 * @method onSignupRequest
 	 * @instance
-	 * @param {external:Request} req
-	 * @param {external:Response} res
+	 * @param {Request} req
+	 * @param {Response} res
 	 * @param {Function} next
 	 */
 	this.onSignUpRequest = function(req, res, next) {
 
-		var opts = {
-			session: false
-		};
+		var help = new SignUpAssistant(
+                          req.protocol + '://' +
+			req.get('host'), store,
+			new StandardSignUpAssistantCallbacks(req, res, next));
 
 		res.locals.$submit = req.body;
 
-		var cb = function(err, customer, msg) {
-
-			if (err) 
-				return next(err);
-
-			if (!customer) {
-				return res.render('customers/signup.html', {
-					$errors: msg
-				});
-			}
-
-			res.redirect('/signup/validate');
-			store.broadcast(store.CUSTOMER_CREATED, customer);
-
-		};
-
-		passport.authenticate('local-signup', opts, cb)(req, res, next);
-
+		(passport.authenticate('local-signup', {
+				session: false,
+			},
+			help.onValidationFinished))(req, res, next);
 
 	};
 

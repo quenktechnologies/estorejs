@@ -43,10 +43,10 @@ module.exports = function Theme(base) {
 	 */
 	this.emails = function() {
 
-		if (this.exists('emails'))
+		if (this.exists('email'))
 			return base + '/email';
 
-		return path.dirname(base) + '/default/email';
+		return path.dirname(base) + '/default/templates/email';
 
 	};
 

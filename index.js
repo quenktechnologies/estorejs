@@ -15,6 +15,8 @@ var DynamicFileSystemLoader = require('./core/loader/DynamicFileSystemLoader');
 var Directory = require('./core/sys/Directory');
 var ModelCompiler = require('./core/models/ModelCompiler');
 var ModelCompilerSyntax = require('./core/models/ModelCompilerSyntax');
+var Mediator = require('./core/sys/Mediator');
+
 /**@module*/
 
 /**
@@ -53,12 +55,12 @@ module.exports = function EStore() {
 	this.TRANSACTION_DECLINED = 'TRANSACTION_DECLINED';
 	this.SYSTEM_ERROR = 'runtime error';
 	this.CATEGORY_CREATED = 'category created';
-	this.CUSTOMER_CREATED = 'customer create';
+	this.CUSTOMER_CREATED = 'customer created';
 	this.CUSTOMER_ACTIVATED = 'customer activated';
 	this.CUSTOMER_SIGNED_IN = 'customer signed in';
 	this.QUERY_ERROR = 'query error';
 	this.NOTIFICATION = 'notify';
-	this.SEND_EMAIL = 'SEND_EMAIL';
+	this.OUTBOUND_MAIL = 'SEND_EMAIL';
 	this.ENQUIRY = 'ENQUIRY';
 	this.SERVER_STARTED = 'SERVER_STARTED';
 
@@ -192,6 +194,8 @@ module.exports = function EStore() {
 	this.installer = new Installer(this, modelCompiler);
 
 	this.validators = [];
+
+	this.mediator = new Mediator(this);
 
 
 
@@ -350,6 +354,9 @@ module.exports = function EStore() {
 		this.extensions.push(require('./core/extensions/models/category'));
 		this.extensions.push(require('./core/extensions/models/transaction'));
 		this.extensions.push(require('./core/extensions/models/country'));
+
+		if (process.env.MANDRILL_API_KEY)
+			this.extensions.push(require('./core/extensions/services/mandrill'));
 
 		var extras = new Directory(__dirname + '/extras/extensions');
 		extras.forEachDirectory(function(path) {
@@ -599,6 +606,7 @@ module.exports = function EStore() {
 			res.locals.$customer = req.session.customer;
 			res.locals.$settings = this.settings;
 			res.locals.$query = req.query;
+			res.locals.$domain = req.get('host');
 			res.locals.$url = req.protocol + '://' + req.get('Host') + req.url;
 			res.locals.$categories = this.locals.categories;
 			res.locals.$navigation = this._navigation;
@@ -735,6 +743,7 @@ module.exports = function EStore() {
 	 *
 	 */
 	this.broadcast = function() {
+		console.log('DEBUG: Event ', arguments[0]);
 		this.bus.emit.apply(this.bus, arguments);
 	};
 
@@ -743,11 +752,12 @@ module.exports = function EStore() {
 	 *
 	 * @method getKeystone
 	 * @instance
+	 * @deprecated
 	 * @return {external:Keystone}
 	 *
 	 */
 	this.getKeystone = function() {
-
+		console.log('Estore.getKeystone is deprecated');
 		return this.keystone;
 	};
 
