@@ -12,7 +12,7 @@ module.exports = {
 
 	type: 'service',
 	name: 'Mandrill Email Support',
-	event: 'SEND_EMAIL',
+	event: 'OUTBOUND_MAIL',
 	/**
 	 *
 	 *  @param {Object} mail The mail Object.
@@ -22,7 +22,7 @@ module.exports = {
 	action: function(mail, store) {
 
 		MailProvider.
-		mandrill(store.keystone.get('email')).
+		mandrill(store.keystone.get('emails'), store.keystone).
 		send(mail).
 		then(null, function(err) {
 			console.log(err);

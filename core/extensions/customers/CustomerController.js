@@ -62,7 +62,7 @@ module.exports = function CustomerController(store) {
 	this.onSignUpRequest = function(req, res, next) {
 
 		var help = new SignUpAssistant(
-                          req.protocol + '://' +
+			req.protocol + '://' +
 			req.get('host'), store,
 			new StandardSignUpAssistantCallbacks(req, res, next));
 
@@ -152,34 +152,34 @@ module.exports = function CustomerController(store) {
 		var Customer = store.getDataModel('Customer');
 
 		Customer.
-		findOne({
-			'tokens.validate': req.params[0]
-		}).
+		findOneAndUpdate({
+			'tokens.validate': req.params[0],
+                        status: 'pending'
+		},
+               {
+				$set: {
+					status: 'active',
+                  'tokens.validate': null
+				}
+			} 
+                
+                ).
 		exec().
 		then(function(customer) {
 
+                  			console.log(arguments);
 			if (!customer)
 				return next();
 
-			return Customer.update({
-				'tokens.validate': req.params[0]
-			}, {
-				$set: {
-					status: 'active'
-				}
-			}).exec();
-
-
-
-		}).
-		then(function(saved) {
-
-			res.redirect('/signin');
-			store.broadcast(store.CUSTOMER_ACTIVATED, saved);
+		req.session.user = customer;
+                req.session.customer = req.session.user;
+			res.redirect('/dashboard');
+			store.broadcast(store.CUSTOMER_ACTIVATED, customer);
 
 
 		}).
 		end(function(err) {
+
 			console.log(err);
 			next(err);
 
@@ -199,7 +199,7 @@ module.exports = function CustomerController(store) {
 	 */
 	this.onGetDashboardRequest = function(req, res, next) {
 
-		if (!req.session.customer)
+		if (!req.session.user)
 			return res.redirect('/signin');
 
 		res.render('customers/dashboard.html');

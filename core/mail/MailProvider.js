@@ -23,8 +23,8 @@ module.exports = {
 	 */
 	mandrill: function(path, keystone) {
 
-		return new Mailer(new MailConfiguration(path,
-			new TemplateEngine(path), keystone));
+		return new Mailer(new MailConfiguration(path, new TemplateEngine(path)),
+			keystone);
 
 	}
 

@@ -33,11 +33,15 @@ module.exports = function SignUpAssistant(domain, store, callbacks) {
 
 			var customer = saved.toObject();
 			customer.domain = domain;
-			customer.registrationLink = domain + '/validate/' +
+
+			customer.registrationLink = domain + '/signup/activate/' +
 				customer.tokens.validate;
-			console.log('||',customer, '||');
+
 			callbacks.onCustomerRegistered(customer);
-			store.mediator.onCustomerRegistered(new NewCustomerEvent(customer));
+
+			store.
+                  mediator.
+			onCustomerRegistered(new NewCustomerEvent(customer));
 
 		}).done();
 

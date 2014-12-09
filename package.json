@@ -46,6 +46,7 @@
     "npm": "1.4.x"
   },
   "devDependencies": {
+    "asynctrace": "^1.0.7",
     "grunt-supervisor": "^0.2.4",
     "mocha": "^1.21.4",
     "mocha-as-promised": "^2.0.0",

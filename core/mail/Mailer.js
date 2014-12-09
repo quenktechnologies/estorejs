@@ -1,16 +1,16 @@
 /**
  * @module
  */
-
+var q = require('q');
 /**
- * MandrillMailer sends mail using mandrill (via keystone).
+ * Mailer sends mail using mandrill (via keystone).
  * @alias name
  * @param {MailConfiguration} config
- * @param {Keystone} keystone 
+ * @param {Keystone} keystone
  * @constructor
  *
  */
-module.exports = function MandrillMailer(config, keystone) {
+module.exports = function Mailer(config, keystone) {
 
 	/**
 	 * send the email.
@@ -21,7 +21,9 @@ module.exports = function MandrillMailer(config, keystone) {
 	 */
 	this.send = function(mail) {
 		config.templateName = mail.template;
-		var email = new keystone.Email(conifg);
+		config.toEmail = mail.to;
+		config.fromEmail = mail.from;
+		var email = new keystone.Email(config);
 		return q.ninvoke(email, 'send', mail);
 
 	};

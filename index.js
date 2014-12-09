@@ -17,8 +17,6 @@ var ModelCompiler = require('./core/models/ModelCompiler');
 var ModelCompilerSyntax = require('./core/models/ModelCompilerSyntax');
 var Mediator = require('./core/sys/Mediator');
 
-/**@module*/
-
 /**
  * EStore is the main constructor for the system.
  *
@@ -60,7 +58,7 @@ module.exports = function EStore() {
 	this.CUSTOMER_SIGNED_IN = 'customer signed in';
 	this.QUERY_ERROR = 'query error';
 	this.NOTIFICATION = 'notify';
-	this.OUTBOUND_MAIL = 'SEND_EMAIL';
+	this.OUTBOUND_MAIL = 'OUTBOUND_MAIL';
 	this.ENQUIRY = 'ENQUIRY';
 	this.SERVER_STARTED = 'SERVER_STARTED';
 

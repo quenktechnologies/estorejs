@@ -1,7 +1,4 @@
-/**
- * @module
- */
-
+var q = require('q');
 
 /**
  * SaveAsyncMethod adds a method to the model that allows Promise style save ops.

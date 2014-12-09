@@ -11,7 +11,6 @@
  *
  */
 module.exports = function MailConfiguration(path, engine) {
-
 	return {
 
 		templateExt: 'html',
