@@ -7,7 +7,7 @@ var nunjucks = require('nunjucks');
  * DynamicFileSystemLoader wraps around the nunjucks FileSystemLoader
  * to allow the template directory to be changed.
  * @alias DynamicFileSystemLoader
- * @param {Theme} theme
+ * @param {ThemeProperties} theme
  * @constructor
  *
  */

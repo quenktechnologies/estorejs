@@ -38,9 +38,8 @@
  *
  * ```
  *
- * @class Controller
  * @param {Estore} store
- * @constructor
+ * @alias Controller
  * @abstract
  *
  */
@@ -49,7 +48,6 @@ module.exports = function Controller(store) {
 	/**
 	 * keystoneConfiguration is called during keystone configuration.
 	 *
-	 * @method keystoneConfiguration
 	 * @param {Object} config An object to be used to configure keystone.
 	 * @return
 	 *
@@ -63,8 +61,6 @@ module.exports = function Controller(store) {
 	/**
 	 * preRouteRegistration is called prior to the keystone routing.
 	 *
-	 * @method preRouteRegistration
-	 * @instance
 	 * @param {external:Request} req
 	 * @param {external: Response} res
 	 * @param {Function} next
@@ -82,7 +78,6 @@ module.exports = function Controller(store) {
 	/**
 	 * routeRegistration is called to setup routes.
 	 *
-	 * @method routeRegistration
 	 * @param {Object} app
 	 * @return
 	 *
@@ -97,7 +92,6 @@ module.exports = function Controller(store) {
 	/**
 	 * modelRegistration is called to setup models.
 	 *
-	 * @method modelRegistration
 	 * @param {keystone} keystone
 	 * @return
 	 *
@@ -111,7 +105,6 @@ module.exports = function Controller(store) {
 	/**
 	 * gatewayRegistration
 	 *
-	 * @method gatewayRegistration
 	 * @return
 	 *
 	 */

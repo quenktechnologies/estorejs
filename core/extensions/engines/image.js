@@ -7,13 +7,15 @@
 module.exports = {
 
 	type: 'engine',
-	id: 'image',
+	id: 'ImageEngine',
 	name: 'Default Image Engine',
 	engine: function(store) {
 		return {
-			type: store.keystone.Field.Types.Url,
-			width: 'medium',
-			label: 'Image URL',
+			url: {
+				type: store.keystone.Field.Types.Url,
+				width: 'medium',
+				label: 'Image URL',
+			}
 		};
 	}
 

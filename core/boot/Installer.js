@@ -1,7 +1,3 @@
-/**
- * @module
- */
-
 var Controller = require('./Controller');
 
 /**
@@ -14,13 +10,14 @@ var Controller = require('./Controller');
  * 1. Remove constructor args?
  * 2. Let caller retrieve desired extensions?
  *
- * @constructor
- * @param {EStore} store
- * @param {ModelCompiler} modelCompiler
  * @alias Installer
- *
+ * @memberOf core/boot
+ * @param {EStore} store
+ * @param {Configuration} config
+ * @param {ModelCompiler} modelCompiler
+ * @constructor
  */
-module.exports = function Installer(store, modelCompiler) {
+module.exports = function Installer(store, config, modelCompiler) {
 
 	var __Controller__ = new Controller();
 	var self = this;
@@ -34,7 +31,7 @@ module.exports = function Installer(store, modelCompiler) {
 	 */
 	this.controller = function(ext) {
 		ext.controller.prototype = __Controller__;
-		store.composite.add(new ext.controller(store));
+		store.composite.add(new ext.controller(store, config));
 	};
 
 	/**
@@ -149,7 +146,7 @@ module.exports = function Installer(store, modelCompiler) {
 		if (ext.repeat)
 			return store.bus.on(ext.event, f);
 
-		store.bus.once(ext.event, f);
+		store.addEventListener(ext.event, f);
 
 
 	};

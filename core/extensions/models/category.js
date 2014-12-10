@@ -27,7 +27,7 @@ module.exports = {
 					initial: true
 				},
 
-				image: store.engines.image(store)
+				image: store.engines.ImageEngine(store,types)
 
 			},
 

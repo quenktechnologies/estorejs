@@ -1,22 +1,25 @@
 var _ = require('lodash');
 var EventEmitter = require('events').EventEmitter;
-var Theme = require('./core/sys/Theme');
+var ThemeProperties = require('./core/boot/ThemeProperties');
 var Extras = require('./core/util/Extras');
 var Endpoints = require('./core/extensions/ajax/Endpoints');
 var Express = require('express');
 var NunjucksMongoose = require('nunjucks-mongoose');
 var CompositeController = require('./core/util/CompositeController');
-var Installer = require('./core/util/Installer');
+var Installer = require('./core/boot/Installer');
 var UIFactory = require('./core/util/UIFactory');
 var MainEventHandler = require('./core/util/MainEventHandler');
-var KeystoneProvider = require('./core/util/KeystoneProvider');
 var Gateways = require('./core/checkout/Gateways');
 var DynamicFileSystemLoader = require('./core/loader/DynamicFileSystemLoader');
-var Directory = require('./core/sys/Directory');
+var Directory = require('./core/boot/Directory');
 var ModelCompiler = require('./core/models/ModelCompiler');
 var ModelCompilerSyntax = require('./core/models/ModelCompilerSyntax');
-var Mediator = require('./core/sys/Mediator');
-
+var Mediator = require('./core/boot/Mediator');
+var ThemeSelection = require('./core/boot/ThemeSelection');
+var ThemePreLoader = require('./core/boot/ThemePreLoader');
+var SettingsPreLoader = require('./core/boot/SettingsPreLoader');
+var Configuration = require('./core/boot/Configuration.js');
+var Environment = require('./core/boot/Environment');
 /**
  * EStore is the main constructor for the system.
  *
@@ -34,12 +37,16 @@ var Mediator = require('./core/sys/Mediator');
 module.exports = function EStore() {
 
 	var modelCompiler = new ModelCompiler(new ModelCompilerSyntax());
+	var config = new Configuration(process.env);
+	var installer = new Installer(this, config, modelCompiler);
+	var bus = new EventEmitter();
+	var extensions = [];
 
-	this.models = [];
+
 	this.settingFields = {};
 	this.runnableSettings = [];
 	this.daemons = [];
-	this.keystoneConfig = new KeystoneProvider();
+	this.validators = {};
 
 	//Settings
 	this.MAX_TRANSACTIONS_PROCESSED = 10;
@@ -78,25 +85,9 @@ module.exports = function EStore() {
 
 
 	/**
-	 * theme
-	 *
-	 * @property theme
-	 * @type {Theme}
-	 */
-	this.theme = undefined;
-
-
-	/**
-	 *
-	 * @property {EventEmitter} bus
-	 *
-	 */
-	this.bus = new EventEmitter();
-
-	/**
 	 * settings contains the settings
 	 *
-	 * @property config
+	 * @property settings
 	 * @type {Object}
 	 */
 	this.settings = {};
@@ -124,21 +115,13 @@ module.exports = function EStore() {
 	this.viewEngine = undefined;
 
 	/**
-	 *
-	 *
-	 *  @property {Object} navigation Navigation settings for keystone.
-	 *
-	 *
-	 */
-	this.navigation = {};
-
-	/**
 	 * gateways is an object containing the gateway modules that are enabled.
 	 *
 	 * @property gateways
 	 * @type {Object}
 	 */
 	this.gateways = new Gateways();
+
 	/**
 	 * engines
 	 *
@@ -158,15 +141,6 @@ module.exports = function EStore() {
 	this.endpoints = new Endpoints();
 
 	/**
-	 * extensions
-	 *
-	 * @property extensions
-	 * @type {Array}
-	 */
-	this.extensions = [];
-
-
-	/**
 	 * composite
 	 *
 	 * @property composite
@@ -174,31 +148,13 @@ module.exports = function EStore() {
 	 */
 	this.composite = new CompositeController();
 
-
-	/**
-	 * util methods that are commonly used.
-	 *
-	 * @property util
-	 * @type {Object}
-	 */
-	this.util = require('lodash');
-
-	/**
-	 * installer
-	 *
-	 * @property installer
-	 * @type {Installer}
-	 */
-	this.installer = new Installer(this, modelCompiler);
-
-	this.validators = [];
-
 	this.mediator = new Mediator(this);
-
-
 
 	/**
 	 * _preloadThemes
+	 *
+	 * Gather a list of available themes, remove any
+	 * that are blacklisted (if implemented).
 	 *
 	 * @method _preloadThemes
 	 * @return
@@ -206,18 +162,10 @@ module.exports = function EStore() {
 	 */
 	this._preloadThemes = function() {
 
-		var themes = new Directory(__dirname + '/themes');
-		this._templates = [];
-
-		themes.forEachDirectory(function(path, file) {
-
-			this._templates.push({
-				value: 'themes/' + file,
-				label: file
-			});
-
-		}.bind(this));
-
+		var selection = new ThemeSelection();
+		var loader = new ThemePreLoader(selection);
+		loader.load(__dirname + '/themes');
+		this._templates = selection.getSelection();
 
 	};
 
@@ -231,19 +179,11 @@ module.exports = function EStore() {
 	 */
 	this._preloadSettings = function() {
 
-		var db = require('promised-mongo')(this.keystoneConfig.mongoURI(), ['settings']);
-		var self = this;
+		var loader =
+			new SettingsPreLoader(Environment.getMongoURI(),
+				this.mediator);
 
-		return db.settings.findOne().
-		then(function(settings) {
-
-			if (!settings)
-				settings = {};
-
-			self.settings = settings;
-
-		});
-
+		return loader.load();
 	};
 
 	/**
@@ -261,9 +201,10 @@ module.exports = function EStore() {
 			path = this.settings.theme.current;
 
 		if (!path)
-			path = process.env.DEFAULT_THEME || 'themes/default';
+			path = config.get('DEFAULT_THEME', 'themes/default');
 
-		this.theme = new Theme(__dirname + '/' + path);
+		config.setThemeProperties(
+			new ThemeProperties(__dirname + '/' + path));
 
 	};
 
@@ -277,7 +218,7 @@ module.exports = function EStore() {
 	this._bootstrapNunjucks = function() {
 
 		var nunjucks = require('nunjucks');
-		this.loader = new DynamicFileSystemLoader(this.theme);
+		this.loader = new DynamicFileSystemLoader(config.getThemeProperties());
 		this.viewEngine = new nunjucks.Environment(
 			this.loader, {
 				autoescape: true,
@@ -305,21 +246,21 @@ module.exports = function EStore() {
 	 */
 	this._boostrapKeystone = function() {
 
+		var theme = config.getThemeProperties();
+
 		this.keystone.init();
-		this.keystone.set('name', process.env.DOMAIN || 'Estore');
-		this.keystone.set('brand', process.env.DOMAIN || 'Estore');
+		this.keystone.set('name', config.get('BRAND', 'EstoreJS'));
+		this.keystone.set('brand', config.get('BRAND', 'EstoreJS'));
 		this.keystone.set('auto update', true);
 		this.keystone.set('session', true);
 		this.keystone.set('session store', 'mongo');
 		this.keystone.set('auth', true);
-		this.keystone.set('cookie secret', this.keystoneConfig.cookieSecret());
+		this.keystone.set('cookie secret', Environment.getCookieSecret());
 		this.keystone.set('view engine', 'html');
-		//	this.keystone.set('views', this.theme.templates());
-		this.keystone.set('static', this.theme.statics());
-		this.keystone.set('emails', this.theme.emails());
-		this.keystone.set('port', process.env.PORT || 3000);
-		this.keystone.set('mongo', this.keystoneConfig.mongoURI());
-		//		this.keystone.set('custom engine', this.viewEngine.render);
+		this.keystone.set('static', theme.statics());
+		this.keystone.set('emails', theme.emails());
+		this.keystone.set('port', config.get('PORT', 3000));
+		this.keystone.set('mongo', Environment.getMongoURI());
 		this.keystone.set('user model', 'User');
 
 		this.viewEngine.addExtension('NunjucksMongoose',
@@ -339,36 +280,76 @@ module.exports = function EStore() {
 	 */
 	this._gatherExtensions = function() {
 
-		this.extensions.push(require('./core/extensions/payments/cod'));
-		this.extensions.push(require('./core/extensions/payments/bank'));
-		this.extensions.push(require('./core/extensions/payments/cheque'));
-		this.extensions.push(require('./core/extensions/daemons/transaction'));
-		this.extensions.push(require('./core/extensions/engines/image'));
-		this.extensions.push(require('./core/extensions/models/user'));
-		this.extensions.push(require('./core/extensions/models/counter'));
-		this.extensions.push(require('./core/extensions/models/item'));
-		this.extensions.push(require('./core/extensions/models/invoice'));
-		this.extensions.push(require('./core/extensions/models/product'));
-		this.extensions.push(require('./core/extensions/models/category'));
-		this.extensions.push(require('./core/extensions/models/transaction'));
-		this.extensions.push(require('./core/extensions/models/country'));
+		var pkg = config.
+		getThemeProperties().
+		getProperties();
 
-		if (process.env.MANDRILL_API_KEY)
-			this.extensions.push(require('./core/extensions/services/mandrill'));
+		extensions.push(require('./core/extensions/routes'));
+		extensions.push(require('./core/extensions/payments/cod'));
+		extensions.push(require('./core/extensions/payments/bank'));
+		extensions.push(require('./core/extensions/payments/cheque'));
+		extensions.push(require('./core/extensions/daemons/transaction'));
+		extensions.push(require('./core/extensions/engines/image'));
+		extensions.push(require('./core/extensions/models/user'));
+		extensions.push(require('./core/extensions/models/counter'));
+		extensions.push(require('./core/extensions/models/item'));
+		extensions.push(require('./core/extensions/models/invoice'));
+		extensions.push(require('./core/extensions/models/product'));
+		extensions.push(require('./core/extensions/models/category'));
+		extensions.push(require('./core/extensions/models/transaction'));
+		extensions.push(require('./core/extensions/models/country'));
+
+		if (config.get('MANDRILL_API_KEY'))
+			extensions.push(require('./core/extensions/services/mandrill'));
+
+		if (config.get('S3_KEY'))
+			if (config.get('S3_SECRET'))
+				if (config.get('S3_BUCKET'))
+					extensions.push(
+						require('./core/extensions/engines/imageS3'));
+
+		if (config.get('CLOUDINARY_URL'))
+			if (config.get('CLOUDINARY_SECRET'))
+				extensions.push(
+					require('./core/extensions/engines/imageCloudinary'));
+
+		if (pkg.supports.blog)
+			extensions.push(require('./core/extensions/blog'));
+
+		if (pkg.supports.pages)
+			extensions.push(require('./core/extensions/pages'));
+
+		if (pkg.supports.contact)
+			extensions.push(require('./core/extensions/contact'));
+
+
+		if (pkg.ajax) {
+
+			if (pkg.ajax.checkout)
+				extensions.push(require('./core/extensions/ajax/checkout'));
+
+			if (pkg.ajax.products)
+				extensions.push(require('./core/extensions/ajax/products'));
+
+			if (pkg.ajax.cart)
+				extensions.push(require('./core/extensions/ajax/cart'));
+		}
+
+		if (pkg.supports)
+			if (pkg.supports.customers)
+				extensions.push(require('./core/extensions/customers'));
 
 		var extras = new Directory(__dirname + '/extras/extensions');
 		extras.forEachDirectory(function(path) {
 
-			this.extensions.push(require(path));
+			extensions.push(require(path));
 
 		}.bind(this));
 
-		this.extensions.forEach(function(ext) {
+		extensions.forEach(function(ext) {
 
-			if (typeof ext.settings === 'object') {
-				this.installer.settings(ext.settings);
-
-			}
+			if (typeof ext.settings === 'object')
+				installer.settings(ext.settings);
 
 		}.bind(this));
 
@@ -414,41 +395,9 @@ module.exports = function EStore() {
 	 */
 	this._processExtensions = function() {
 
-		var list = [];
-		var pkg = this.theme.require('package.json').estore;
+		extensions.forEach(function(ext) {
 
-		if (pkg.supports.blog)
-			list.push(require('./core/extensions/blog'));
-
-		if (pkg.supports.pages)
-			list.push(require('./core/extensions/pages'));
-
-		if (pkg.supports.contact)
-			list.push(require('./core/extensions/contact'));
-
-		list.push(require('./core/extensions/routes'));
-
-		if (pkg.ajax) {
-
-			if (pkg.ajax.checkout)
-				list.push(require('./core/extensions/ajax/checkout'));
-
-			if (pkg.ajax.products)
-				list.push(require('./core/extensions/ajax/products'));
-
-			if (pkg.ajax.cart)
-				list.push(require('./core/extensions/ajax/cart'));
-		}
-
-		if (pkg.supports)
-			if (pkg.supports.customers)
-				list.push(require('./core/extensions/customers'));
-
-		this.extensions.unshift.apply(this.extensions, list);
-
-		this.extensions.forEach(function(ext) {
-
-			this.install(ext);
+			installer.install(ext);
 
 		}.bind(this));
 
@@ -464,7 +413,9 @@ module.exports = function EStore() {
 	 */
 	this._scanPages = function() {
 
-		var pages = this.theme.require('package.json').estore.supports.pages;
+		var pages = config.getThemeProperties().
+		getProperties().
+		supports.pages;
 
 		if (!pages)
 			return;
@@ -580,16 +531,11 @@ module.exports = function EStore() {
 				//This prevents 403 errors from being thrown after the csrf middleware.
 				if (err) return res.send(403);
 				next();
-
-
-
-
 			});
 
 		});
 
 		this.keystone.pre('routes', function(req, res, next) {
-
 			res.locals._csrf = res.locals._csrf || req.csrfToken && req.csrfToken();
 			res.cookie('XSRF-TOKEN', res.locals._csrf);
 			next();
@@ -711,7 +657,7 @@ module.exports = function EStore() {
 	 */
 	this.install = function(ext) {
 
-		this.installer.install(ext);
+		installer.install(ext);
 
 	};
 
@@ -722,12 +668,18 @@ module.exports = function EStore() {
 	 * @method addEventListener
 	 * @param {String} event
 	 * @param {Function} cb
+	 * @param {Boolean} once
 	 * @return
 	 *
 	 */
-	this.addEventListener = function(event, cb) {
+	this.addEventListener = function(event, cb, once) {
 
-		this.bus.on(event, cb);
+		if (once)
+			bus.once(event, cb);
+
+		if (!once)
+			bus.on(event, cb);
+
 		return this;
 
 	};
@@ -742,7 +694,7 @@ module.exports = function EStore() {
 	 */
 	this.broadcast = function() {
 		console.log('DEBUG: Event ', arguments[0]);
-		this.bus.emit.apply(this.bus, arguments);
+		bus.emit.apply(bus, arguments);
 	};
 
 	/**

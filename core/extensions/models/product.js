@@ -2,14 +2,12 @@ module.exports = {
 	type: 'model',
 	name: 'Product',
 	options: {
-
 		autokey: {
 			path: 'slug',
 			from: 'name',
 			unique: true
 		},
 		track: true
-
 	},
 	defaultColumns: 'name,stock.balance,price,createdAt',
 	model: function(store, types, ui) {
@@ -49,10 +47,7 @@ module.exports = {
 						'isTangible': true
 					},
 				},
-				image: {
-					url: store.engines.image(store)
-				},
-
+				image: new store.engines.ImageEngine(store,types,ui)
 			},
 			'Stock', {
 
