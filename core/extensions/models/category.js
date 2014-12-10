@@ -60,7 +60,7 @@ module.exports = {
 
 		list.schema.post('save', function(category) {
 
-			store.bus.emit(store.CATEGORY_CREATED, category);
+			store.broadcast(store.CATEGORY_CREATED, category);
 
 		});
 

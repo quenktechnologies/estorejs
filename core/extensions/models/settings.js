@@ -91,7 +91,7 @@ module.exports = {
 
 		list.schema.post('save', function(settings) {
 
-			store.mediator.onSettingsChanged(store.SETTINGS_CHANGED, settings);
+			store.mediator.onSettingsChanged(settings);
 		});
 
 

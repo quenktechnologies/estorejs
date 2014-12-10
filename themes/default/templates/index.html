@@ -11,7 +11,7 @@
       {% for product in products %}
       <div class="col-md-3">
         <div class="thumbnail no-border">
-          <img alt="<$ product.name $>" src="<$ product.image $>">
+          <img alt="<$ product.name $>" src="<$ product.image.url $>">
           <div class="caption">
             <div class="col-md-12">
               <h6 class="product-title"><a style="color:#555; font-weight:900" href="/categories/all/products/<$ product.slug $>"><$ product.name | truncate(128) $></a></h6>

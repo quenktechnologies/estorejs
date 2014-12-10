@@ -488,7 +488,6 @@ module.exports = function EStore() {
 				}
 
 			} else {
-
 				if (self.settings.payments[gw.key])
 					if (self.settings.payments[gw.key].active === true) {
 						self.gateways.active[gw.workflow] = gw;
