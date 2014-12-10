@@ -12,6 +12,30 @@
       "from": "bignumber.js@1.4.x",
       "resolved": "https://registry.npmjs.org/bignumber.js/-/bignumber.js-1.4.1.tgz"
     },
+    "connect-mongo": {
+      "version": "0.4.1",
+      "from": "connect-mongo@",
+      "resolved": "https://registry.npmjs.org/connect-mongo/-/connect-mongo-0.4.1.tgz",
+      "dependencies": {
+        "mongodb": {
+          "version": "1.3.23",
+          "from": "mongodb@1.3.x",
+          "resolved": "https://registry.npmjs.org/mongodb/-/mongodb-1.3.23.tgz",
+          "dependencies": {
+            "bson": {
+              "version": "0.2.5",
+              "from": "bson@0.2.5",
+              "resolved": "https://registry.npmjs.org/bson/-/bson-0.2.5.tgz"
+            },
+            "kerberos": {
+              "version": "0.0.3",
+              "from": "kerberos@0.0.3",
+              "resolved": "https://registry.npmjs.org/kerberos/-/kerberos-0.0.3.tgz"
+            }
+          }
+        }
+      }
+    },
     "currency-codes": {
       "version": "1.1.0",
       "from": "currency-codes@^1.1.0",

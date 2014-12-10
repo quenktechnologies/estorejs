@@ -23,6 +23,7 @@
   "dependencies": {
     "accounting": "^0.4.1",
     "bignumber.js": "1.4.x",
+    "connect-mongo": "^0.4.1",
     "currency-codes": "^1.1.0",
     "dotenv": "0.0.x",
     "easy-table": "^0.3.0",
