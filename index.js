@@ -521,8 +521,11 @@ module.exports = function EStore() {
 
 		var self = this;
 
+
 		/** Temporary hack to ensure CSRF protection for EStore routes **/
 		this.keystone.pre('routes', function(req, res, next) {
+			if (process.env.DISABLE_CSRF)
+				return next();
 			if (req.originalUrl.match(/^\/keystone/))
 				return next();
 
@@ -535,8 +538,10 @@ module.exports = function EStore() {
 		});
 
 		this.keystone.pre('routes', function(req, res, next) {
-			res.locals._csrf = res.locals._csrf || req.csrfToken && req.csrfToken();
-			res.cookie('XSRF-TOKEN', res.locals._csrf);
+			if (!process.env.DISABLE_CSRF) {
+				res.locals._csrf = res.locals._csrf || req.csrfToken && req.csrfToken();
+				res.cookie('XSRF-TOKEN', res.locals._csrf);
+			}
 			next();
 
 		});
