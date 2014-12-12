@@ -10,7 +10,7 @@
  * @implements {CheckoutAssistantHandler}
  *
  */
-module.exports = function CheckoutAssistantHandlerWrapper(store, session, handler) {
+module.exports = function CheckoutAssistantHandlerWrapper(store, session, callbacks, handler) {
 
 	this.onGatewayNotFound = function() {
 		handler.onGatewayNotFound();

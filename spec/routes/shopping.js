@@ -15,7 +15,7 @@ before(function(done) {
 	process.env.MONGO_URI = 'mongodb://localhost/estorejs-spec-testing-database';
 	process.env.DISABLE_CSRF = true;
 	this.timeout(300000);
-        checkout = new Checkout();
+	checkout = new Checkout();
 	store = new EStore();
 	store.start(done);
 });
@@ -27,7 +27,6 @@ beforeEach(function(done) {
 });
 
 beforeEach(function(done) {
-
 	store.getDataModel('Product').
 	findOne({
 		slug: 'mock-product'
@@ -45,7 +44,6 @@ afterEach(function(done) {
 });
 
 describe('Shopping flow', function() {
-
 	it('GET /categories/all/products/<product-slug>', function(done) {
 		agent.
 		get('/categories/all/products/mock-product').

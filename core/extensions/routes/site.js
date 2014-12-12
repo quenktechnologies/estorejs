@@ -15,7 +15,7 @@ module.exports = {
 	 * @extends {Controller}
 	 *
 	 */
-	controller: function SiteRoutesController(store, config) {
+	controller: function SiteRoutesController(store, dao, composite, callbacks, config) {
 
 		var render = store.getRenderCallback();
 

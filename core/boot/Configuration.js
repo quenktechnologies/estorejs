@@ -44,18 +44,46 @@ module.exports = function Configuration() {
 
 	};
 
-
 	/**
 	 * getSettings
 	 *
 	 * @return {Object}
 	 *
 	 */
-	this.getSettings = function() {
+	this.getPreferences = function() {
 
 		return settings;
 
 	};
+
+	/**
+	 * getPreference returns a setting from the admin interface.
+	 *
+	 * @param {String} name
+	 * @param {*}
+	 *
+	 */
+	this.getPreference = function(name) {
+
+		return settings[name];
+
+	};
+
+	/**
+	 * setPreferences
+	 *
+	 * @param {Object} settings
+	 *
+	 */
+	this.setPreferences = function(newSettings) {
+		settings = newSettings;
+		return this;
+
+	};
+
+
+
+
 
 	/**
 	 * get
@@ -72,7 +100,7 @@ module.exports = function Configuration() {
 		if (!s)
 			return defult;
 
-                return s;
+		return s;
 
 	};
 

@@ -1,15 +1,33 @@
-/**
- *
- *  Provides a cash on delivery gateway option.
- *
- */
 module.exports = {
 
-	type: 'gateway',
-	workflow: 'cod',
-	key: 'cod',
-	label: 'Cash On Delivery',
-	value: 'Cash On Delivery',
+	type: 'controller',
+	name: 'Cash Payments',
+	controller: function(store, dao, controllers, callbacks, config) {
+
+		this.onGetGateways = function(gateways) {
+			if (config.getPreference('payments').cod.active === true)
+				gateways.cod = this;
+
+		};
+
+		this.onGetPaymentOptions = function(options) {
+
+			if (config.getPreference('payments').cod.active === true)
+				options.push({
+					label: 'Cash on Delivery',
+					value: 'cod',
+				});
+
+
+		};
+
+		this.checkout = function(ctx) {
+
+			ctx.handler.onTransactionApproved(ctx.transaction);
+
+		};
+
+	},
 	settings: {
 		run: function(list, types) {
 
@@ -37,7 +55,5 @@ module.exports = {
 
 
 		}
-	},
-
-	checkout: require('./checkout')
+	}
 };

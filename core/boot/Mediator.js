@@ -1,9 +1,4 @@
 /**
- * @module
- */
-
-
-/**
  * Mediator for different events within the system.
  *
  * @todo In future releases this will be decomposed into seperate
@@ -14,7 +9,7 @@
  * @constructor
  *
  */
-module.exports = function Mediator(store) {
+module.exports = function Mediator(store, controllers, config) {
 
 	/**
 	 * onSettingsChanged is called whenever the settings changed.
@@ -27,8 +22,9 @@ module.exports = function Mediator(store) {
 		if (!settings)
 			settings = {};
 
+		config.setPreferences(settings);
 		store.settings = settings;
-			store.broadcast(store.SETTINGS_CHANGED, settings);
+		store.broadcast(store.SETTINGS_CHANGED, settings);
 
 	};
 
@@ -50,9 +46,6 @@ module.exports = function Mediator(store) {
 		store.broadcast(store.CUSTOMER_CREATED, evt);
 
 	};
-
-
-
 
 
 };

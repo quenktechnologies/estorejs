@@ -1,4 +1,4 @@
-var Factory = require('../../checkout/Factory');
+Factory = require('../../checkout/Factory');
 
 module.exports = {
 
@@ -13,7 +13,7 @@ module.exports = {
 	 * @extends {Controller}
 	 *
 	 */
-	controller: function CheckoutRoutesController(store) {
+	controller: function CheckoutRoutesController(store,dao,controllers,callbacks,config) {
 
 		var render = store.getRenderCallback();
 
@@ -107,7 +107,7 @@ module.exports = {
 		this.onCheckoutTransactionRequest = function(req, res, next) {
 
 			var checkout = Factory.
-			createStandardAssistant(store, req.session, res, next);
+			createStandardAssistant(store, req.session, res, next, controllers, callbacks);
 
 			if (!checkout.hasItems(req.session.cart))
 				return res.redirect('/cart');

@@ -38,12 +38,11 @@
  *
  * ```
  *
- * @param {Estore} store
  * @alias Controller
  * @abstract
  *
  */
-module.exports = function Controller(store) {
+module.exports = {
 
 	/**
 	 * keystoneConfiguration is called during keystone configuration.
@@ -52,11 +51,11 @@ module.exports = function Controller(store) {
 	 * @return
 	 *
 	 */
-	this.keystoneConfiguration = function() {
+	keystoneConfiguration: function(config) {
 
 
 
-	};
+	},
 
 	/**
 	 * preRouteRegistration is called prior to the keystone routing.
@@ -67,14 +66,11 @@ module.exports = function Controller(store) {
 	 * @return undefined
 	 *
 	 */
-	this.preRouteRegistration = function(req, res, next) {
+	preRouteRegistration: function(req, res, next) {
 
 
 
-	};
-
-
-
+	},
 	/**
 	 * routeRegistration is called to setup routes.
 	 *
@@ -82,13 +78,11 @@ module.exports = function Controller(store) {
 	 * @return
 	 *
 	 */
-	this.routeRegistration = function(app) {
+	routeRegistration: function(app) {
 
 
 
-	};
-
-
+	},
 	/**
 	 * modelRegistration is called to setup models.
 	 *
@@ -96,11 +90,11 @@ module.exports = function Controller(store) {
 	 * @return
 	 *
 	 */
-	this.modelRegistration = function(keystone) {
+	modelRegistration: function(keystone) {
 
 
 
-	};
+	},
 
 	/**
 	 * gatewayRegistration
@@ -108,12 +102,34 @@ module.exports = function Controller(store) {
 	 * @return
 	 *
 	 */
-	this.gatewayRegistration = function() {
+	gatewayRegistration: function() {
 
 
 
-	};
+	},
 
+	/**
+	 * onGetPaymentOptions
+	 *
+	 * params
+	 *
+	 */
+	onGetPaymentOptions: function(options) {
+
+
+	},
+
+	/**
+	 * onGetGateways
+	 *
+	 * params
+	 *
+	 */
+	onGetGateways: function(gateways) {
+
+
+
+	}
 
 
 

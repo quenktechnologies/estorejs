@@ -1,19 +1,32 @@
-/**
- *
- *  Provides a cash on delivery gateway option.
- *
- */
 module.exports = {
 
-	type: 'gateway',
-	workflow: 'bank',
-	key: 'bank',
-	label: 'Bank Transfer',
-	value: 'Bank Transfer',
+	type: 'controller',
+	name: 'Bank Payments',
+	controller: function(store, dao, controllers, callbacks, config) {
+
+		this.onGetGateways = function(gateways) {
+
+			if (config.getPreference('payments').bank.active === true)
+				gateways.bank = this;
+
+		};
+
+		this.onGetPaymentOptions = function(options) {
+
+			if (config.getPreference('payments').bank.active === true)
+				options.push({
+					label: 'Bank Transfer',
+					value: 'bank',
+				});
+
+
+		};
+
+	},
 	settings: {
 		run: function(list, types) {
 
-			list.add('Bank Transfers',{
+			list.add('Bank Transfers', {
 				payments: {
 					bank: {
 						active: {
@@ -39,4 +52,4 @@ module.exports = {
 		}
 	},
 
-	checkout: require('./checkout')};
+};

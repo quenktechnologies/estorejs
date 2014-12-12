@@ -1,11 +1,4 @@
-/** module */
-var CheckoutAssistant = require('../../../checkout/CheckoutAssistant');
-
-var CheckoutAssistantHandlerWrapper =
-	require('../../../checkout/CheckoutAssistantHandlerWrapper');
-
-var AjaxCheckoutAssistantHandler = require('./AjaxCheckoutAssistantHandler');
-
+var Factory = require('../../../checkout/Factory');
 module.exports = {
 
 	type: 'controller',
@@ -17,7 +10,7 @@ module.exports = {
 	 * @extends {Controller}
 	 *
 	 */
-	controller: function AjaxCheckoutController(store) {
+	controller: function AjaxCheckoutController(store, dao, controllers, callbacks, config) {
 
 		var self = this;
 
@@ -45,9 +38,8 @@ module.exports = {
 		 */
 		this.onCheckoutTransactionRequest = function(req, res) {
 
-			var checkout = new CheckoutAssistant(store,
-				new CheckoutAssistantHandlerWrapper(store, req.session,
-					new AjaxCheckoutAssistantHandler(res)));
+			var checkout = Factory.
+			createAjaxAssistant(store, req.session, res, controllers, callbacks);
 
 			if (!checkout.hasItems(req.session.cart))
 				return res.send(400, 'Your cart is empty!');
@@ -67,8 +59,9 @@ module.exports = {
 		 *
 		 */
 		this.onPaymentOptionsRequest = function(req, res) {
-
-			res.json(store.gateways.list);
+			var list = [];
+			controllers.onGetPaymentOptions(list);
+			res.json(list);
 
 		};
 

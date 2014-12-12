@@ -1,12 +1,12 @@
 /**
  * CheckoutAssistant is a model object used for actually doing a checkout.
  * @class CheckoutAssistant
- * @param {EStore} store
+ * @param {Edao} dao
  * @param {CheckoutHandler} handler
  * @constructor
  *
  */
-module.exports = function CheckoutAssistant(store, handler) {
+module.exports = function CheckoutAssistant(dao, controllers, handler) {
 
 	/**
 	 * hasItems checks the cart for validity.
@@ -24,19 +24,20 @@ module.exports = function CheckoutAssistant(store, handler) {
 	 * checkout
 	 *
 	 * @method checkout
-	 * @param {CheckoutContext} ctxt
 	 * @param {Array} cart
 	 * @param {Object} checkout
 	 * @return
 	 *
 	 */
-	this.checkout = function(ctx, cart, checkout) {
+	this.checkout = function(cart, checkout) {
 
-		var gateways = store.getGateways();
-		if (!gateways.hasActive(checkout.workflow))
+		var gateways = {};
+		controllers.onGetGateways(gateways);
+
+		if (!gateways.hasOwnProperty(checkout.workflow))
 			return handler.onGatewayNotFound();
 
-		var invoice = store.getDataModel('Invoice', true, checkout);
+		var invoice = dao.getDataModel('Invoice', true, checkout);
 		invoice.set({
 			items: cart,
 			payment: {
@@ -51,14 +52,14 @@ module.exports = function CheckoutAssistant(store, handler) {
 			if (err)
 				return handler.onValidationError(err);
 
-			var transaction = store.getDataModel('Transaction', true);
+			var transaction = dao.getDataModel('Transaction', true);
 			transaction.set('invoice', invoice.toObject());
 			transaction.
 			save(function(err, saved) {
 
 				if (err) return handler.onTransactionSaveFailed(err, saved);
 
-				gateways.getActive(checkout.workflow).checkout({
+				gateways[checkout.workflow].checkout({
 					transaction: saved,
 					handler: handler,
 				});

@@ -1,19 +1,39 @@
-/**
- *
- *  Provides a cash on delivery gateway option.
- *
- */
 module.exports = {
 
-	type: 'gateway',
-	workflow: 'cheque',
-	key: 'cheque',
-	label: 'Cheque/Money Order',
-	value: 'Cheque/Money Order',
+	type: 'controller',
+	name: 'Cheque Payments',
+	controller: function(store, dao, controllers, callbacks, config) {
+
+		this.onGetGateways = function(gateways) {
+
+			if (config.getPreference('payments').cheque.active === true)
+				gateways.cheque = this;
+
+		};
+
+		this.onGetPaymentOptions = function(options) {
+
+			if (config.getPreference('payments').cheque.active === true)
+				options.push({
+					label: 'Cheque',
+					value: 'cheque',
+				});
+
+
+		};
+
+		this.checkout = function(ctx) {
+
+			ctx.handler.onTransactionApproved(ctx.transaction);
+
+		};
+
+
+	},
 	settings: {
 		run: function(list, types) {
 
-			list.add('Cheque/Money Orders',{
+			list.add('Cheque/Money Orders', {
 				payments: {
 					cheque: {
 						active: {
@@ -38,9 +58,6 @@ module.exports = {
 
 		}
 	},
-
-	checkout: require('./checkout')
-
 
 
 };

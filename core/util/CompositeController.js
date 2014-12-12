@@ -72,6 +72,34 @@ module.exports = function CompositeController() {
 	};
 
 
+	/**
+	 * onGetPaymentOptions
+	 *
+	 * params
+	 *
+	 */
+	this.onGetPaymentOptions = function(options) {
+		this._callEach('onGetPaymentOptions', options);
+		return this;
+
+
+	};
+
+	/**
+	 * onGetGateways
+	 *
+	 * params
+	 *
+	 */
+	this.onGetGateways = function(gateways) {
+
+		this._callEach('onGetGateways', gateways);
+		return this;
+
+
+	};
+
+
 
 
 };

@@ -6,7 +6,6 @@ var Endpoints = require('./core/extensions/ajax/Endpoints');
 var Express = require('express');
 var NunjucksMongoose = require('nunjucks-mongoose');
 var CompositeController = require('./core/util/CompositeController');
-var Installer = require('./core/boot/Installer');
 var UIFactory = require('./core/util/UIFactory');
 var MainEventHandler = require('./core/util/MainEventHandler');
 var Gateways = require('./core/checkout/Gateways');
@@ -20,6 +19,7 @@ var ThemePreLoader = require('./core/boot/ThemePreLoader');
 var SettingsPreLoader = require('./core/boot/SettingsPreLoader');
 var Configuration = require('./core/boot/Configuration.js');
 var Environment = require('./core/boot/Environment');
+var InstallerFactory = require('./core/boot/installers/Factory');
 /**
  * EStore is the main constructor for the system.
  *
@@ -38,14 +38,17 @@ module.exports = function EStore() {
 
 	var modelCompiler = new ModelCompiler(new ModelCompilerSyntax());
 	var config = new Configuration(process.env);
-	var installer = new Installer(this, config, modelCompiler);
+	var composite = new CompositeController();
+
+	//@todo stop direct access
+	this.gateways = new Gateways();
+	this.engines = {};
+
 	var bus = new EventEmitter();
 	var extensions = [];
 
-
 	this.settingFields = {};
 	this.runnableSettings = [];
-	this.daemons = [];
 	this.validators = {};
 
 	//Settings
@@ -75,80 +78,13 @@ module.exports = function EStore() {
 	this.STATUS_CLIENT_ERROR = 409;
 	this.STATUS_OPERATION_COMPLETE = 201;
 
-	/**
-	 * locals
-	 *
-	 * @property
-	 * @type {Object}
-	 */
 	this.locals = {};
-
-
-	/**
-	 * settings contains the settings
-	 *
-	 * @property settings
-	 * @type {Object}
-	 */
 	this.settings = {};
-
-	/**
-	 *
-	 * @property {Application}
-	 *
-	 */
 	this.app = new Express();
-
-	/**
-	 *
-	 * @property {Keystone} keystone
-	 *
-	 *
-	 */
 	this.keystone = require('keystone');
-
-	/**
-	 *
-	 * @property {Environment} viewEngine
-	 *
-	 */
 	this.viewEngine = undefined;
-
-	/**
-	 * gateways is an object containing the gateway modules that are enabled.
-	 *
-	 * @property gateways
-	 * @type {Object}
-	 */
-	this.gateways = new Gateways();
-
-	/**
-	 * engines
-	 *
-	 * @property engines
-	 * @type
-	 */
-	this.engines = {};
-
-
-	/**
-	 * endpoints is an object with the api endpoints for the app.
-	 * TODO: In the future, this may be an external package so it can be reused onGateways
-	 * the client side.
-	 * @property endpoints
-	 * @type {Object}
-	 */
 	this.endpoints = new Endpoints();
-
-	/**
-	 * composite
-	 *
-	 * @property composite
-	 * @type {CompositeController}
-	 */
-	this.composite = new CompositeController();
-
-	this.mediator = new Mediator(this);
+	this.mediator = new Mediator(this, composite, config);
 
 	/**
 	 * _preloadThemes
@@ -346,13 +282,6 @@ module.exports = function EStore() {
 
 		}.bind(this));
 
-		extensions.forEach(function(ext) {
-
-			if (typeof ext.settings === 'object')
-				installer.settings(ext.settings);
-
-		}.bind(this));
-
 
 
 	};
@@ -395,11 +324,23 @@ module.exports = function EStore() {
 	 */
 	this._processExtensions = function() {
 
+		var installer = InstallerFactory.
+		create({
+			store: this,
+			config: config,
+			modelCompiler: modelCompiler,
+			gateways: this.gateways,
+			engines: this.engines,
+			callbacks: this.mediator,
+			controllers: composite
+
+		});
+
 		extensions.forEach(function(ext) {
 
 			installer.install(ext);
 
-		}.bind(this));
+		});
 
 	};
 
@@ -463,54 +404,6 @@ module.exports = function EStore() {
 	};
 
 	/**
-	 * _buildGatewayList
-	 *
-	 * @method _buildGatewayList
-	 * @return
-	 *
-	 */
-	this._buildGatewayList = function() {
-
-		var self = this;
-
-		this.gateways.list.length = 0;
-
-		this.gateways.available.forEach(function(gw) {
-
-			if (gw.workflow === 'card') {
-
-				if (gw.value === self.settings.payments.card.active) {
-					self.gateways.active.card = gw;
-					self.gateways.list.push({
-						label: 'Credit Card',
-						value: 'card'
-					});
-				}
-
-			} else {
-				if (self.settings.payments[gw.key])
-					if (self.settings.payments[gw.key].active === true) {
-						self.gateways.active[gw.workflow] = gw;
-						self.gateways.list.push({
-							label: gw.label,
-							value: gw.workflow
-						});
-
-
-					}
-
-
-
-			}
-
-
-
-
-		});
-
-	};
-
-	/**
 	 * _routeRegistration registers the routes.
 	 *
 	 * @method _routeRegistration
@@ -520,8 +413,6 @@ module.exports = function EStore() {
 	this._routeRegistration = function() {
 
 		var self = this;
-
-
 		/** Temporary hack to ensure CSRF protection for EStore routes **/
 		this.keystone.pre('routes', function(req, res, next) {
 			if (process.env.DISABLE_CSRF)
@@ -568,29 +459,11 @@ module.exports = function EStore() {
 
 		this.keystone.set('routes', function(app) {
 
-			this.composite.routeRegistration(app);
+			composite.routeRegistration(app);
 
 		}.bind(this));
 
 	};
-
-	/**
-	 * _startDaemons starts the daemons.
-	 *
-	 * @method _startDaemons
-	 * @return
-	 *
-	 */
-	this._startDaemons = function() {
-
-		this.daemons.forEach(function(daemon) {
-
-			setInterval(daemon.exec(this), daemon.interval);
-
-		}.bind(this));
-
-	};
-
 
 	/**
 	 * _fetchCategories
@@ -633,10 +506,8 @@ module.exports = function EStore() {
 			self._processExtensions();
 			self._scanPages();
 			self._modelRegistration();
-			self._buildGatewayList();
 			self._eventRegistration();
 			self._routeRegistration();
-			self._startDaemons();
 			self.keystone.start(function() {
 
 				self._fetchCategories();
@@ -661,7 +532,7 @@ module.exports = function EStore() {
 	 */
 	this.install = function(ext) {
 
-		installer.install(ext);
+		this.extensions.push(ext);
 
 	};
 
@@ -762,7 +633,6 @@ module.exports = function EStore() {
 
 	};
 
-
 	/**
 	 * getViewEngine returns the installed view engine.
 	 *
@@ -772,10 +642,9 @@ module.exports = function EStore() {
 	 *
 	 */
 	this.getViewEngine = function() {
-
+		console.log('getViewEngine is deprecated');
 		return this.viewEngine;
 
 	};
-
 
 };

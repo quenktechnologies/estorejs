@@ -38,8 +38,7 @@ module.exports = function Composite() {
 		this._members.forEach(function(member, key) {
 
 			var f = member[method];
-
-			if (!f) throw new Error("Method '" + method + "' not found!");
+			if (!f) throw new Error("Method '" + method + "' not found on " + member.constructor + "!");
 			f.apply(member, args);
 
 		});
