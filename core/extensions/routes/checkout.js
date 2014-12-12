@@ -19,7 +19,7 @@ module.exports = {
 	 */
 	controller: function CheckoutRoutesController(store) {
 
-          var render = store.getRenderCallback();
+		var render = store.getRenderCallback();
 
 		/**
 		 * routeRegistration
@@ -34,6 +34,7 @@ module.exports = {
 			app.get('/checkout', this.onCheckoutPageRequest);
 
 			app.get('/checkout/error', render('checkout/error.html'));
+			app.get('/checkout/declined', render('checkout/declined.html'));
 
 			app.get(/^\/checkout\/success\/([a-f\d-]{36})$/,
 				this.onCheckoutSuccessPageRequest);

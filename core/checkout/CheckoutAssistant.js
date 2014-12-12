@@ -24,12 +24,13 @@ module.exports = function CheckoutAssistant(store, handler) {
 	 * checkout
 	 *
 	 * @method checkout
+	 * @param {CheckoutContext} ctxt
 	 * @param {Array} cart
 	 * @param {Object} checkout
 	 * @return
 	 *
 	 */
-	this.checkout = function(cart, checkout) {
+	this.checkout = function(ctx, cart, checkout) {
 
 		var gateways = store.getGateways();
 		if (!gateways.hasActive(checkout.workflow))
