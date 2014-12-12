@@ -12,14 +12,14 @@ var RunMethod = require('./RunMethod');
 var ValidationMethod = require('./ValidationMethod');
 
 /**
- * sourceCompilerSyntax contains the steps involved in compiling a source.
+ * ModelCompilerSyntax contains the steps involved in compiling a source.
  *
  * All of the methods here correspond to a field value for a sourceExtension.
  * @alias treeCompilerSyntax
  * @constructor
  *
  */
-module.exports = function treeCompilerSyntax() {
+module.exports = function ModelCompilerSyntax() {
 
 	var stack;
 	var tree;
