@@ -1,8 +1,4 @@
-/** @module */
-
-var CheckoutAssistant = require('../../checkout/CheckoutAssistant');
-var CheckoutHandlerWrapper = require('../../checkout/CheckoutAssistantHandlerWrapper');
-var StandardCheckoutHandler = require('./StandardCheckoutAssistantHandler');
+var Factory = require('../../checkout/Factory');
 
 module.exports = {
 
@@ -110,9 +106,8 @@ module.exports = {
 		 */
 		this.onCheckoutTransactionRequest = function(req, res, next) {
 
-			var checkout = new CheckoutAssistant(store,
-				new CheckoutHandlerWrapper(store, req.session,
-					new StandardCheckoutHandler(res)));
+			var checkout = Factory.
+			createStandardAssistant(store, req.session, res, next);
 
 			if (!checkout.hasItems(req.session.cart))
 				return res.redirect('/cart');
