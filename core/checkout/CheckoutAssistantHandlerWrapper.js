@@ -79,6 +79,11 @@ module.exports = function CheckoutAssistantHandlerWrapper(store, session, callba
 
 	};
 
+        this.onRedirectNeeded = function(url) {
+
+          handler.onRedirectNeeded(url);
+
+        };
 
 
 };

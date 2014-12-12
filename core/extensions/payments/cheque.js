@@ -24,14 +24,17 @@ module.exports = {
 
 		this.checkout = function(ctx) {
 
-			ctx.handler.onTransactionApproved(ctx.transaction);
+			ctx.callbacks.onTransactionApproved(ctx.transaction);
 
 		};
 
 
+
+
+
 	},
 	settings: {
-		run: function(list, types) {
+		run: function(list, store, types) {
 
 			list.add('Cheque/Money Orders', {
 				payments: {

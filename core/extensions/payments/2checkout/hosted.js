@@ -1,33 +1,47 @@
+var TwoCheckout = require('./util/TwoCheckout');
+
 module.exports = {
 
 	type: 'controller',
-	name: 'Bank Payments',
+	name: '2Checkout Hosted',
 	controller: function(store, dao, controllers, callbacks, config) {
 
 		this.onGetGateways = function(gateways) {
 
-			if (config.getPreference('payments').bank.active === true)
-				gateways.bank = this;
+			var tco = config.getPreference('payments').TwoCheckout;
+
+			if (tco.active === true)
+				if (TwoCheckout.isHostedReady(config))
+					gateways.card = this;
 
 		};
+
 		this.onGetPaymentOptions = function(options) {
 
-			if (config.getPreference('payments').bank.active === true)
-				options.push({
-					label: 'Bank Transfer',
-					value: 'bank',
-				});
+			var tco = config.getPreference('payments').TwoCheckout;
 
+			if (TwoCheckout.isHostedReady(config))
+				options.push({
+					label: '2Checkout Hosted',
+					value: 'card',
+				});
 
 		};
 		this.checkout = function(ctx) {
 
-			ctx.callbacks.onTransactionApproved(ctx.transaction);
+			var tco = TwoCheckout.create({
+				sellerId: config.get('TWO_CHECKOUT_SELLER_ID')
+			});
+
+			ctx.onRedirectNeeded(tco.checkout.link(
+				TwoCheckout.createParamsForHosted(ctx, config)));
+
 
 		};
+
 	},
 	settings: {
-		run: function(list, store, types) {
+		run: function(list, types) {
 
 			list.add('Bank Transfers', {
 				payments: {

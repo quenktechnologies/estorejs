@@ -36,8 +36,7 @@ module.exports = {
 					default: ['products', 'categories', 'transactions']
 
 				}
-			},
-{
+			}, {
 				notifications: {
 					type: types.TextArray
 				}
@@ -50,7 +49,7 @@ module.exports = {
 		// Provide access to Keystone
 		list.schema.virtual('canAccessKeystone').get(function() {
 
-			if (this.roles.indexOf('keystone') < 0)
+			if (this.get('roles').indexOf('keystone') < 0)
 				return false;
 
 			return true;

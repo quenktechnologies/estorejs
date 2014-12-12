@@ -9,6 +9,7 @@ var store;
 var mock;
 var checkout;
 
+
 before(function(done) {
 
 	process.env.PORT = 8888;
@@ -19,13 +20,15 @@ before(function(done) {
 	store = new EStore();
 	store.start(done);
 });
-
+before(function(done) {
+	return store.getDataModel('Product').
+	remove({}, done);
+});
 beforeEach(function(done) {
 	this.timeout(300000);
 	store.getDataModel('Product', true, new Mock()).
 	save(done);
 });
-
 beforeEach(function(done) {
 	store.getDataModel('Product').
 	findOne({
@@ -38,10 +41,6 @@ beforeEach(function(done) {
 
 });
 
-afterEach(function(done) {
-	return store.getDataModel('Product').
-	remove({}, done);
-});
 
 describe('Shopping flow', function() {
 	it('GET /categories/all/products/<product-slug>', function(done) {

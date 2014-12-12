@@ -28,10 +28,14 @@ module.exports = {
 		var gateway = new Gateway(ctx.gateways);
 		var model = new Model(ctx.modelCompiler);
 		var service = new Service(ctx.store);
-		var settings = new Settings(ctx.store);
+		var settings = new Settings(controller);
 		var composite = new Composite(controller);
 
-		controller.
+                //Be careful not to introduce circular dependencies here
+                //The settings installer wraps up settings sections and puts
+                //back on the chain. The composite installer does the same without the wrapping.
+
+                controller.
 		setNext(daemon).
 		setNext(engine).
 		setNext(gateway).

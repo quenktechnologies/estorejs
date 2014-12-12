@@ -4,7 +4,6 @@
 
 var _ = require('lodash');
 var DocumentMethod = require('./DocumentMethod');
-var ModelMethod = require('./ModelMethod');
 var StaticMethod = require('./ModelMethod');
 var FieldsMethod = require('./FieldsMethod');
 var PreMethod = require('./PreMethod');
@@ -16,48 +15,48 @@ var ValidationMethod = require('./ValidationMethod');
  * sourceCompilerSyntax contains the steps involved in compiling a source.
  *
  * All of the methods here correspond to a field value for a sourceExtension.
- * @alias ModelCompilerSyntax
+ * @alias treeCompilerSyntax
  * @constructor
  *
  */
-module.exports = function ModelCompilerSyntax() {
+module.exports = function treeCompilerSyntax() {
 
 	var stack;
-	var model;
+	var tree;
 
 	/**
 	 *
 	 * newRound prepares the syntax for a new round of parsing.
-	 * @param {Object} newModel
+	 * @param {Tree} newTree
 	 */
-	this.newRound = function(newModel) {
+	this.newRound = function(newTree) {
 
-		stack = [];
-		model = newModel;
+		stack = newTree.stack;
+		tree = newTree;
 
 	};
 
 	/**
-	 * getTree returns the AST for the model.
-	 * @returns {Array}
+	 * getTree returns the AST for the tree.
+	 * @returns {Tree}
 	 */
 	this.getTree = function() {
-		model.stack = stack;
-		return model;
+		tree.stack = stack;
+		return tree;
 	};
 
 	this.options = function(source) {
-		model.options = model.options || {};
-		_.merge(model.options, source.options);
+		tree.options = tree.options || {};
+		_.merge(tree.options, source.options);
 	};
 
 	this.navigation = function(source) {
-		model.navigation = model.navigation || {};
-		_.merge(model.navigation, source.navigation);
+		tree.navigation = tree.navigation || {};
+		_.merge(tree.navigation, source.navigation);
 	};
 
 	this.defaultColumns = function(source) {
-		model.defaultColumns = source.defaultColumns;
+		tree.defaultColumns = source.defaultColumns;
 	};
 
 	this.model = function(source) {
@@ -84,9 +83,9 @@ module.exports = function ModelCompilerSyntax() {
 		stack.push(new RunMethod(source.run));
 	};
 
-        this.validation = function(source) {
-stack.push(new ValidationMethod(source.validation));
-        };
+	this.validation = function(source) {
+		stack.push(new ValidationMethod(source.validation));
+	};
 
 
 };

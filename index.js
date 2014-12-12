@@ -208,6 +208,36 @@ module.exports = function EStore() {
 	};
 
 	/**
+	 * _scanPages scans the theme package file for pages support.
+	 *
+	 * @method _scanPages
+	 * @return
+	 *
+	 */
+	this._scanPages = function() {
+
+		var pages = config.getThemeProperties().
+		getProperties().
+		supports.pages;
+
+		if (!pages)
+			return;
+
+		this.pages = {
+			templates: []
+		};
+
+		Object.keys(pages.templates).forEach(function(key) {
+
+			this.pages.templates.push({
+				value: pages.templates[key],
+				label: key
+			});
+
+		}.bind(this));
+
+	};
+	/**
 	 * _gatherExtensions
 	 *
 	 * @method _gatherExtensions
@@ -220,12 +250,14 @@ module.exports = function EStore() {
 		getThemeProperties().
 		getProperties();
 
+
 		extensions.push(require('./core/extensions/routes'));
 		extensions.push(require('./core/extensions/payments/cod'));
 		extensions.push(require('./core/extensions/payments/bank'));
 		extensions.push(require('./core/extensions/payments/cheque'));
 		extensions.push(require('./core/extensions/daemons/transaction'));
 		extensions.push(require('./core/extensions/engines/image'));
+		extensions.push(require('./core/extensions/models/settings'));
 		extensions.push(require('./core/extensions/models/user'));
 		extensions.push(require('./core/extensions/models/counter'));
 		extensions.push(require('./core/extensions/models/item'));
@@ -286,34 +318,6 @@ module.exports = function EStore() {
 
 	};
 
-	/**
-	 * _registerSettingsDataModel
-	 *
-	 * @method _registerSettingsDataModel
-	 * @return
-	 *
-	 */
-	this._registerSettingsDataModel = function() {
-
-		var settings = require('./core/extensions/models/settings');
-		var fields = settings.model(this, this.keystone.Field.Types);
-
-		fields.push.apply(this.settingFields);
-
-		var list = new this.keystone.List('Settings', settings.options);
-
-		list.add.apply(list, fields);
-		settings.run(list, this);
-
-		this.runnableSettings.forEach(function(f) {
-			f(list, this.keystone.Field.Types);
-		}.bind(this));
-
-		list.register();
-
-		this.settings = this.keystone.list('Settings').model(this.settings).toObject();
-
-	};
 
 	/**
 	 * _processExtensions
@@ -337,44 +341,18 @@ module.exports = function EStore() {
 		});
 
 		extensions.forEach(function(ext) {
-
 			installer.install(ext);
 
 		});
 
-	};
+		modelCompiler.compile(this);
 
-
-	/**
-	 * _scanPages scans the theme package file for pages support.
-	 *
-	 * @method _scanPages
-	 * @return
-	 *
-	 */
-	this._scanPages = function() {
-
-		var pages = config.getThemeProperties().
-		getProperties().
-		supports.pages;
-
-		if (!pages)
-			return;
-
-		this.pages = {
-			templates: []
-		};
-
-		Object.keys(pages.templates).forEach(function(key) {
-
-			this.pages.templates.push({
-				value: pages.templates[key],
-				label: key
-			});
-
-		}.bind(this));
+		this.settings = this.keystone.list('Settings').model(this.settings).toObject();
 
 	};
+
+
+
 
 
 	/**
@@ -385,7 +363,7 @@ module.exports = function EStore() {
 	 *
 	 */
 	this._modelRegistration = function() {
-		modelCompiler.compile(this);
+		//	modelCompiler.compile(this);
 	};
 
 
@@ -501,10 +479,9 @@ module.exports = function EStore() {
 			self._bootstrapTheme();
 			self._bootstrapNunjucks();
 			self._boostrapKeystone();
-			self._gatherExtensions();
-			self._registerSettingsDataModel();
-			self._processExtensions();
 			self._scanPages();
+			self._gatherExtensions();
+			self._processExtensions();
 			self._modelRegistration();
 			self._eventRegistration();
 			self._routeRegistration();
@@ -532,7 +509,7 @@ module.exports = function EStore() {
 	 */
 	this.install = function(ext) {
 
-		this.extensions.push(ext);
+		extensions.push(ext);
 
 	};
 

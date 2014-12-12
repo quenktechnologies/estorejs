@@ -18,17 +18,9 @@ module.exports = {
 
 		if (ext.settings) {
 
-			if (ext.settings.run)
-				ext.settings.run.bind(ext);
-
-			if (ext.settings.provide)
-				ext.settings.provide.bind(ext);
-
-			this.next({
-				type: 'settings',
-				settings: ext.settings
-			});
-
+                  var newExt = ext.settings;
+                  newExt.type = 'settings';
+                  this.next(newExt);
 
 		}
 

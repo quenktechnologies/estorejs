@@ -38,6 +38,7 @@ module.exports = function CheckoutAssistant(dao, controllers, handler) {
 			return handler.onGatewayNotFound();
 
 		var invoice = dao.getDataModel('Invoice', true, checkout);
+
 		invoice.set({
 			items: cart,
 			payment: {
@@ -52,6 +53,8 @@ module.exports = function CheckoutAssistant(dao, controllers, handler) {
 			if (err)
 				return handler.onValidationError(err);
 
+			invoice.calculateTotals();
+
 			var transaction = dao.getDataModel('Transaction', true);
 			transaction.set('invoice', invoice.toObject());
 			transaction.
@@ -61,7 +64,7 @@ module.exports = function CheckoutAssistant(dao, controllers, handler) {
 
 				gateways[checkout.workflow].checkout({
 					transaction: saved,
-					handler: handler,
+					callbacks: handler,
 				});
 
 

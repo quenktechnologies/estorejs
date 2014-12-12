@@ -26,11 +26,14 @@ module.exports = function ModelCompiler(syntax) {
 	 */
 	this.parse = function(source) {
 
-		var model = trees[source.name] || {
-			options: {},
-			navigation: {},
-			stack: []
-		};
+		var model = trees[source.name];
+
+		if (!model)
+			model = {
+				options: {},
+				navigation: {},
+				stack: []
+			};
 
 		if (source.replace)
 			model.stack.length = 0;
@@ -59,11 +62,11 @@ module.exports = function ModelCompiler(syntax) {
 		var types = store.keystone.Field.Types;
 		var nav = {};
 		fields = new UIFactory(types);
-
 		for (var key in trees)
 			if (trees.hasOwnProperty(key)) {
 
 				tree = trees[key];
+
 				var list = store.keystone.List(key, tree.options);
 
 				if (tree.defaultColumns)
@@ -81,6 +84,8 @@ module.exports = function ModelCompiler(syntax) {
 				console.log('Registered List ' + key + '.');
 
 			}
+
+
 		nav.settings = ['settings', 'users', 'countries', 'counters'];
 		store.keystone.set('nav', nav);
 

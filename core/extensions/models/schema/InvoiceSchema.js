@@ -23,7 +23,23 @@ module.exports = function InvoiceSchema(store, types, ui) {
 			width: 'short',
 			default: Date.now
 		},
+		charges: {
 
+			delivery: {
+				type: types.Money,
+				default: '0.00',
+				noedit: true,
+				width: 'short',
+                                required:true,
+			},
+			tax: {
+				type: types.Money,
+				default: '0.00',
+				noedit: true,
+				width: 'short',
+                                required:true
+			},
+		},
 		total: {
 
 			type: types.Money,

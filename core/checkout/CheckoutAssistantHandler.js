@@ -39,3 +39,13 @@ CheckoutAssistantHandler.prototype.onTransactionApproved = function(trn) {};
  *
  */
 CheckoutAssistantHandler.prototype.onTransactionDeclined = function(trn) {};
+
+/**
+ *
+ * onRedirectNeeded is called when the checkout needs to be redirected.
+ * For example: hosted checkouts.
+ *
+ * @param {String} url 
+ *
+ */
+CheckoutAssistantHandler.prototype.onRedirectNeeded = function(url) {};

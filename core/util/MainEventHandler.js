@@ -48,7 +48,6 @@ module.exports = function MainEventHandler(store) {
 	 */
 	this.onSettingsChanged = function(settings) {
 		store.settings = settings;
-		store._buildGatewayList();
 	};
 
 
