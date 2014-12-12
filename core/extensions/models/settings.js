@@ -53,19 +53,16 @@ module.exports = {
 			}, 'Credit Cards', {
 				payments: {
 					card: {
-						active: {
-							type: types.Select,
-							options: (function() {
-								var list = [];
-								store.gateways.available.forEach(function(gw) {
-									if (gw.workflow === 'card')
-										list.push(gw);
-								});
-								return list;
-							})(),
-							default: 'none',
-							label: 'Choose a gateway:'
-						}
+						type: types.Select,
+						options: [{
+							label: 'None',
+							value: 'none'
+						}, {
+							label: '2checkout Hosted',
+							value: '2co-hosted'
+						}],
+						default: 'none',
+						label: 'Choose a gateway:'
 					}
 				}
 
@@ -74,7 +71,7 @@ module.exports = {
 				currency: {
 					type: types.Select,
 					options: require('currency-codes').codes(),
-					default: 'TTD',
+					default: 'USD',
 					label: 'Select default'
 				}
 			}];
