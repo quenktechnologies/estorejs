@@ -435,8 +435,8 @@
     },
     "keystone": {
       "version": "0.2.36",
-      "from": "keystone@^0.2.x",
-      "resolved": "https://registry.npmjs.org/keystone/-/keystone-0.2.36.tgz",
+      "from": "keystone@git+https://github.com/quenktechnologies/keystone",
+      "resolved": "git+https://github.com/quenktechnologies/keystone#5c24de36da97b57277ad545cc487e479081c3045",
       "dependencies": {
         "async": {
           "version": "0.9.0",

@@ -33,7 +33,7 @@
     "express": "3.3.x",
     "json2csv": "2.2.x",
     "just.randomstring": "^0.1.1",
-    "keystone": "^0.2.x",
+    "keystone": "quenktechnologies/keystone",
     "lodash": "2.4.x",
     "mongojs": "^0.15.1",
     "node-uuid": "^1.4.1",
