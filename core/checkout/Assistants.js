@@ -11,7 +11,7 @@ var StandardCheckoutHandler =
 	require('./StandardCheckoutAssistantHandler');
 
 /**
- * Assistants
+ * Assitants object for checkout.
  * @memberOf core/checkout
  */
 
@@ -33,6 +33,13 @@ module.exports = {
 			callbacks);
 
 	},
+        createStandardAssistantHandler: function(dao, session, callback, res, next) {
+
+	return		new CheckoutAssistantHandlerWrapper(dao, req.session, callbacks,
+				new StandardCheckoutHandler(res, next));
+
+
+        }
 
 
 

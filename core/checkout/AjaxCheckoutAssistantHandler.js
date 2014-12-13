@@ -36,6 +36,16 @@ module.exports = function AjaxCheckoutAssistantHandler(res) {
 		res.send(409);
 	};
 
+	this.onRedirectNeeded = function(url) {
 
+		res.set('x-checkout-url', url);
+		res.redirect(204, url);
+	};
+
+	this.onValidationError = function(err) {
+		var errors = err.errors || err;
+		res.send(409, errors);
+
+	};
 
 };

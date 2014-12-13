@@ -252,6 +252,7 @@ module.exports = function EStore() {
 
 
 		extensions.push(require('./core/extensions/routes'));
+		extensions.push(require('./core/extensions/payments/2checkout/hosted'));
 		extensions.push(require('./core/extensions/payments/cod'));
 		extensions.push(require('./core/extensions/payments/bank'));
 		extensions.push(require('./core/extensions/payments/cheque'));

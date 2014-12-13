@@ -21,9 +21,11 @@
     "test": "mocha --recursive -R spec spec; mocha --recursive -R spec test;"
   },
   "dependencies": {
+    "2checkout-node": "0.0.1",
     "accounting": "^0.4.1",
     "bcrypt": "^0.8.0",
     "bignumber.js": "1.4.x",
+    "chance": "^0.7.0",
     "connect-mongo": "^0.4.1",
     "currency-codes": "^1.1.0",
     "dotenv": "0.0.x",

@@ -1,7 +1,7 @@
 /**
  * CheckoutAssistantHandlerWrapper wraps around other
  * CheckoutAssistantHandlers to simplify what they must do.
- *
+ * @todo just use a prototye.
  * @alias CheckoutAssistantHandlerWrapper
  * @param {EStore} store
  * @param {Object} session
@@ -79,11 +79,16 @@ module.exports = function CheckoutAssistantHandlerWrapper(store, session, callba
 
 	};
 
-        this.onRedirectNeeded = function(url) {
+	this.onRedirectNeeded = function(url) {
 
-          handler.onRedirectNeeded(url);
+		handler.onRedirectNeeded(url);
+
+	};
+
+        this.onValidationError = function(err) {
+
+          handler.onValidationError(err);
 
         };
-
 
 };

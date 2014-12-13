@@ -1,4 +1,4 @@
-var Factory = require('../../../checkout/Factory');
+var Assistants = require('../../../checkout/Assistants');
 module.exports = {
 
 	type: 'controller',
@@ -38,13 +38,13 @@ module.exports = {
 		 */
 		this.onCheckoutTransactionRequest = function(req, res) {
 
-			var checkout = Factory.
-			createAjaxAssistant(store, req.session, res, controllers, callbacks);
+			var checkout = Assistants.
+			createAjaxAssistant(store, req, res, controllers, callbacks);
 
 			if (!checkout.hasItems(req.session.cart))
 				return res.send(400, 'Your cart is empty!');
 
-			checkout.checkout(req.session.cart, req.body);
+			checkout.checkout(req.session.cart, req.body, req, res);
 
 
 		};

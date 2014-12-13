@@ -7,7 +7,7 @@
  * @constructor
  *
  */
-module.exports = function AddressParams(address, params) {
+module.exports = function AddressParams(email, address, params) {
 
 
 	this.toObject = function() {
@@ -23,11 +23,14 @@ module.exports = function AddressParams(address, params) {
 		set.state = address.billing.state;
 		set.zip = address.billing.code;
 		set.country = address.billing.country;
+		set.phone = address.billing.phone;
+		set.email = email;
 
 		if (address.shipping.street1) {
 
-			set.ship_first_name = address.shipping.name.first;
-			set.ship_last_name = address.shipping.name.last;
+			set.ship_name = address.shipping.name.first + ' ' +
+				address.shipping.name.last;
+
 			set.ship_street_address = address.shipping.street1;
 			set.ship_street_address2 = address.shipping.street2;
 			set.ship_city = address.shipping.city;
@@ -36,7 +39,7 @@ module.exports = function AddressParams(address, params) {
 			set.ship_country = address.shipping.country;
 		}
 
-                return set;
+		return set;
 	};
 
 

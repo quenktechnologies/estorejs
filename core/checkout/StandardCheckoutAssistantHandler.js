@@ -34,6 +34,12 @@ module.exports = function StandardCheckoutAssistantHandler(res, next) {
 	};
 
 
+        this.onValidationError = function(err) {
+
+          var errors = err.errors || err;
+res.locals.$errors = errors;
+res.render('checkout/index.html');
+        };
 
 
 };

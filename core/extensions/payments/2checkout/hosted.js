@@ -1,4 +1,5 @@
 var TwoCheckout = require('./util/TwoCheckout');
+var Handlers = require('../../../checkout/Handlers');
 
 module.exports = {
 
@@ -6,23 +7,28 @@ module.exports = {
 	name: '2Checkout Hosted',
 	controller: function(store, dao, controllers, callbacks, config) {
 
+		this.routeRegistration = function(app) {
+
+			app.get(
+				/^\/checkout\/success\/hosted\/[\w]{1,80}\/([\w]+)$/,
+				this.onCustomerReturns);
+
+			app.get(/^\/checkout\/success\/hosted\/[\w]{1,80}$/,
+				this.onCustomerReturns);
+
+
+		};
 		this.onGetGateways = function(gateways) {
 
-			var tco = config.getPreference('payments').TwoCheckout;
-
-			if (tco.active === true)
-				if (TwoCheckout.isHostedReady(config))
-					gateways.card = this;
+			gateways.card = this;
 
 		};
 
 		this.onGetPaymentOptions = function(options) {
 
-			var tco = config.getPreference('payments').TwoCheckout;
-
 			if (TwoCheckout.isHostedReady(config))
 				options.push({
-					label: '2Checkout Hosted',
+					label: 'Credit Card',
 					value: 'card',
 				});
 
@@ -30,43 +36,80 @@ module.exports = {
 		this.checkout = function(ctx) {
 
 			var tco = TwoCheckout.create({
-				sellerId: config.get('TWO_CHECKOUT_SELLER_ID')
+				sellerId: config.get('TWO_CHECKOUT_SELLER_ID'),
+				sandbox: (config.get('TWO_CHECKOUT_SANDBOX')) ? true : false
 			});
 
-			ctx.onRedirectNeeded(tco.checkout.link(
-				TwoCheckout.createParamsForHosted(ctx, config)));
+			var link = tco.checkout.link(
+				TwoCheckout.createParamsForHosted(ctx, config));
+
+			console.log('DEBUG: Redirecting customer to ', link);
+			ctx.callbacks.onRedirectNeeded(link);
 
 
 		};
 
-	},
-	settings: {
-		run: function(list, types) {
+		/**
+		 * onCustomerReturns
+		 *
+		 * @param {Request} req
+		 * @param {Response} res
+		 * @param {Function} next
+		 */
+		this.onCustomerReturns = function(req, res, next) {
 
-			list.add('Bank Transfers', {
-				payments: {
-					bank: {
-						active: {
-							type: Boolean,
-							default: true,
-							label: 'Accept Bank Transfer Payments?'
-						},
-						content: {
-							type: types.Markdown,
-							label: 'Instructions to customers',
-							dependsOn: {
-								'payments.bank.active': true
-							}
-						}
-					}
+			var debug = function() {
+				console.log('DEBUG: ignoring failed validation for transaction ' +
+					req.query.estorejs_ptid);
+				next();
+			};
+
+			var tid = req.params[0] || req.query.estorejs_ptid;
+
+			if (!TwoCheckout.verifyTwoCheckoutKey(req.query, config))
+				return debug();
+
+			if (!TwoCheckout.verifyEncryptedTID(
+				req.query.estorejs_ptid,
+				req.query.estorejs_etid,
+				config))
+
+				return debug();
+
+
+			var handler =
+				Handlers.
+			createStandardCheckoutAssistantHandler(dao, req.session, callbacks, res, next);
+			console.log('funk');
+			dao.getDataModel('Transaction').
+			findOne({
+				tid: tid,
+				status: 'created'
+			}).
+			exec(function(err, trn) {
+
+				if (err) {
+					console.log(err);
+					return next();
 				}
+
+				if (!trn)
+					return next();
+
+				if (req.query.credit_card_processed === 'N')
+					return handler.onTransactionDeclined(trn);
+
+				if (req.query.credit_card_processed === 'Y')
+					return handler.onTransactionApproved(trn);
+
+
+				next();
+
+
 			});
 
+		};
 
-
-
-
-		}
 	},
 
 };

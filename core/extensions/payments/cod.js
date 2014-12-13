@@ -11,7 +11,6 @@ module.exports = {
 		};
 
 		this.onGetPaymentOptions = function(options) {
-
 			if (config.getPreference('payments').cod.active === true)
 				options.push({
 					label: 'Cash on Delivery',
