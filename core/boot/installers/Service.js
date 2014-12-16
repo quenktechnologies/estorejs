@@ -19,7 +19,7 @@ module.exports = function Service(store) {
 		};
 
 		if (ext.repeat)
-			return store.bus.on(ext.event, f);
+			return store.bus.on(store[ext.event], f);
 
 		store.addEventListener(ext.event, f);
 
