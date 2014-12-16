@@ -69,6 +69,29 @@ module.exports = function Configuration() {
 
 	};
 
+
+	/**
+	 * hasPreference checks if a preference exits.
+	 *
+	 * @param {String} name
+	 *
+	 */
+	this.hasPreference = function(name) {
+
+		if (!settings)
+			return;
+
+		if (!settings[name])
+			return;
+
+		return true;
+
+
+
+	};
+
+
+
 	/**
 	 * setPreferences
 	 *

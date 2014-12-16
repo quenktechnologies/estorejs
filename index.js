@@ -71,6 +71,9 @@ module.exports = function EStore() {
 	this.OUTBOUND_MAIL = 'OUTBOUND_MAIL';
 	this.ENQUIRY = 'ENQUIRY';
 	this.SERVER_STARTED = 'SERVER_STARTED';
+	this.THEME_CHANGED = 'THEME_CHANGED';
+	this.STOPPING = 'stopping';
+
 
 
 	//Constants
@@ -624,5 +627,27 @@ module.exports = function EStore() {
 		return this.viewEngine;
 
 	};
+
+
+	/**
+	 * stop the app
+	 *
+	 * @param {Function} cb
+	 *
+	 */
+	this.stop = function(cb) {
+
+		this.broadcast(store.STOPPING);
+		this.keystone.httpServer.close(function() {
+			this.keystone.mongoose.disconnect(function() {
+				if (cb)
+					cb();
+				process.exit();
+			});
+
+		});
+	};
+
+
 
 };
