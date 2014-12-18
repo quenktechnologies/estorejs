@@ -30,14 +30,12 @@ module.exports = function InvoiceSchema(store, types, ui) {
 				default: '0.00',
 				noedit: true,
 				width: 'short',
-                                required:true,
 			},
 			tax: {
 				type: types.Money,
 				default: '0.00',
 				noedit: true,
 				width: 'short',
-                                required:true
 			},
 		},
 		total: {
