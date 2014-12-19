@@ -147,17 +147,15 @@ module.exports = function TransactionCallbacks(store) {
 			var invoice = store.getDataModel('Invoice', true,
 				transaction.invoice.toObject());
 
-			//Allows invoice to overwrited if commit fails.
 			invoice.set('_id', transaction._id);
-			return q.ninvoke(invoice, 'save').
+			return invoice.saveQStyle().
 			catch (function(err) {
 
-				console.log('Save invoice error: ');
-				console.log(err);
+				console.log('Save invoice error: ', err);
 
 			}).
 			done(function(saved) {
-				console.log('Saved invoice number : ' + saved[0].number);
+				console.log('Saved invoice number : ' + saved.number);
 				cb(transaction);
 
 			});
@@ -182,7 +180,8 @@ module.exports = function TransactionCallbacks(store) {
 
 			console.log('DEBUG: setting transaction to commit');
 
-			q.ninvoke(transaction, 'save').
+			transaction.set('status', 'committed');
+			transaction.saveQStyle().
 			catch (function(err) {
 
 				console.log(err);
