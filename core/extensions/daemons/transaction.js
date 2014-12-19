@@ -32,10 +32,9 @@ module.exports = {
 
 				transactions.forEach(
 					callbacks.getProductUpdateCallback(
-						callbacks.getInvoiceNumberCallback(
-							callbacks.getSaveInvoiceCallback(
-								callbacks.getSaveCommittedTransactionCallback(cb)
-							))));
+						callbacks.getSaveInvoiceCallback(
+							callbacks.getSaveCommittedTransactionCallback(cb)
+						)));
 			});
 		};
 	}
