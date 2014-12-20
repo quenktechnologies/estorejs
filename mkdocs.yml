@@ -1,0 +1,8 @@
+site_name: EStore.js
+theme: readthedocs
+site_description: Documentation for the EStore.js suite.
+pages:
+- ['index.md', 'Home']
+- ['user-guide/accessing-the-admin-area-of-your-site.md', 'User Guide', 'Accessing the admin area of your site']
+- ['user-guide/managing-products.md', 'User Guide', 'Managing Products']
+- ['credits.md', 'Credits']

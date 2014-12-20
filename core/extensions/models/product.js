@@ -14,77 +14,62 @@ module.exports = {
 
 		return [{
 
-				name: ui.TextField({
+				name: {
+					type: String,
+					required: true,
+					initial: true,
+					width: 'medium',
+				},
+				price: {
+					type: types.Money,
 					required: true,
 					initial: true
-				}),
-				description: ui.PageContentEditor()
-			}, 'Details', {
-				price: ui.PriceField({
-					required: true,
-					initial: true
-				}),
+				},
+				description: {
 
+					type: types.Markdown,
+					height: 400,
+				}
+			}, 'Additional Details', {
 				vendor: {
 					type: String,
 					width: 'short'
 				},
-				isFeatured: {
-					type: Boolean,
-					label: 'Featured product?'
-				},
 				isTangible: {
 					type: Boolean,
 					label: 'Physical product?',
+					hidden: true,
 					default: true,
-					initial: true
 				},
 				weight: {
 					type: Number,
 					min: 0,
-					label: 'Weight (lbs)',
-					dependsOn: {
-						'isTangible': true
-					},
+					label: 'Weight (kgs)',
+					default: 0
 				},
-				image: new store.engines.ImageEngine(store,types,ui)
+				image: new store.engines.ImageEngine(store, types, ui)
 			},
 			'Stock', {
 
 				stock: {
 					sku: {
 						type: String,
-						label: 'SKU',
-						width: 'short',
-						note: 'Optional Stock Keeping Unit code',
-						dependsOn: {
-							'isTangible': true
-						}
+						label: 'Product SKU',
+						width: 'medium'
 					},
 					track: {
 						type: Boolean,
-						label: 'Track the number of this product in stock?',
-						dependsOn: {
-							'isTangible': true
-						},
+						label: 'Track stock balance?',
 						default: true
 					},
-					balance: ui.NumberField(0, null, {
-						label: 'Inventory Balance',
+					balance: {
+						type: Number,
+						label: 'Inventory balance',
 						dependsOn: {
-							'isTangible': true,
 							'stock.track': true
 						},
-						default: 0,
-						initial: true
-					}),
-					isDisplayed: {
-						type: Boolean,
-						label: 'Display stock balance?',
-						dependsOn: {
-							'isTangible': true,
-						},
-						default: true
+						min: 0,
+						default: 1,
 					},
 
 				}
@@ -92,24 +77,18 @@ module.exports = {
 			},
 			'Ordering', {
 				order: {
-					hasConstraints: {
-						type: Boolean,
-						label: 'Set min/max order quantities?'
-					},
-					min: ui.NumberField(1, null, {
+					min: {
+						type: Number,
+						min: 1,
 						default: 1,
-						dependsOn: {
-							'order.hasConstraints': true
-						},
 						label: 'Minimum'
-					}),
-					max: ui.NumberField(1, null, {
+					},
+					max: {
+						type: Number,
+						min: 1,
 						default: 9999999999,
-						dependsOn: {
-							'order.hasConstraints': true
-						},
 						label: 'Maximum'
-					})
+					}
 
 				}
 			}, 'Charges', {
@@ -119,30 +98,42 @@ module.exports = {
 					delivery: {
 						type: types.Money,
 						label: 'Delivery',
-						dependsOn: {
-							'isTangible': true,
-						},
-						note: 'Assign a fixed charge for delivering this product.'
+						default: '0.00',
 					}
 				}
 			},
-			'SEO', {
+			'Search Engines', {
+
 				meta: {
-					type: types.Textarea,
-					width: 'medium',
-					label: 'SEO Description',
-					note: 'Used by search engines such as Google.'
+
+					title: {
+
+						type: String,
+						width: 'medium',
+						label: 'Title'
+
+					},
+					description: {
+						type: types.Textarea,
+						width: 'medium',
+						label: 'Description',
+					}
 				}
 
+			},
+			'Options', {
+				isFeatured: {
+					type: Boolean,
+					label: 'Featured product?'
+				}
 			},
 			'Keywords', {
 				keywords: {
 					type: types.TextArray,
-					label: 'Terms'
-
+					label: 'Terms',
 				}
 
-			}, 
+			},
 		];
 	},
 	run: function(list, store, types, ui) {
@@ -270,7 +261,7 @@ module.exports = {
 	},
 	navigation: {
 
-          products : ['products', 'categories']
+		products: ['products', 'categories']
 
 	}
 
