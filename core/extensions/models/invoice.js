@@ -39,16 +39,37 @@ module.exports = {
 					shipping: address
 				}
 			}, 'Items', {
-				_items: {
-					type: types.Textarea,
-					width: 'medium',
-					label: 'Items'
-				},
+
+				//			items: {
+				//				type: types.ItemList
+				//			}
+
 			}, 'Payment', {
 				payment: payment
 
 
-			}];
+			}, {
+
+				items: {
+                                  type: types.Table,
+                                  hidden:true,
+					columns: [{
+						name: 'name'
+					}, {
+						name: 'quantity'
+					}, {
+						name: 'price'
+					}, {
+						name: 'subtotal'
+					}]
+				}
+
+			}, {
+				texty: types.TextArray
+			}
+
+
+		];
 
 	},
 	run: function(list, store, types) {
@@ -83,6 +104,7 @@ module.exports = {
 		list.schema.pre('save', function(next) {
 
 
+			/**
 			if (this.items) {
 
 				var t = new Table();
@@ -101,7 +123,7 @@ module.exports = {
 				this._items = t.toString();
 
 
-			}
+			}**/
 
 
 
@@ -114,8 +136,8 @@ module.exports = {
 
 	},
 
-	navigation:  {
-          sales : ['invoices']
+	navigation: {
+		sales: ['invoices']
 	}
 
 

@@ -18,7 +18,7 @@ module.exports = {
 	 * @extends {Controller}
 	 *
 	 */
-	controller: function CartRoutesController(store) {
+	controller: function CartRoutesController(store, dao) {
 
 		var render = store.getRenderCallback();
 
@@ -56,11 +56,10 @@ module.exports = {
 
 			var item = req.body;
 
-			store.getDataModel('Product').
+			dao.getDataModel('Product').
 			findOne({
-				_id: req.params[0]
+				slug: req.params[0]
 			}).
-			lean().
 			exec().
 			then(null, function(err) {
 

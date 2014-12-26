@@ -493,7 +493,7 @@ module.exports = function EStore() {
 
 				self._fetchCategories();
 				self.broadcast(self.SERVER_STARTED, self);
-				if (cb) cb();
+				if (cb) cb(null, self);
 
 			});
 
