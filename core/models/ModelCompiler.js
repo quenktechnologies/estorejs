@@ -38,7 +38,7 @@ module.exports = function ModelCompiler(syntax) {
 		if (source.replace)
 			model.stack.length = 0;
 
-		syntax.newRound(model);
+		syntax.newRound(model, model.stack);
 
 		for (var key in source)
 			if (source.hasOwnProperty(key))
