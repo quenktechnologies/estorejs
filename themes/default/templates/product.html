@@ -42,7 +42,7 @@
       </div>
       <div class="row">
         <div class="col-md-5">
-          <form name="cartAddition" action="/cart/items/<$ $product._id $>" method="POST">
+          <form name="cartAddition" action="/cart/items/<$ $product.slug $>" method="POST">
             <div class="input-group">
               <input name="quantity" type="number" min="1" value="1" max="<$ $product.order.max $>" class="form-control input-small">
               <input type="hidden" name="_csrf" value="<$ _csrf $>">
