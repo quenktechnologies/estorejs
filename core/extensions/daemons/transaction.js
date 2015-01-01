@@ -1,6 +1,6 @@
 /** @module */
-
-var TransactionCallbacks = require('./TransactionCallbacks');
+var q = require('q');
+var TransactionPromiseFactory = require('./TransactionPromiseFactory');
 /**
  *
  * This daemon polls (every 10 seconds by default) to find a list
@@ -16,7 +16,7 @@ module.exports = {
 	interval: process.env.TRANSACTION_APPROVAL_INTERVAL || 10000,
 	exec: function(store, cb) {
 
-		var callbacks = new TransactionCallbacks(store);
+		var factory = new TransactionPromiseFactory(store, store);
 
 		return function() {
 
@@ -30,11 +30,25 @@ module.exports = {
 				if (err)
 					return console.log(err);
 
-				transactions.forEach(
-					callbacks.getProductUpdateCallback(
-						callbacks.getSaveInvoiceCallback(
-							callbacks.getSaveCommittedTransactionCallback(cb)
-						)));
+				transactions.forEach(function(transaction) {
+
+					var list = [];
+
+					transaction.invoice.items.forEach(function(item) {
+						if (item.stock)
+							if (item.stock.track);
+						list.push(
+							factory.getInventoryUpdatePromise(item, transaction).bind(factory));
+
+					});
+
+					list.push(factory.getSaveInvoicePromise.bind(factory));
+					list.push(factory.getSaveCommittedTransactionPromise.bind(factory));
+					list.reduce(q.when, q(transaction)).done();
+
+
+				});
+
 			});
 		};
 	}
