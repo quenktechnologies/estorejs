@@ -20,6 +20,7 @@ var SettingsPreLoader = require('./core/boot/SettingsPreLoader');
 var Configuration = require('./core/boot/Configuration.js');
 var Environment = require('./core/boot/Environment');
 var InstallerFactory = require('./core/boot/installers/Factory');
+var SocketRegistry = require('./core/server/SocketRegistry');
 /**
  * EStore is the main constructor for the system.
  *
@@ -88,6 +89,7 @@ module.exports = function EStore() {
 	this.viewEngine = undefined;
 	this.endpoints = new Endpoints();
 	this.mediator = new Mediator(this, composite, config);
+	this.sockets = new SocketRegistry();
 
 	/**
 	 * _preloadThemes
@@ -395,31 +397,6 @@ module.exports = function EStore() {
 	this._routeRegistration = function() {
 
 		var self = this;
-		/** Temporary hack to ensure CSRF protection for EStore routes **/
-		this.keystone.pre('routes', function(req, res, next) {
-			if (process.env.DISABLE_CSRF)
-				return next();
-			if (req.originalUrl.match(/^\/keystone/))
-				return next();
-
-			Express.csrf()(req, res, function(err) {
-				//This prevents 403 errors from being thrown after the csrf middleware.
-				if (err) return res.send(403);
-				next();
-			});
-
-		});
-
-		this.keystone.pre('routes', function(req, res, next) {
-			if (!process.env.DISABLE_CSRF) {
-				res.locals._csrf = res.locals._csrf || req.csrfToken && req.csrfToken();
-				res.cookie('XSRF-TOKEN', res.locals._csrf);
-			}
-			next();
-
-		});
-		/** end hack **/
-
 		this.keystone.pre('routes', function(req, res, next) {
 
 			//Set some useful variables.
@@ -435,6 +412,8 @@ module.exports = function EStore() {
 			res.locals.$cart = req.session.cart;
 			res.locals.$currency = this.settings.currency;
 			req.session.pendingTransactions = req.session.pendingTransactions || [];
+			res.locals._csrf = self.keystone.security.TOKEN_KEY;
+			res.locals.$csrf = res.locals._csrf;
 			next();
 
 		}.bind(this));
@@ -491,13 +470,17 @@ module.exports = function EStore() {
 			self._routeRegistration();
 			self.keystone.start(function() {
 
+				self.keystone.httpServer.
+				on('connection',
+					self.sockets.addConnection.bind(self.sockets));
+
 				self._fetchCategories();
 				self.broadcast(self.SERVER_STARTED, self);
 				if (cb) cb(null, self);
 
 			});
 
-		}).done(function(err) {
+		}).done(null, function(err) {
 			if (err) throw err;
 		});
 
@@ -637,16 +620,42 @@ module.exports = function EStore() {
 	 */
 	this.stop = function(cb) {
 
-		this.broadcast(store.STOPPING);
-		this.keystone.httpServer.close(function() {
-			this.keystone.mongoose.disconnect(function() {
+		var self = this;
+		self.broadcast(this.STOPPING);
+		self.keystone.httpServer.close(function() {
+			self.keystone.mongoose.disconnect(function() {
 				if (cb)
 					cb();
-				process.exit();
+				//			process.exit();
 			});
 
 		});
 	};
+
+
+	/**
+	 * shutDown the system.
+	 *
+	 * Closes the http server and any existing connections,
+	 * it then proceeds to issue the disconnect command to mongoose.
+	 * @param {Function} cb
+	 *
+	 */
+	this.shutDown = function(cb) {
+
+		var self = this;
+		self.broadcast(self.STOPPING);
+		self.keystone.httpServer.close(function() {
+			self.sockets.flush();
+			self.keystone.mongoose.disconnect(cb);
+		});
+
+
+
+
+	};
+
+
 
 
 
