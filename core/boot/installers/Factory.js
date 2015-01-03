@@ -22,7 +22,13 @@ module.exports = {
 	 */
 	create: function(ctx, store, config, gateways, engines) {
 
-		var controller = new Controller(ctx.store, ctx.store, ctx.controllers, ctx.callbacks, ctx.config);
+		var controller = new Controller(ctx.store,
+			ctx.store,
+			ctx.runtime,
+			ctx.config,
+			ctx.factories,
+			ctx.controllers);
+
 		var daemon = new Daemon(ctx.store);
 		var engine = new Engine(ctx.engines);
 		var gateway = new Gateway(ctx.gateways);
@@ -31,11 +37,11 @@ module.exports = {
 		var settings = new Settings(controller);
 		var composite = new Composite(controller);
 
-                //Be careful not to introduce circular dependencies here
-                //The settings installer wraps up settings sections and puts
-                //back on the chain. The composite installer does the same without the wrapping.
+		//Be careful not to introduce circular dependencies here
+		//The settings installer wraps up settings sections and puts
+		//back on the chain. The composite installer does the same without the wrapping.
 
-                controller.
+		controller.
 		setNext(daemon).
 		setNext(engine).
 		setNext(gateway).
