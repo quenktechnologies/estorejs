@@ -12,11 +12,11 @@
  * @param {ControllerIterator} controllers
  *
  */
-function ControllerPrototype(store, dao, runtime, config, factories, controllers) {
+function ControllerPrototype(store, data, runtime, config, factories, controllers) {
 
 	this.store = store;
 	this.data = data;
-	this.hooks = hooks;
+	this.runtime = runtime;
 	this.config = config;
 	this.factories = factories;
 	this.controllers = controllers;
@@ -29,14 +29,24 @@ function ControllerPrototype(store, dao, runtime, config, factories, controllers
 ControllerPrototype.prototype.initialize = function() {};
 
 /**
- * addController to the internal set.
+ * add a Controller to the internal set.
  * @param {Controller} ctl
  *
  */
-ControllerPrototype.prototype.addController = function(ctl) {
+ControllerPrototype.prototype.add = function(ctl) {
 	this.controllers.push(ctl);
 	return this;
 };
+
+
+/**
+ * onPreRouteConfiguration is called before the app router is
+ * initialized.
+ *
+ * @param {Application} app
+ *
+ */
+ControllerPrototype.prototype.onPreRouteConfiguration = function(app) {};
 
 /**
  * onRouteConfiguration is called to configure the application routes.
@@ -63,5 +73,21 @@ ControllerPrototype.prototype.onGetPaymentOptions = function(options) {};
 ControllerPrototype.prototype.onGetGateways = function(gateways) {};
 
 
+/**
+ * render is a helper for simply rendering a template for a route.
+ * @param {String} template
+ * @param {Hash} ctx
+ *
+ */
+ControllerPrototype.prototype.render = function(template, ctx) {
+
+	return function(req, res, next) {
+
+		res.render(template, ctx);
+
+	};
+
+
+};
 
 module.exports = ControllerPrototype;
