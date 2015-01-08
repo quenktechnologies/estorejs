@@ -1,19 +1,19 @@
-{% macro footer($networks) %}
+{% macro footer($settings) %}
 <div class="row" style="margin-top:55px">
   <div class="col-md-12 text-center">
     <ul class="list-inline list-unstyled">
       <li><a href="/pages/about"><span>About</span></a>
       </li>
-      <li><a href="/pages/shipping"><span>Shipping Info</span></a>
+      <li><a href="/pages/delivery"><span>Delivery</span></a>
       </li>
-      <li><a href="/pages/faq"><span>FAQ</span></a>
+      <li><a href="/pages/terms"><span>Terms</span></a>
       </li>
       <li><a href="/pages/contact"><span>Contact</span></a>
       </li>
     </ul>
   </div>
   <div class="col-md-12 text-center">
-    <p>Copyright Somebody 2014 | This site powered by <a href="http://vendorlize.com">Vendorlize</a>.</p>
+    <p>Copyright <$ $settings.brand.name $> 2015 | This site powered by <a href="http://estorejs.quenk.com">estorejs</a>.</p>
   </div>
 </div>
 {% endmacro %}

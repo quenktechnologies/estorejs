@@ -1,0 +1,28 @@
+{% macro staticCart($cart) %}
+<div class="panel panel-default">
+  <div class="panel-body">
+    {% for product in $cart %}
+      <div class="row" style="margin-top:15px">
+        <div class="col-md-2">
+          {% if product.image %}
+          <a href="/products/<$ product.slug $>">
+          <img class="img img-responsive" src="<$ product.image.url $>" alt="<$ product.name $>">
+          </a>
+          {% endif %}
+        </div>
+        <div class="col-md-6">
+          <strong><$ product.name $></strong> x <$ product.quantity $>
+        </div>
+        <div class="col-md-2">
+          {{<$ product.price $>| currency }}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="panel-footer">
+    <p><strong>Subtotal:</strong> {{<$ $cart | subtotal $> | currency }}</p>
+    <p><strong>Delivery:</strong> {{<$ $cart | delivery $> | currency }}</p>
+    <p><strong>Total:</strong> {{<$ $cart | total $> | currency }} <span class="label label-info"><$ $currency $></span></p>
+    </div>
+</div>
+{% endmacro %}

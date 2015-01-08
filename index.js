@@ -3,7 +3,6 @@ var EventEmitter = require('events').EventEmitter;
 var ThemeProperties = require('./core/boot/ThemeProperties');
 var Extras = require('./core/util/Extras');
 var Endpoints = require('./core/extensions/ajax/Endpoints');
-var Express = require('express');
 var NunjucksMongoose = require('nunjucks-mongoose');
 var UIFactory = require('./core/util/UIFactory');
 var MainEventHandler = require('./core/util/MainEventHandler');
@@ -83,7 +82,6 @@ module.exports = function EStore() {
 
 	this.locals = {};
 	this.settings = {};
-	this.app = new Express();
 	this.keystone = require('keystone');
 	this.viewEngine = undefined;
 	this.endpoints = new Endpoints();
@@ -171,7 +169,9 @@ module.exports = function EStore() {
 		this.viewEngine.addFilter('subtotal', require('./core/filters/subtotal'));
 		this.viewEngine.addFilter('delivery', require('./core/filters/delivery'));
 		this.viewEngine.addFilter('total', require('./core/filters/total'));
-		this.viewEngine.express(this.app);
+
+		this.keystone.init();
+		this.viewEngine.express(this.keystone.app);
 
 
 	};
@@ -188,7 +188,6 @@ module.exports = function EStore() {
 
 		var theme = config.getThemeProperties();
 
-		this.keystone.init();
 		this.keystone.set('name', config.get('BRAND', 'EstoreJS'));
 		this.keystone.set('brand', config.get('BRAND', 'EstoreJS'));
 		this.keystone.set('auto update', true);
@@ -206,7 +205,7 @@ module.exports = function EStore() {
 		this.viewEngine.addExtension('NunjucksMongoose',
 			new NunjucksMongoose(this.keystone.mongoose, 'get'));
 
-		this.keystone.connect(this.app);
+		this.keystone.connect(this.keystone.app);
 
 
 	};
@@ -361,22 +360,6 @@ module.exports = function EStore() {
 
 	};
 
-
-
-
-
-	/**
-	 * _modelRegistration registers the keystone models.
-	 *
-	 * @method _modelRegistration
-	 * @return
-	 *
-	 */
-	this._modelRegistration = function() {
-		//	modelCompiler.compile(this);
-	};
-
-
 	/**
 	 * _eventRegistration
 	 *
@@ -426,7 +409,6 @@ module.exports = function EStore() {
 		this.keystone.set('routes',
 			controllers.onRouteConfiguration.bind(controllers));
 
-
 	};
 
 	/**
@@ -468,11 +450,10 @@ module.exports = function EStore() {
 			self._scanPages();
 			self._gatherExtensions();
 			self._processExtensions();
-			self._modelRegistration();
 			self._eventRegistration();
 			self._routeRegistration();
+			console.log('start keystone');
 			self.keystone.start(function() {
-
 				self.keystone.httpServer.
 				on('connection',
 					self.sockets.addConnection.bind(self.sockets));

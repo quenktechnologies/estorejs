@@ -38,35 +38,27 @@ module.exports = {
 				address: {
 					shipping: address
 				}
-			}, 'Items', {
-
-				//			items: {
-				//				type: types.ItemList
-				//			}
-
-			}, 'Payment', {
-				payment: payment
-
-
 			}, {
-
 				items: {
-                                  type: types.Table,
-                                  hidden:true,
+					type: types.Table,
 					columns: [{
 						name: 'name'
 					}, {
 						name: 'quantity'
 					}, {
 						name: 'price'
-					}, {
-						name: 'subtotal'
-					}]
+					}, ]
 				}
+			},
+
+			'Payment', {
+				payment: payment
+
 
 			}, {
-				texty: types.TextArray
-			}
+
+
+			},
 
 
 		];

@@ -1,32 +1,36 @@
+{% from "snippets/editableCart.html" import editableCart %}
+{% from "snippets/checkoutButtons.html" import checkoutButtons %}
 {% extends "base.html" %} {% block body %}
 <$ navbar($cart, $categories, $settings) $>
-{% if $cartError %}
-<div class="alert alert-dismissable alert-warning">
-  <button type="button" class="close" data-dismiss="alert">×</button>
-  <h4>Wait!</h4>
-  <$ $cartError $>
-</div>
-{% endif %}
-  {% if $cart.length
-  < 1 %} <div>
-    <h3>Your cart empty!</h3>
-    <p><a class="btn btn-danger check_out" href="/categories/all">Continue Shopping</a> 
+  <div class="row">
+    <div class="col-md-12">
+      {% if $cartError %}
+      <div class="alert alert-dismissable alert-warning">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <h4>Wait!</h4>
+        <$ $cartError $>
       </div>
-      {% else %}
-      <h2>Your Shopping Cart</h2>
-      <hr>
-
-      <div class="panel panel-default">
-        <div class="panel-body">
-          <es-shopping-cart></es-shopping-cart>
-        </div>
-      </div>
+      {% endif %} {% if $cart.length
+      < 1 %} <div>
+        <h4>Your cart empty!</h4>
+        <p><a class="btn btn-danger btn-xs" href="/categories/all">Continue Shopping</a> 
+    </div>
+    {% else %}
+    <h2>Your Shopping Cart</h2>
+    <hr>
+    <$ editableCart($cart, _csrf) $>
+  </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 text-right">
       <div class="heading">
-        <h3>What would you like to do next?</h3>
-        <p><a class="btn btn-fefault" href="/categories/all">Continue Shopping</a>
-          <a class="btn btn-danger check_out" href="/checkout">Check Out</a> 
+        <h4>What would you like to do next?</h4>
+        <p>
+        <$ checkoutButtons($settings) $>
         </p>
       </div>
-      {% endif %}
-      <$ footer() $>
-        {% endblock %}
+    </div>
+  </div>
+  {% endif %}
+  <$ footer($settings) $>
+    {% endblock %}

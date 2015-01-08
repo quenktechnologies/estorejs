@@ -10,8 +10,11 @@ exports.create = {
 			title: "contact",
 			template: "pages/default.html"
 		}, {
+			title: "delivery",
+			template: "pages/default.html"
+		}, {
 
-			title: "Front Page",
+			title: "index",
 			template: "pages/default.html",
 			"content.md": require("./pages/index.js"),
 			"isIndex": true

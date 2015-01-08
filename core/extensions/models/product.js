@@ -15,6 +15,7 @@ module.exports = {
 		return [{
 				uuid: {
                                   type: String,
+                                  noedit:true,
                                   unique: true,
 					default: require('node-uuid').v4
 				},

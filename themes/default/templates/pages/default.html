@@ -2,7 +2,13 @@
 <$ navbar($cart, $categories, $settings) $>
   <div class="row">
     <div class="col-md-12">
-      <$ $page.content.html| safe $>
+      <h1><$ $page.title | capitalize $></h1>
+      <hr>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <$ $page.content.html | safe $>
     </div>
   </div>
   <$ footer() $>

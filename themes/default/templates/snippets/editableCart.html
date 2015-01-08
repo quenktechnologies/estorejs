@@ -1,0 +1,52 @@
+{% macro editableCart($cart, $csrf) %}
+<div class="panel panel-default">
+  <div class="panel-body">
+    {% for product in $cart %}
+    <form class="form-horizontal" action="/cart/items/<$ product.uuid $>" method="POST">
+      <div class="row" style="margin-top:15px">
+        <div class="col-md-3">
+          {% if product.image %}
+          <a href="/products/<$ product.slug $>">
+          <img src="<$ product.image.url $>" alt="<$ product.name $>">
+          </a>
+          {% endif %}
+        </div>
+        <div class="col-md-4">
+          <a href="/products/<$ product.slug $>">
+            <$ product.name $>
+          </a>
+        </div>
+        <div class="col-md-1">
+          <div class="form-group">
+            <input type="text" size=2 autocomplete="off" value="<$ product.quantity $>" name="quantity" class="input-xs">
+          </div>
+        </div>
+        <div class="col-md-1">
+          <$ product.price $>
+        </div>
+        <div class="col-md-2">
+          <div class="form-group">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="quantity" value="0">Remove
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-1">
+          <div class="form-group">
+            <input type="hidden" name="_csrf" value="<$ $csrf $>">
+            <button type="sumbit" class="btn btn-default btn-xs">Update</button>
+          </div>
+        </div>
+      </div>
+    </form>
+    {% endfor %}
+  </div>
+<div class="panel-footer">
+    <p><strong>Subtotal:</strong> {{<$ $cart | subtotal $> | currency }}</p>
+    <p><strong>Delivery:</strong> {{<$ $cart | delivery $> | currency }}</p>
+    <p><strong>Total:</strong> {{<$ $cart | total $> | currency }} <span class="label label-info"><$ $currency $></span></p>
+    </div>
+</div>
+{% endmacro %}

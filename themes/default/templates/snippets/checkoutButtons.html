@@ -1,0 +1,19 @@
+{# This macro generates the checkout buttons for the cart page based
+   on the config settings. Specifically whether regular checkout and/or pickup
+   is enabled. 
+#}
+{% macro checkoutButtons($settings) %}
+{% if $settings.checkout.style == 'offline' %}
+<a class="btn btn-default btn-xs" href="/categories/all">Continue Shopping</a>
+<a class="btn btn-danger btn-xs" href="/checkout/pickup">Pick up order</a> 
+{% endif %}
+{% if $settings.checkout.style == 'online' %}
+<a class="btn btn-default btn-xs" href="/categories/all">Continue Shopping</a>
+<a class="btn btn-danger btn-xs" href="/checkout">Check Out</a> 
+{% endif %}
+{% if $settings.checkout.style == 'both' %}
+<a class="btn btn-default btn-xs" href="/categories/all">Continue Shopping</a>
+<a class="btn btn-danger btn-xs" href="/checkout">Check Out</a> 
+<a class="btn btn-danger btn-xs" href="/checkout/pickup">Pick up order</a> 
+{% endif %}
+{% endmacro %}

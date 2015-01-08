@@ -64,6 +64,23 @@ module.exports = {
 						default: 'none',
 						label: 'Choose a gateway:'
 					}
+				},
+				checkout: {
+
+					style: {
+						type: types.Select,
+						options: [{
+							label: 'Online only',
+							value: 'online'
+						}, {
+							label: 'Offline only',
+							value: 'offline'
+						}, {
+							label: 'Both',
+							value: 'both'
+                                                }],
+                                                default:'online'
+					}
 				}
 
 			},
@@ -74,7 +91,8 @@ module.exports = {
 					default: 'USD',
 					label: 'Select default'
 				}
-			}];
+			}
+		];
 	},
 	run: function(list, store) {
 
