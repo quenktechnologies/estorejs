@@ -44,7 +44,7 @@ module.exports = function AjaxCartAssistantHandler(res) {
 
 	};
 
-	this.onItemCanBeAddedToCart = function(item) {
+	this.onItemAddedToCart = function(item) {
 
 		res.status(201);
 

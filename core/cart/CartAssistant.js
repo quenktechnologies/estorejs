@@ -31,7 +31,7 @@ CartAssistant.prototype.addToCart = function(item, product) {
 		item.quantity = 1;
 
 	if (item.quantity === 0)
-		return this.handler.onItemMustBeRemoved(item);
+		return this.removeFromCart(item.uuid);
 
 	if (product.stock.balance < 1)
 		return this.handler.onProductOutOfStock(product);
@@ -55,9 +55,8 @@ CartAssistant.prototype.addToCart = function(item, product) {
 			this.cart.splice(index, 1);
 	}.bind(this));
 
-	this.cart.push(item);
 
-	this.handler.onItemCanBeAddedToCart({
+	item = {
 		_id: product._id,
 		uuid: product.uuid,
 		name: product.name,
@@ -70,7 +69,10 @@ CartAssistant.prototype.addToCart = function(item, product) {
 		quantity: item.quantity,
 		subtotal: new Big(product.price).times(item.quantity).toString()
 
-	});
+	};
+
+	this.cart.push(item);
+	this.handler.onItemAddedToCart(item);
 
 };
 

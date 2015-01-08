@@ -47,7 +47,7 @@ module.exports = function StandardCartAssistantHandler(res) {
 
 	};
 
-	this.onItemCanBeAddedToCart = function(item) {
+	this.onItemAddedToCart = function(item) {
 
 		res.redirect(303, '/cart');
 
