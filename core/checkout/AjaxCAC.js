@@ -1,12 +1,12 @@
 /**
- * AjaxCheckoutAssistantHandler is the CheckoutAssistantHandler for ajax requests.
- * @class AjaxCheckoutAssistantHandler
+ * AjaxCAC is the CheckoutAssistantHandler for ajax requests.
+ * @class AjaxCAC
  * @param {Response} res
  * @constructor
  * @implements {CheckoutAssistantHandler}
  *
  */
-module.exports = function AjaxCheckoutAssistantHandler(res) {
+module.exports = function AjaxCAC(res) {
 
 
 	this.onGatewayNotFound = function() {

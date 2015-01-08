@@ -29,9 +29,9 @@ module.exports = function ModelCompilerSyntax() {
 	 * newRound prepares the syntax for a new round of parsing.
 	 * @param {Tree} newTree
 	 */
-	this.newRound = function(newTree) {
+	this.newRound = function(newTree, newStack) {
 
-		stack = newTree.stack;
+		stack = newStack;
 		tree = newTree;
 
 	};
@@ -41,7 +41,6 @@ module.exports = function ModelCompilerSyntax() {
 	 * @returns {Tree}
 	 */
 	this.getTree = function() {
-		tree.stack = stack;
 		return tree;
 	};
 

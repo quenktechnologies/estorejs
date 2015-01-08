@@ -1,3 +1,4 @@
+var _ = require('lodash');
 /**
  * Controller installs controllers.
  * @todo break up to support multiple controller types.
@@ -5,32 +6,38 @@
  * @memberOf core/boot/installers
  * @param {ControllerPrototype} proto
  * @param {Hash} ctx
+ * @param {Function:Controller} cons
  * @constructor
  *
  */
-function Controller(proto, ctx) {
+function Controller(ctx, cons) {
 
-	this.proto = proto;
 	this.ctx = ctx;
+	this.cons = cons;
+
 	/**
 	 * controller will install a controller
 	 *
 	 * @param {Extension} ext
 	 *
 	 */
-	this.controller = function(ext) {
+        this.controller = function(ext) {
 
-		ext.controller.prototype = this.proto;
-		console.log('called');
-		this.ctx.controllers.add(new ext.controller(
-			this.ctx.store,
-			this.ctx.data,
-			this.ctx.runtime,
-			this.ctx.config,
-			this.ctx.factories,
-			this.ctx.controllers));
+          var newProto =  Object.create(this.cons.prototype);
+          _.mixin(newProto, ext.controller.prototype);
+          ext.controller.prototype = newProto;
+		ext.controller.prototype.constructor = ext.controller;
+		ext.controller.$parent = this.cons;
 
-		console.log('DEBUG: Load controller extension:', ext.name);
+		this.ctx.controllers.add(
+
+			new ext.controller(
+				this.ctx.store,
+				this.ctx.data,
+				this.ctx.model,
+				this.ctx.config,
+				this.ctx.factories,
+				this.ctx.routes));
 	};
 
 }

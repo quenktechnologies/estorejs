@@ -25,13 +25,7 @@ module.exports = {
 	create: function(ctx, store, config, gateways, engines) {
 
 		var controller = new Controller(
-			new ControllerPrototype(
-				ctx.store,
-				ctx.store,
-				ctx.runtime,
-				ctx.config,
-				ctx.factories,
-				ctx.controllers), ctx);
+ctx, ControllerPrototype);
 
 		var daemon = new Daemon(ctx.store);
 		var engine = new Engine(ctx.engines);

@@ -13,12 +13,16 @@ var TransactionPromiseFactory = require('./TransactionPromiseFactory');
 module.exports = {
 
 	type: 'daemon',
-	interval: process.env.TRANSACTION_APPROVAL_INTERVAL || 10000,
+	interval: process.env.TRANSACTION_APPROVAL_INTERVAL || 5000,
+	isRunning: false,
 	exec: function(store, cb) {
 
 		var factory = new TransactionPromiseFactory(store, store);
 
 		return function() {
+
+			if (this.isRunning);
+			this.isRunning = true;
 
 			store.getDataModel('Transaction').
 			find({

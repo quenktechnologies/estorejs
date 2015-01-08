@@ -13,7 +13,11 @@ module.exports = {
 	model: function(store, types, ui) {
 
 		return [{
-
+				uuid: {
+                                  type: String,
+                                  unique: true,
+					default: require('node-uuid').v4
+				},
 				name: {
 					type: String,
 					required: true,

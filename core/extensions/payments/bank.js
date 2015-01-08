@@ -1,31 +1,37 @@
+function BankCheckout() {
+
+	BankCheckout.$parent.apply(this, arguments);
+
+}
+
+BankCheckout.prototype.onGetGateways = function(gateways) {
+
+	if (this.$config.getPreference('payments').bank.active === true)
+		gateways.bank = this;
+
+};
+
+BankCheckout.prototype.onGetPaymentOptions = function(options) {
+	if (this.$config.getPreference('payments').bank.active === true)
+		options.push({
+			label: 'Bank Transfer',
+			value: 'bank',
+		});
+
+
+};
+
+BankCheckout.prototype.checkout = function(ctx) {
+
+	ctx.callbacks.onTransactionApproved(ctx.transaction);
+
+};
+
 module.exports = {
 
 	type: 'controller',
 	name: 'Bank Payments',
-	controller: function(store, dao, controllers, callbacks, config) {
-
-		this.onGetGateways = function(gateways) {
-
-			if (config.getPreference('payments').bank.active === true)
-				gateways.bank = this;
-
-		};
-		this.onGetPaymentOptions = function(options) {
-
-			if (config.getPreference('payments').bank.active === true)
-				options.push({
-					label: 'Bank Transfer',
-					value: 'bank',
-				});
-
-
-		};
-		this.checkout = function(ctx) {
-
-			ctx.callbacks.onTransactionApproved(ctx.transaction);
-
-		};
-	},
+	controller: BankCheckout,
 	settings: {
 		run: function(list, store, types) {
 

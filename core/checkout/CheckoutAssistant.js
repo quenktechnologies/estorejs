@@ -2,12 +2,12 @@
  * CheckoutAssistant is a model object used for actually doing a checkout.
  * @class CheckoutAssistant
  * @param {DataAccessObject} dao
- * @param {Controllers} controllers
+ * @param {AppModel} model
  * @param {CheckoutHandler} handler
  * @constructor
  *
  */
-module.exports = function CheckoutAssistant(dao, controllers, handler) {
+module.exports = function CheckoutAssistant(dao, model, handler) {
 
 	/**
 	 * hasItems checks the cart for validity.
@@ -33,7 +33,7 @@ module.exports = function CheckoutAssistant(dao, controllers, handler) {
 	this.checkout = function(cart, checkout, req, res) {
 
 		var gateways = {};
-		controllers.onGetGateways(gateways);
+		model.onGetGateways(gateways);
 
 		if (!gateways.hasOwnProperty(checkout.workflow))
 			return handler.onGatewayNotFound();

@@ -1,17 +1,15 @@
-module.exports = {
+function CashCheckout () {
 
-	type: 'controller',
-	name: 'Cash Payments',
-	controller: function(store, dao, controllers, callbacks, config) {
-
-		this.onGetGateways = function(gateways) {
-			if (config.getPreference('payments').cod.active === true)
+  CashCheckout.$parent.apply(this, arguments);
+}
+		CashCheckout.prototype.onGetGateways = function(gateways) {
+			if (this.$config.getPreference('payments').cod.active === true)
 				gateways.cod = this;
 
 		};
 
-		this.onGetPaymentOptions = function(options) {
-			if (config.getPreference('payments').cod.active === true)
+		CashCheckout.prototype.onGetPaymentOptions = function(options) {
+			if (this.$config.getPreference('payments').cod.active === true)
 				options.push({
 					label: 'Cash on Delivery',
 					value: 'cod',
@@ -20,13 +18,17 @@ module.exports = {
 
 		};
 
-		this.checkout = function(ctx) {
+		CashCheckout.prototype.checkout = function(ctx) {
 
 			ctx.callbacks.onTransactionApproved(ctx.transaction);
 
 		};
 
-	},
+module.exports = {
+
+	type: 'controller',
+        name: 'Cash Payments',
+        controller: CashCheckout,
 	settings: {
 		run: function(list, store, types) {
 

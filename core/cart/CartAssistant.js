@@ -45,7 +45,8 @@ module.exports = function CartAssistant(handler) {
 				product.order.max, product);
 
 		handler.onItemCanBeAddedToCart({
-			_id: product._id,
+                  _id: product._id,
+                  uuid: product.uuid,
 			name: product.name,
 			price: product.price,
 			slug: product.slug,

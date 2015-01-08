@@ -1,38 +1,38 @@
+function ChequeCheckout() {
+
+	ChequeCheckout.$parent.apply(this, arguments);
+
+}
+
+ChequeCheckout.prototype.onGetGateways = function(gateways) {
+
+	if (this.$config.getPreference('payments').cheque.active === true)
+		gateways.cheque = this;
+
+};
+
+ChequeCheckout.prototype.onGetPaymentOptions = function(options) {
+
+	if (this.$config.getPreference('payments').cheque.active === true)
+		options.push({
+			label: 'Cheque',
+			value: 'cheque',
+		});
+
+
+};
+
+ChequeCheckout.prototype.checkout = function(ctx) {
+
+	ctx.callbacks.onTransactionApproved(ctx.transaction);
+
+};
+
 module.exports = {
 
 	type: 'controller',
 	name: 'Cheque Payments',
-	controller: function(store, dao, controllers, callbacks, config) {
-
-		this.onGetGateways = function(gateways) {
-
-			if (config.getPreference('payments').cheque.active === true)
-				gateways.cheque = this;
-
-		};
-
-		this.onGetPaymentOptions = function(options) {
-
-			if (config.getPreference('payments').cheque.active === true)
-				options.push({
-					label: 'Cheque',
-					value: 'cheque',
-				});
-
-
-		};
-
-		this.checkout = function(ctx) {
-
-			ctx.callbacks.onTransactionApproved(ctx.transaction);
-
-		};
-
-
-
-
-
-	},
+	controller: ChequeCheckout,
 	settings: {
 		run: function(list, store, types) {
 

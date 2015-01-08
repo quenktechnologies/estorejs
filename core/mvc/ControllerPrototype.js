@@ -5,21 +5,21 @@
  * @abstract
  * @constructor
  * @param {EStore} store
- * @param {DataAccess} data
- * @param {Runtime} runtime
+ * @param {DataAccessObject} data
+ * @param {AppModel} model
  * @param {Configuration} config
  * @param {Factories} factories
  * @param {ControllerIterator} controllers
+ * @param {Routes} routes
  *
  */
-function ControllerPrototype(store, data, runtime, config, factories, controllers) {
-
-	this.store = store;
-	this.data = data;
-	this.runtime = runtime;
-	this.config = config;
-	this.factories = factories;
-	this.controllers = controllers;
+function ControllerPrototype(store, data, model, config, factories, routes) {
+	this.$store = store;
+	this.$data = data;
+	this.$model = model;
+	this.$config = config;
+	this.$factories = factories;
+	this.$routes = routes;
 }
 
 /**
@@ -61,7 +61,8 @@ ControllerPrototype.prototype.onRouteConfiguration = function() {};
  * @param {Hash} options
  *
  */
-ControllerPrototype.prototype.onGetPaymentOptions = function(options) {};
+ControllerPrototype.prototype.onGetPaymentOptions = function(options) {
+};
 
 
 /**
@@ -82,12 +83,8 @@ ControllerPrototype.prototype.onGetGateways = function(gateways) {};
 ControllerPrototype.prototype.render = function(template, ctx) {
 
 	return function(req, res, next) {
-
 		res.render(template, ctx);
-
 	};
-
-
 };
 
 module.exports = ControllerPrototype;

@@ -91,6 +91,7 @@ TransactionPromiseFactory.prototype.getSaveInvoicePromise = function(transaction
  */
 TransactionPromiseFactory.prototype.getSaveCommittedTransactionPromise = function(transaction) {
 
+  transaction.set('flag', 'muyla');
 	return transaction.saveQStyle().
 	then(function(saved) {
 		console.log('Transaction ' + transaction._id + ' committed successfully');

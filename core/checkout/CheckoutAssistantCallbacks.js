@@ -1,18 +1,18 @@
 /**
- * CheckoutAssistantHandler is an interface for reacting to the various states
+ * CheckoutAssistantCallbacks is an interface for reacting to the various states
  * a checkout maybe in.
  *
- * @alias CheckoutAssistantHandler
+ * @alias CheckoutAssistantCallbacks
  * @interface
  *
  */
-function CheckoutAssistantHandler() {}
+function CheckoutAssistantCallbacks() {}
 
 /**
  * onGatewayNotFound is called when the user supplies an invalid
  * gateway.
  */
-CheckoutAssistantHandler.prototype.onGatewayNotFound = function() {};
+CheckoutAssistantCallbacks.prototype.onGatewayNotFound = function() {};
 
 /**
  * onTransactionSaveFailed is called when we fail to save a transaction.
@@ -20,7 +20,7 @@ CheckoutAssistantHandler.prototype.onGatewayNotFound = function() {};
  * @param {Error} err
  *
  */
-CheckoutAssistantHandler.prototype.onTransactionSaveFailed = function(err) {};
+CheckoutAssistantCallbacks.prototype.onTransactionSaveFailed = function(err) {};
 
 /**
  * onTransactionApproved is called when we get approval for a transaction.
@@ -29,7 +29,7 @@ CheckoutAssistantHandler.prototype.onTransactionSaveFailed = function(err) {};
  * @method onTransactionApproved
  * @param {Transaction} trn
  */
-CheckoutAssistantHandler.prototype.onTransactionApproved = function(trn) {};
+CheckoutAssistantCallbacks.prototype.onTransactionApproved = function(trn) {};
 
 
 /**
@@ -38,7 +38,7 @@ CheckoutAssistantHandler.prototype.onTransactionApproved = function(trn) {};
  * @param {Transaction} trn
  *
  */
-CheckoutAssistantHandler.prototype.onTransactionDeclined = function(trn) {};
+CheckoutAssistantCallbacks.prototype.onTransactionDeclined = function(trn) {};
 
 /**
  *
@@ -48,4 +48,4 @@ CheckoutAssistantHandler.prototype.onTransactionDeclined = function(trn) {};
  * @param {String} url 
  *
  */
-CheckoutAssistantHandler.prototype.onRedirectNeeded = function(url) {};
+CheckoutAssistantCallbacks.prototype.onRedirectNeeded = function(url) {};

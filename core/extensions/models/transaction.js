@@ -64,6 +64,9 @@ module.exports = {
 
 
 			},
+			flag: {
+				type: String
+			},
 			timestamp: {
 				type: types.Datetime,
 				default: Date.now,

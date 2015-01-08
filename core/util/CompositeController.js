@@ -27,15 +27,15 @@ module.exports = function CompositeController() {
 
 
 	/**
-	 * routeRegistration
+	 * onRouteConfiguration
 	 *
-	 * @method routeRegistration
+	 * @method onRouteConfiguration
 	 * @param {Object} app
 	 * @return CompositeController
 	 *
 	 */
-	this.routeRegistration = function(app) {
-		this._callEach('routeRegistration', app);
+	this.onRouteConfiguration = function(app) {
+		this._callEach('onRouteConfiguration', app);
 		return this;
 	};
 

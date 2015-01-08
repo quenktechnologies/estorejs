@@ -5,15 +5,13 @@ var Extras = require('./core/util/Extras');
 var Endpoints = require('./core/extensions/ajax/Endpoints');
 var Express = require('express');
 var NunjucksMongoose = require('nunjucks-mongoose');
-var CompositeController = require('./core/util/CompositeController');
 var UIFactory = require('./core/util/UIFactory');
 var MainEventHandler = require('./core/util/MainEventHandler');
-var Gateways = require('./core/checkout/Gateways');
 var DynamicFileSystemLoader = require('./core/loader/DynamicFileSystemLoader');
 var Directory = require('./core/boot/Directory');
 var ModelCompiler = require('./core/models/ModelCompiler');
 var ModelCompilerSyntax = require('./core/models/ModelCompilerSyntax');
-var Mediator = require('./core/boot/Mediator');
+var AppModel = require('./core/mvc/AppModel');
 var ThemeSelection = require('./core/boot/ThemeSelection');
 var ThemePreLoader = require('./core/boot/ThemePreLoader');
 var SettingsPreLoader = require('./core/boot/SettingsPreLoader');
@@ -21,6 +19,8 @@ var Configuration = require('./core/boot/Configuration.js');
 var Environment = require('./core/boot/Environment');
 var InstallerFactory = require('./core/boot/installers/Factory');
 var SocketRegistry = require('./core/server/SocketRegistry');
+var Routes = require('./core/util/Routes');
+var ControllerCollection = require('./core/mvc/ControllerCollection');
 /**
  * EStore is the main constructor for the system.
  *
@@ -39,10 +39,9 @@ module.exports = function EStore() {
 
 	var modelCompiler = new ModelCompiler(new ModelCompilerSyntax());
 	var config = new Configuration(process.env);
-	var composite = new CompositeController();
+	var controllers = new ControllerCollection();
 
 	//@todo stop direct access
-	this.gateways = new Gateways();
 	this.engines = {};
 
 	var bus = new EventEmitter();
@@ -88,7 +87,7 @@ module.exports = function EStore() {
 	this.keystone = require('keystone');
 	this.viewEngine = undefined;
 	this.endpoints = new Endpoints();
-	this.mediator = new Mediator(this, composite, config);
+	this.mediator = new AppModel(this, controllers, config);
 	this.sockets = new SocketRegistry();
 
 	/**
@@ -255,7 +254,6 @@ module.exports = function EStore() {
 		getThemeProperties().
 		getProperties();
 
-
 		extensions.push(require('./core/extensions/routes'));
 		extensions.push(require('./core/extensions/payments/2checkout/hosted'));
 		extensions.push(require('./core/extensions/payments/cod'));
@@ -337,23 +335,29 @@ module.exports = function EStore() {
 		var installer = InstallerFactory.
 		create({
 			store: this,
+			data: this,
 			config: config,
 			modelCompiler: modelCompiler,
 			gateways: this.gateways,
 			engines: this.engines,
-			callbacks: this.mediator,
-			controllers: composite
+			model: this.mediator,
+			controllers: controllers,
+			factories: {},
+			routes: Routes
 
 		});
 
 		extensions.forEach(function(ext) {
 			installer.install(ext);
-
 		});
 
 		modelCompiler.compile(this);
 
-		this.settings = this.keystone.list('Settings').model(this.settings).toObject();
+		this.settings = this.
+		keystone.
+		list('Settings').
+		model(this.settings).
+		toObject();
 
 	};
 
@@ -414,15 +418,14 @@ module.exports = function EStore() {
 			req.session.pendingTransactions = req.session.pendingTransactions || [];
 			res.locals._csrf = self.keystone.security.TOKEN_KEY;
 			res.locals.$csrf = res.locals._csrf;
+
 			next();
 
 		}.bind(this));
 
-		this.keystone.set('routes', function(app) {
+		this.keystone.set('routes',
+			controllers.onRouteConfiguration.bind(controllers));
 
-			composite.routeRegistration(app);
-
-		}.bind(this));
 
 	};
 
@@ -537,21 +540,6 @@ module.exports = function EStore() {
 	};
 
 	/**
-	 * getKeystone returns the keystonejs singleton.
-	 *
-	 * @method getKeystone
-	 * @instance
-	 * @deprecated
-	 * @return {external:Keystone}
-	 *
-	 */
-	this.getKeystone = function() {
-		console.log('Estore.getKeystone is deprecated');
-		return this.keystone;
-	};
-
-
-	/**
 	 * getDataModel is a factory method for getting a model from keystone.
 	 *
 	 * @method getDataModel
@@ -570,47 +558,6 @@ module.exports = function EStore() {
 		return new Model(args);
 
 	};
-
-	/**
-	 * getGateways returns the list of gateways in a helpful wrapper.
-	 *
-	 * @method getGateways
-	 * @return
-	 *
-	 */
-	this.getGateways = function() {
-
-		return this.gateways;
-	};
-
-	/**
-	 * getRenderCallback provides a handy callback for rendering templates.
-	 *
-	 * @method getRenderCallback
-	 * @instance
-	 * @return {Function}
-	 *
-	 */
-	this.getRenderCallback = function() {
-
-		return require('./core/util/render');
-
-	};
-
-	/**
-	 * getViewEngine returns the installed view engine.
-	 *
-	 * @method getViewEngine
-	 * @instance
-	 * @return {Object}
-	 *
-	 */
-	this.getViewEngine = function() {
-		console.log('getViewEngine is deprecated');
-		return this.viewEngine;
-
-	};
-
 
 	/**
 	 * stop the app

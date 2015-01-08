@@ -9,211 +9,213 @@ var StandardSignUpAssistantCallbacks = require('./StandardSignUpAssistantCallbac
  *
  * @alias CustomerController
  * @constructor
- * @param {EStore} store
+ * @extends {Controller}
  *
  */
-module.exports = function CustomerController(store) {
+function CustomerController() {
 
-	/**
-	 * routeRegistration is called.
-	 *
-	 * @method routeRegistration
-	 * @instance
-	 * @param {external:express} app
-	 * @return {undefined}
-	 *
-	 */
-	this.routeRegistration = function(app) {
+	CustomerController.$parent.apply(this, arguments);
+}
 
-		var provider = new PassportFactory(passport);
-		var render = store.getRenderCallback();
+/**
+ * onRouteConfiguration is called.
+ *
+ * @method onRouteConfiguration
+ * @instance
+ * @param {external:express} app
+ * @return {undefined}
+ *
+ */
+CustomerController.prototype.onRouteConfiguration = function(app) {
 
-		passport.use('local-signup', provider.getLocalSignupStrategy(
-			new SignUpCallbacks(store)));
+	var provider = new PassportFactory(passport);
 
-		passport.use('local-signin', provider.getLocalSigninStrategy(store));
+	passport.use('local-signup', provider.getLocalSignupStrategy(
+		new SignUpCallbacks(this.$store)));
 
-		//Actual routes
-		app.get('/signup', render('customers/signup.html'));
-		app.get('/signup/validate', render('customers/validate.html'));
-		app.get(/^\/signup\/activate\/(\w+)/, this.onActivateCustomerRequest);
-		app.post('/signup', this.onSignUpRequest);
+	passport.use('local-signin', provider.getLocalSigninStrategy(this.$store));
 
-		app.get('/signin', render('customers/signin.html'));
-		app.post('/signin', this.onSignInRequest);
+	app.get(this.$routes.standard.members.signup.index,
+		this.render('customers/signup.html'));
 
-		app.get('/signout', this.onSignOutRequest);
+	app.get(this.$routes.standard.members.signup.validate,
+		this.render('customers/validate.html'));
 
-		app.get('/dashboard', this.onGetDashboardRequest);
+	app.get(this.$routes.standard.members.signup.activate,
+		this.onActivateCustomerRequest.bind(this));
 
+	app.post(this.$routes.standard.members.signup.index,
+		this.onSignUpRequest.bind(this));
 
-	};
+	app.get(this.$routes.standard.members.signin.index,
+		this.render('customers/signin.html'));
 
+	app.post(this.$routes.standard.members.signin.index,
+		this.onSignInRequest.bind(this));
 
-	/**
-	 * onSignupRequest handles user signups.
-	 *
-	 * @method onSignupRequest
-	 * @instance
-	 * @param {Request} req
-	 * @param {Response} res
-	 * @param {Function} next
-	 */
-	this.onSignUpRequest = function(req, res, next) {
+	app.get(this.$routes.standard.members.signout.index,
+		this.onSignOutRequest.bind(this));
 
-		var help = new SignUpAssistant(
-			req.protocol + '://' +
-			req.get('host'), store,
-			new StandardSignUpAssistantCallbacks(req, res, next));
-
-		res.locals.$submit = req.body;
-
-		(passport.authenticate('local-signup', {
-				session: false,
-			},
-			help.onValidationFinished))(req, res, next);
-
-	};
-
-	/**
-	 * onSignInRequest logs the customer in.
-	 *
-	 * @method onSignInRequest
-	 * @instance
-	 * @param {external:Request} req
-	 * @param {external:Response} res
-	 * @param {Function} next
-	 * @return undefined
-	 *
-	 */
-	this.onSignInRequest = function(req, res, next) {
-
-		passport.authenticate('local-signin', {
-			session: false
-		}, function(err, customer, msg) {
-
-			if (err)
-				return next(err);
-
-			if (!customer)
-				return res.render('customers/signin.html', {
-					message: msg
-				});
-
-			if (customer.status === 'pending')
-				return res.redirect('/signup/validate');
-
-			if (customer.status === 'inactive')
-				return res.redirect('/signin/inactive');
-
-			if (customer.status === 'disabled')
-				return res.redirect('/signin/disabled');
-
-			req.session.customer = customer;
-			res.redirect('/dashboard');
-
-			store.broadcast(store.CUSTOMER_SIGNED_IN, customer);
+	app.get(this.$routes.standard.members.signin.dashboard,
+		this.onGetDashboardRequest.bind(this));
 
 
-		})(req, res, next);
+};
 
 
+/**
+ * onSignupRequest handles user signups.
+ *
+ * @method onSignupRequest
+ * @instance
+ * @param {Request} req
+ * @param {Response} res
+ * @param {Function} next
+ */
+CustomerController.prototype.onSignUpRequest = function(req, res, next) {
 
-	};
+	var help = new SignUpAssistant(
+		req.protocol + '://' +
+		req.get('host'), this.$store,
+		new StandardSignUpAssistantCallbacks(req, res, next));
 
-	/**
-	 * onSignOutRequest logs out the customer.
-	 *
-	 * @method SignOutRequest
-	 * @instance
-	 * @param {external:Request} req
-	 * @param {external:Response} res
-	 * @param {Function} next
-	 */
-	this.onSignOutRequest = function(req, res, next) {
+	res.locals.$submit = req.body;
 
-		req.session.user = undefined;
-		res.redirect('/signin');
-
-
-	};
-
-	/**
-	 * onActivateCustomerRequest activates a customer account.
-	 *
-	 * @method onActivateCustomerRequest
-	 * @instance
-	 * @param {external:Request} req
-	 * @param {external:Response} res
-	 * @param {Function} next
-	 */
-	this.onActivateCustomerRequest = function(req, res, next) {
-
-		var Customer = store.getDataModel('Customer');
-
-		Customer.
-		findOneAndUpdate({
-			'tokens.validate': req.params[0],
-                        status: 'pending'
+	(passport.authenticate('local-signup', {
+			session: false,
 		},
-               {
-				$set: {
-					status: 'active',
-                  'tokens.validate': null
-				}
-			} 
-                
-                ).
-		exec().
-		then(function(customer) {
+		help.onValidationFinished))(req, res, next);
 
-                  			console.log(arguments);
-			if (!customer)
-				return next();
+};
 
-		req.session.user = customer;
-                req.session.customer = req.session.user;
-			res.redirect('/dashboard');
-			store.broadcast(store.CUSTOMER_ACTIVATED, customer);
+/**
+ * onSignInRequest logs the customer in.
+ *
+ * @method onSignInRequest
+ * @instance
+ * @param {external:Request} req
+ * @param {external:Response} res
+ * @param {Function} next
+ * @return undefined
+ *
+ */
+CustomerController.prototype.onSignInRequest = function(req, res, next) {
 
+	passport.authenticate('local-signin', {
+		session: false
+	}, function(err, customer, msg) {
 
-		}).
-		end(function(err) {
+		if (err)
+			return next(err);
 
-			console.log(err);
-			next(err);
+		if (!customer)
+			return res.render('customers/signin.html', {
+				message: msg
+			});
 
-		});
+		if (customer.status === 'pending')
+			return res.redirect('/signup/validate');
 
-	};
+		if (customer.status === 'inactive')
+			return res.redirect('/signin/inactive');
 
+		if (customer.status === 'disabled')
+			return res.redirect('/signin/disabled');
 
+		req.session.customer = customer;
+		res.redirect('/dashboard');
 
-	/**
-	 * onGetDashboardRequest displays the customers' dashboard.
-	 *
-	 * @method GetDashboardRequest
-	 * @instance
-	 * @param {external:Request} req
-	 * @param {external:Response} res
-	 */
-	this.onGetDashboardRequest = function(req, res, next) {
-
-		if (!req.session.user)
-			return res.redirect('/signin');
-
-		res.render('customers/dashboard.html');
-
-	};
+		this.$store.broadcast(this.$store.CUSTOMER_SIGNED_IN, customer);
 
 
-
-
-
-
-
-
+	})(req, res, next);
 
 
 
 };
+
+/**
+ * onSignOutRequest logs out the customer.
+ *
+ * @method SignOutRequest
+ * @instance
+ * @param {external:Request} req
+ * @param {external:Response} res
+ * @param {Function} next
+ */
+CustomerController.prototype.onSignOutRequest = function(req, res, next) {
+
+	req.session.user = undefined;
+	res.redirect('/signin');
+
+
+};
+
+/**
+ * onActivateCustomerRequest activates a customer account.
+ *
+ * @method onActivateCustomerRequest
+ * @instance
+ * @param {external:Request} req
+ * @param {external:Response} res
+ * @param {Function} next
+ */
+CustomerController.prototype.onActivateCustomerRequest = function(req, res, next) {
+
+	var Customer = this.$data.getDataModel('Customer');
+
+	Customer.
+	findOneAndUpdate({
+			'tokens.validate': req.params[0],
+			status: 'pending'
+		}, {
+			$set: {
+				status: 'active',
+				'tokens.validate': null
+			}
+		}
+
+	).
+	exec().
+	then(function(customer) {
+
+		console.log(arguments);
+		if (!customer)
+			return next();
+
+		req.session.user = customer;
+		req.session.customer = req.session.user;
+		res.redirect('/dashboard');
+		this.$store.broadcast(this.$store.CUSTOMER_ACTIVATED, customer);
+
+
+	}).
+	end(function(err) {
+
+		console.log(err);
+		next(err);
+
+	});
+
+};
+
+
+
+/**
+ * onGetDashboardRequest displays the customers' dashboard.
+ *
+ * @method GetDashboardRequest
+ * @instance
+ * @param {external:Request} req
+ * @param {external:Response} res
+ */
+CustomerController.prototype.onGetDashboardRequest = function(req, res, next) {
+
+	if (!req.session.user)
+		return res.redirect('/signin');
+
+	res.render('customers/dashboard.html');
+
+};
+
+module.exports = CustomerController;
