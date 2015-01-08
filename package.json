@@ -1,7 +1,7 @@
 {
   "name": "estore",
-  "version": "0.2.9",
-  "description": "Run an e-store in the cloud using mongodb, keystone and nunjucks.",
+  "version": "0.2.10",
+  "description": "ECommerce in your cloud.",
   "keywords": [
     "ecommerce",
     "mongodb",
@@ -21,7 +21,7 @@
     "test-spec": "mocha --recursive -R spec --ui bdd --timeout 120000 core/test/spec",
     "test-func": "mocha --recursive -R spec --ui bdd --timeout 120000 core/test/func",
     "test-unit": "mocha --recursive -R spec --ui bdd --timeout 120000 core/test/unit",
-    "testx": "npm run test-unit; npm run test-func; npm run test-spec;"
+    "test": "echo 'Test have to be run manually at this time. :('"
   },
   "dependencies": {
     "2checkout-node": "0.0.1",
