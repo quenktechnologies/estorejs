@@ -452,7 +452,6 @@ module.exports = function EStore() {
 			self._processExtensions();
 			self._eventRegistration();
 			self._routeRegistration();
-			console.log('start keystone');
 			self.keystone.start(function() {
 				self.keystone.httpServer.
 				on('connection',

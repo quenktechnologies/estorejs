@@ -54,8 +54,8 @@ CartAssistantHandler.prototype.onItemCanBeAddedToCart = function(item) {};
 
 
 /**
- * onItemMustBeRemoved is called when an item must be removed form the cart.
+ * onItemHasBeenRemoved is called when an item must be removed form the cart.
  *
  * @param {Item} item 
  */
-CartAssistantHandler.onItemMustBeRemoved = function () {};
+CartAssistantHandler.onItemHasBeenRemoved = function () {};

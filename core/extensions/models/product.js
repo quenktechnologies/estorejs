@@ -1,3 +1,5 @@
+var uuid = require('node-uuid');
+
 module.exports = {
 	type: 'model',
 	name: 'Product',
@@ -14,10 +16,13 @@ module.exports = {
 
 		return [{
 				uuid: {
-                                  type: String,
-                                  noedit:true,
-                                  unique: true,
-					default: require('node-uuid').v4
+					type: String,
+					noedit: true,
+					unique: true,
+					hidden: true,
+                                        default: function() { 
+                                         return  uuid.v4();
+                                        }
 				},
 				name: {
 					type: String,

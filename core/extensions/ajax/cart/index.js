@@ -1,6 +1,6 @@
 var _ = require('lodash');
-var CartAssistant = require('../../../cart/Cart');
-
+var Cart = require('../../../cart/Cart');
+//@todo use new cart apis
 /**
  *
  * AjaxCartController provides the endpoints for the cart ajax api.
@@ -46,6 +46,7 @@ AjaxCartController.prototype.onRouteConfiguration = function(app) {
  */
 AjaxCartController.prototype.onGetItemsInCartRequest = function(req, res) {
 
+  //@todoconsider updating the items in the cart first
 	res.json(req.session.cart);
 
 };

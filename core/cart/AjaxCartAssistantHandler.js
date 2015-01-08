@@ -51,7 +51,7 @@ module.exports = function AjaxCartAssistantHandler(res) {
 	};
 
 
-	this.onItemMustBeRemoved = function(item) {
+	this.onItemHasBeenRemoved = function(item) {
 
 		res.status(204);
 

@@ -49,15 +49,13 @@ module.exports = function StandardCartAssistantHandler(res) {
 
 	this.onItemCanBeAddedToCart = function(item) {
 
-		res.status(201);
-		res.redirect('/cart');
+		res.redirect(201, '/cart');
 
 	};
 
-	this.onItemMustBeRemoved = function(item) {
+	this.onItemHasBeenRemoved = function(item) {
 
-		res.status(204);
-		res.redirect('/cart');
+		res.redirect(204,'/cart');
 
 	};
 

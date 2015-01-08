@@ -1,5 +1,4 @@
 var CartAssistant = require('./CartAssistant');
-var CartAssistantHandlerWrapper = require('./CartAssistantHandlerWrapper');
 var AjaxCartAssistantHandler = require('./AjaxCartAssistantHandler');
 var StandardCartAssistantHandler = require('./StandardCartAssistantHandler');
 
@@ -10,21 +9,19 @@ var StandardCartAssistantHandler = require('./StandardCartAssistantHandler');
 
 module.exports = {
 
-	createAjaxAssistant: function(session, res) {
+	createAjaxAssistant: function(cart, res) {
 
-		return new CartAssistant(
-			new CartAssistantHandlerWrapper(session,
-				new AjaxCartAssistantHandler(res)));
+		return new CartAssistant(cart,
+			new AjaxCartAssistantHandler(res));
 
 
-        },
-        createStandardAssistant: function(session, res) {
+	},
+	createStandardAssistant: function(cart, res) {
 
-return new CartAssistant(
-					new CartAssistantHandlerWrapper(session,
-						new StandardCartAssistantHandler(res)));
+		return new CartAssistant(cart,
+			new StandardCartAssistantHandler(res));
 
-        }
+	}
 
 
 
