@@ -2,8 +2,8 @@
 ![EstoreJS](http://estorejs.quenk.com/assets/images/logo.svg)
 ==============================
 
-![Build Status](https://travis-ci.org/quenktechnologies/estore.js.svg)
-
+![Build Status](https://travis-ci.org/quenktechnologies/estorejs.svg)
+[![forthebadge](http://forthebadge.com/badges/built-with-love.svg)](http://forthebadge.com)
 #EStore
 **Note: This version will break apps based on prior versions.**
 
