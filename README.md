@@ -1,4 +1,9 @@
 
+![EstoreJS](http://estorejs.quenk.com/assets/images/logo.svg)
+==============================
+
+![Build Status](https://travis-ci.org/quenktechnologies/estore.js.svg)
+
 #EStore
 **Note: This version will break apps based on prior versions.**
 
