@@ -4,16 +4,16 @@
 
 ![Build Status](https://travis-ci.org/quenktechnologies/estorejs.svg)
 
-EStoreJS is a [12 factor](http://12factor.net) app for running cloud backed
-eCommerce stores.
 
-You can deploy an instance to Heroku by using the button below:
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/quenktechnologies/estorejs)
+
+Quickly run an eCommerce store in the cloud!
 
 ##Why EStoreJS?
 
 EStoreJS started off as part of a bigger project to provide eCommerce related services
-to businesses in Trinidad and Tobago. Its design is influenced by both the current state of technology adoption in T&ampl;T and a need to be flexible.
+to businesses in Trinidad and Tobago. It's designed to be flexible and play nice with
+third party services.
 
 ##Current Status
 
