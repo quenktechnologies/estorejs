@@ -29,7 +29,7 @@ AjaxCartController.prototype.onRouteConfiguration = function(app) {
 	app.put(this.$routes.ajax.cart.items.item,
 		this.onAddItemToCartRequest.bind(this));
 
-	app.del(this.$routes.ajax.cart.items.item,
+	app.delete(this.$routes.ajax.cart.items.item,
 		this.onRemoveItemFromCartRequest.bind(this));
 
 	app.head(this.$routes.ajax.cart.items.item,
