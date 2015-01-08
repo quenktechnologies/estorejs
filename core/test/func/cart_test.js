@@ -29,7 +29,7 @@ describe('Adding a product to the cart.', function() {
 		agent.post('/cart/items/' + item.uuid).
 		send(item).
 		end(function(err, res) {
-			res.status.must.equal(201);
+			res.status.must.equal(303);
 			done(err);
 
 		});
@@ -40,7 +40,7 @@ describe('Adding a product to the cart.', function() {
 		agent.post('/cart/items/' + item.uuid).
 		send(item).
 		end(function(err, res) {
-			res.status.must.equal(201);
+			res.status.must.equal(303);
 			done(err);
 
 		});
@@ -58,7 +58,7 @@ describe('Removing a product from the cart.', function() {
 		agent.post('/cart/items/' + item.uuid).
 		send(item).
 		end(function(err, res) {
-			res.status.must.equal(201);
+			res.status.must.equal(303);
 			done(err);
 
 		});
@@ -71,14 +71,14 @@ describe('Removing a product from the cart.', function() {
 		agent.delete('/cart/items/' + item.uuid).
 		end(function(err, res) {
 
-			res.status.must.equal(204);
+			res.status.must.equal(303);
 			done(err);
 
 		});
 
 	});
 
-	it('must work when overloaded', function(done) {
+	it('must work when using DELETE override', function(done) {
 
 		agent.post('/cart/items/' + item.uuid).
 		send({
@@ -86,7 +86,7 @@ describe('Removing a product from the cart.', function() {
 		}).
 		end(function(err, res) {
 
-			res.status.must.equal(204);
+			res.status.must.equal(303);
 			done(err);
 
 		});
