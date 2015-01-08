@@ -22,7 +22,7 @@ default template to get you started.
 
 ##Features
 
-* KeystoneJS as an admin interface.
+* [KeystoneJS](http://keystonejs.com) as an admin interface.
 * Nunjucks for templating.
 * Product and Category management.
 * Invoice generation.
