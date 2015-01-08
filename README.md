@@ -1,5 +1,5 @@
 
-![EStoreJS](http://estorejs.quenk.com/assets/images/logo.svg)
+![EStoreJS](http://estorejs.quenk.com/assets/images/common/logo.svg)
 ==============================
 
 ![Build Status](https://travis-ci.org/quenktechnologies/estorejs.svg)
