@@ -7,33 +7,49 @@
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/quenktechnologies/estorejs)
 
-Quickly run an eCommerce store in the cloud!
+Run an eCommerce store in your cloud!
 
 ##Why EStoreJS?
 
 EStoreJS started off as part of a bigger project to provide eCommerce related services
 to businesses in Trinidad and Tobago. It's designed to be flexible and play nice with
-third party services.
+third party applications and services.
 
 ##Current Status
 
 EStoreJS is just about ready to run small, low traffic sites. It ships with a
-default template which may have a few bugs (please file them).
+default template to get you started. 
 
-Documentation is lacking however and will be the main focus along with 
-deciding on a concrete extension API come `0.2.11`.
+##Features
 
-##Setup and Deployments
+* KeystoneJS as an admin interface.
+* Nunjucks for templating.
+* Product and Category management.
+* Invoice generation.
+* Shopping Cart
+* A MongoDB backend.
 
-If you do not want to deploy to Heroku, you can clone the master branch.
+##Requirements
+
+To run EStoreJS you will need to have [NodeJS](http://nodejs.org) installed and access to a [MongoDB](http://mongodb.org) server.
+The deploy to Heroku button takes care of this for you though.
+
+You should also have [git](http://gitscm.org) installed.
+
+##Setup
+
+If you do not want to deploy to Heroku, clone the master branch.
 Be sure to either create a .env file or set the environment with the following:
 
-* MONGO_URI - Maybe set depending on your host.
-* COOKIE_SECRET - A secure random string of characters used in signing cookies.
+* MONGO_URI - Include the database name at the end of the uri.
+* COOKIE_SECRET - If not supplied will be generated internally each time app starts.
 
 Once that is take care of run `npm install` then `npm start` to get your app going.
 
-Check back for more documentation in the future!
+##Documentation
+
+Working on it. For now, read the source!
+
 
 ##License
 (The MIT License)
