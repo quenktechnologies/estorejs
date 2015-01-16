@@ -121,7 +121,9 @@ module.exports = function EStore() {
 			new SettingsPreLoader(Environment.getMongoURI(),
 				this.mediator);
 
-		return loader.load();
+		this._preloadThemes();
+
+				return loader.load();
 	};
 
 	/**
@@ -269,6 +271,7 @@ module.exports = function EStore() {
 		extensions.push(require('./core/extensions/models/category'));
 		extensions.push(require('./core/extensions/models/transaction'));
 		extensions.push(require('./core/extensions/models/country'));
+		extensions.push(require('./core/extensions/models/navigation.js'));
 
 		if (config.get('MANDRILL_API_KEY'))
 			extensions.push(require('./core/extensions/services/mandrill'));

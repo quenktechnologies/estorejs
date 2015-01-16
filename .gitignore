@@ -16,4 +16,4 @@ npm-debug.log
 tmp
 .DS_Store
 .journal
-/nbproject/private/
+.idea
