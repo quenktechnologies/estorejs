@@ -19,7 +19,7 @@ function FieldFactory(config) {
 					if (config.get('S3_BUCKET'))
 						return types.S3File;
 
-		if (config.get('IMAGES_USE_CLOUDINARY') === true)
+		if (config.get('IMAGES_USE_CLOUDINARY'))
 			if (config.get('CLOUDINARY_URL'))
 				return types.CloudinaryImage;
 
@@ -34,9 +34,9 @@ function FieldFactory(config) {
 	 * @param {Object} types
 	 * @return {Function}
 	 */
-        FieldFactory.prototype.getMultiImage = function(types) {
+	FieldFactory.prototype.getMultiImage = function(types) {
 
-		if (config.get('IMAGE_USE_CLOUDINARY') === true)
+		if (config.get('IMAGE_USE_CLOUDINARY'))
 			if (config.get('CLOUDINARY_URL'))
 				return types.CloudinaryImages;
 
