@@ -19,22 +19,22 @@ module.exports = {
 	model: function(store, types, ui) {
 
 		return [{
-				title: ui.TextField({
+                  title: {
+                    type:String,
 					required: true
-				}),
+				},
 				template: {
 					type: types.Select,
-					options: store.pages.templates,
+                                        options: store.pages.templates, //Maybe get from types infuture?
 					initial: true,
 					default: store.pages.templates[0].value,
 					required: true
 
 				},
-				content: ui.PageContentEditor(),
-				meta: {
-					author: ui.TextField('Meta Author'),
-					description: ui.TextBox('Meta Description'),
 
+                                meta: {
+                                  author:{type: String},
+                                  description:{type: types.Textarea}
 				}
 			}, {
 				isIndex: {
@@ -48,7 +48,13 @@ module.exports = {
 					default: false,
 					label: 'Include in navigation menu?'
 				}
-			}
+                        },{
+                                content: 	{
+                                  type: types.Markdown,
+                                  height: 400,
+                                  wysiwyg: true
+                                  
+                                }}
 
 		];
 
