@@ -18,10 +18,10 @@
   },
   "scripts": {
     "start": "node run.js",
-    "test-spec": "mocha --recursive -R spec --ui bdd --timeout 120000 core/test/spec",
+    "test-spec": "mocha --recursive -R spec --ui bdd --timeout 120000 core/test/spec/shopping_spec.js",
     "test-func": "mocha --recursive -R spec --ui bdd --timeout 120000 core/test/func",
     "test-unit": "mocha --recursive -R spec --ui bdd --timeout 120000 core/test/unit",
-    "test": "echo 'Test have to be run manually at this time. :('"
+    "test": "npm run test-spec"
   },
   "dependencies": {
     "2checkout-node": "0.0.1",

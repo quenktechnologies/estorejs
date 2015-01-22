@@ -21,13 +21,17 @@ module.exports = {
 						type: String,
 						label: 'Name',
 						width: 'medium'
+					},
+					about: {
+						type: types.Textarea,
+						label: 'About'
+
 					}
 				}
 			}, 'Main Address', {
 
-				brand: {
-					address: address(store, types, ui)
-				}
+				address: address(store, types, ui)
+
 
 			},
 			'Theme', {
@@ -78,8 +82,8 @@ module.exports = {
 						}, {
 							label: 'Both',
 							value: 'both'
-                                                }],
-                                                default:'online'
+						}],
+						default: 'online'
 					}
 				}
 
@@ -91,7 +95,37 @@ module.exports = {
 					default: 'USD',
 					label: 'Select default'
 				}
+			},
+			'Blog', {
+				blog: {
+					title: {
+						type: String,
+						default: 'Blog'
+					},
+					tagline: {
+						type: String,
+						default: ''
+					}
+				}
+
+			}, 'Social Media', {
+
+				social: {
+					networks: {
+						type: types.Table,
+						columns: [{
+								name: 'network'
+							}, {
+								name: 'link'
+							}, {
+								name: 'reference'
+							}
+
+						]
+					}
+				}
 			}
+
 		];
 	},
 	run: function(list, store) {

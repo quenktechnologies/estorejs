@@ -2,6 +2,7 @@ module.exports = {
 
 	type: 'model',
 	name: 'Navigation',
+	plural: 'Navigations',
 	options: {
 		track: true,
 	},
@@ -13,8 +14,7 @@ module.exports = {
 			},
 			links: {
 				type: types.Table,
-                                columns: [
-                                  {
+				columns: [{
 					name: 'label'
 				}, {
 					name: 'url'

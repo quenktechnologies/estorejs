@@ -17,6 +17,7 @@ var q = require('q');
  */
 module.exports = function ModelCompiler(syntax) {
 
+
 	var trees = {};
 
 	/**
@@ -61,6 +62,7 @@ module.exports = function ModelCompiler(syntax) {
 		var tree;
 		var types = store.keystone.Field.Types;
 		var nav = {};
+
 		fields = new UIFactory(types);
 		for (var key in trees)
 			if (trees.hasOwnProperty(key)) {
@@ -86,7 +88,7 @@ module.exports = function ModelCompiler(syntax) {
 			}
 
 
-		nav.settings = ['settings', 'users', 'countries', 'counters'];
+		nav.settings = ['settings', 'users', 'countries', 'counters', 'navigations'];
 		store.keystone.set('nav', nav);
 
 	};

@@ -2,6 +2,8 @@ module.exports = {
 
 	type: 'model',
 	name: 'PostCategory',
+	plural: 'Categories',
+
 	options: {
 		autokey: {
 			path: 'slug',
@@ -25,7 +27,6 @@ module.exports = {
 					type: types.Relationship,
 					ref: 'Post',
 					many: true,
-					label: 'member',
 					collapse: true
 				}
 			}

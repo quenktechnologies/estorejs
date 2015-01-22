@@ -10,6 +10,7 @@ var DynamicFileSystemLoader = require('./core/loader/DynamicFileSystemLoader');
 var Directory = require('./core/boot/Directory');
 var ModelCompiler = require('./core/models/ModelCompiler');
 var ModelCompilerSyntax = require('./core/models/ModelCompilerSyntax');
+var FieldFactory = require('./core/models/FieldFactory.js');
 var AppModel = require('./core/mvc/AppModel');
 var ThemeSelection = require('./core/boot/ThemeSelection');
 var ThemePreLoader = require('./core/boot/ThemePreLoader');
@@ -36,8 +37,8 @@ var ControllerCollection = require('./core/mvc/ControllerCollection');
  */
 module.exports = function EStore() {
 
-	var modelCompiler = new ModelCompiler(new ModelCompilerSyntax());
 	var config = new Configuration(process.env);
+	var modelCompiler = new ModelCompiler(new ModelCompilerSyntax());
 	var controllers = new ControllerCollection();
 
 	//@todo stop direct access
@@ -123,7 +124,7 @@ module.exports = function EStore() {
 
 		this._preloadThemes();
 
-				return loader.load();
+		return loader.load();
 	};
 
 	/**
@@ -207,8 +208,11 @@ module.exports = function EStore() {
 		this.viewEngine.addExtension('NunjucksMongoose',
 			new NunjucksMongoose(this.keystone.mongoose, 'get'));
 
-		this.keystone.connect(this.keystone.app);
 
+		var fields = new FieldFactory(config);
+		var types = this.keystone.Field.Types;
+		this.keystone.Field.Types.Image = fields.getSingleImage(types);
+		this.keystone.Field.Types.Images = fields.getMultiImage(types);
 
 	};
 
