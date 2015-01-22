@@ -265,7 +265,6 @@ module.exports = function EStore() {
 		extensions.push(require('./core/extensions/payments/bank'));
 		extensions.push(require('./core/extensions/payments/cheque'));
 		extensions.push(require('./core/extensions/daemons/transaction'));
-		extensions.push(require('./core/extensions/engines/image'));
 		extensions.push(require('./core/extensions/models/settings'));
 		extensions.push(require('./core/extensions/models/user'));
 		extensions.push(require('./core/extensions/models/counter'));
@@ -279,17 +278,6 @@ module.exports = function EStore() {
 
 		if (config.get('MANDRILL_API_KEY'))
 			extensions.push(require('./core/extensions/services/mandrill'));
-
-		if (config.get('S3_KEY'))
-			if (config.get('S3_SECRET'))
-				if (config.get('S3_BUCKET'))
-					extensions.push(
-						require('./core/extensions/engines/imageS3'));
-
-		if (config.get('CLOUDINARY_URL'))
-			if (config.get('CLOUDINARY_SECRET'))
-				extensions.push(
-					require('./core/extensions/engines/imageCloudinary'));
 
 		if (pkg.supports.blog)
 			extensions.push(require('./core/extensions/blog'));

@@ -21,7 +21,7 @@ module.exports = {
 					required: true,
 					initial: true
 				},
-				image: store.engines.ImageEngine(store, types),
+				image: types.Image,
 				posts: {
 
 					type: types.Relationship,

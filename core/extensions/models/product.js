@@ -20,9 +20,9 @@ module.exports = {
 					noedit: true,
 					unique: true,
 					hidden: true,
-                                        default: function() { 
-                                         return  uuid.v4();
-                                        }
+					default: function() {
+						return uuid.v4();
+					}
 				},
 				name: {
 					type: String,
@@ -57,7 +57,7 @@ module.exports = {
 					label: 'Weight (kgs)',
 					default: 0
 				},
-				image: new store.engines.ImageEngine(store, types, ui)
+				image: types.Image
 			},
 			'Stock', {
 
