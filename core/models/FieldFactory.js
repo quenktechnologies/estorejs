@@ -36,7 +36,7 @@ function FieldFactory(config) {
 	 */
 	FieldFactory.prototype.getMultiImage = function(types) {
 
-		if (config.get('IMAGE_USE_CLOUDINARY'))
+		if (config.get('IMAGES_USE_CLOUDINARY'))
 			if (config.get('CLOUDINARY_URL'))
 				return types.CloudinaryImages;
 

@@ -51,6 +51,9 @@ SiteRoutesController.prototype.onRouteConfiguration = function(app) {
  */
 SiteRoutesController.prototype.onIndexPageRequest = function(req, res, next) {
 
+  //Note for a future breaking change:
+  //We will remove the isIndex option in favour of just
+  //Naming a page Index
 
 	this.$data.getDataModel('Page').
 	findOne({
