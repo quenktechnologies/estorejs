@@ -71,7 +71,7 @@ StoreRoutesController.prototype.onShowCategoryPageRequest = function(req, res, n
 			return next();
 
 		res.locals.$category = category;
-		res.render('categories/category.html');
+		res.render('category.html');
 
 
 	}).end();
@@ -135,7 +135,7 @@ StoreRoutesController.prototype.onGetAllProductsRequest = function(req, res, nex
 		res.locals.$pagination = pager;
 		res.locals.$products = pager.items;
 		res.locals.$currentCategory = 'all';
-		res.render('categories/all.html');
+		res.render('categories.html');
 	}).end(function(err) {
 		console.log(err);
 		next();
