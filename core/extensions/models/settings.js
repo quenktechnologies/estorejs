@@ -34,7 +34,7 @@ module.exports = {
 						},
 						large: {
 							type: types.Image,
-							lael: 'Logo Large'
+							label: 'Logo Large'
 						}
 					}
 				}
