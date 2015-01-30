@@ -26,6 +26,16 @@ module.exports = {
 						type: types.Textarea,
 						label: 'About'
 
+					},
+					logo: {
+						small: {
+							type: types.Image,
+							label: 'Logo Small'
+						},
+						large: {
+							type: types.Image,
+							lael: 'Logo Large'
+						}
 					}
 				}
 			}, 'Main Address', {
@@ -42,19 +52,38 @@ module.exports = {
 						default: process.env.DEFAULT_THEME || 'themes/default',
 						label: 'Select one:'
 					},
-					skin: {
-						type: types.Select,
-						options: ['cyborg', 'cerulean', 'cyborg', 'darkly', 'flatly',
-							'journal', 'lumen', 'paper', 'readable', 'sandstone',
-							'simplex', 'slate', 'spacelab',
-							'superhero', 'united', 'yeti'
-						],
-						label: 'Bootstrap Theme',
-						note: 'May not be supported by all themes.',
-						default: 'lumen'
+				}
+			},
+			'Blog', {
+				blog: {
+					title: {
+						type: String,
+						default: 'Blog',
+						label: 'Title'
+					},
+					description: {
+						type: types.Textarea,
+						default: '',
+						label: 'Description'
 					}
 				}
-			}, 'Credit Cards', {
+
+			}, 'Social Media', {
+
+				social: {
+					networks: {
+						type: types.Table,
+						columns: [{
+								name: 'network'
+							}, {
+								name: 'link'
+							}
+
+						]
+					}
+				}
+			},
+			'Credit Cards', {
 				payments: {
 					card: {
 						type: types.Select,
@@ -96,35 +125,6 @@ module.exports = {
 					label: 'Select default'
 				}
 			},
-			'Blog', {
-				blog: {
-					title: {
-						type: String,
-						default: 'Blog'
-					},
-					tagline: {
-						type: String,
-						default: ''
-					}
-				}
-
-			}, 'Social Media', {
-
-				social: {
-					networks: {
-						type: types.Table,
-						columns: [{
-								name: 'network'
-							}, {
-								name: 'link'
-							}, {
-								name: 'reference'
-							}
-
-						]
-					}
-				}
-			}
 
 		];
 	},

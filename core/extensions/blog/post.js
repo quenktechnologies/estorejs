@@ -2,7 +2,7 @@ module.exports = {
 
 	type: 'model',
 	name: 'Post',
-	defaultColumns: 'title,state,createdBy,createdAt',
+	defaultColumns: 'title,state,author.name,createdBy,createdAt',
 	options: {
 
 		autokey: {
@@ -25,9 +25,17 @@ module.exports = {
 					initial: true
 				},
 				author: {
-					type: String,
-					intital: true,
-					default: 'System'
+
+					name: {
+						type: String,
+						intital: true,
+						default: 'System',
+						initial: true
+					},
+					url: {
+						type: types.Url
+
+					}
 				},
 				image: {
 					type: types.Image,
@@ -45,27 +53,24 @@ module.exports = {
 						state: 'published'
 					}
 				},
-				content: {
-					brief: {
-						type: types.Textarea,
-						wysiwyg: true,
-						height: 150,
-						initial: true
+				summary: {
+					type: types.Textarea,
+					wysiwyg: true,
+					height: 150,
+					initial: true
 
-					},
-					full: {
-						type: types.Markdown,
-						wysiwyg: true,
-						height: 600
-					}
 				},
+				content: {
 
+					type: types.Markdown,
+					wysiwyg: true,
+					height: 600
+				},
 				keywords: {
 
 					type: types.TextArray
 
 				}
-
 			}
 
 		];

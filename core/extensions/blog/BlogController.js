@@ -1,8 +1,6 @@
-/** @module **/
 var Paginator = require('../../util/Paginator');
 /**
  * BlogRouteController is the controller for the blog feature.
- * @alias BlogRouteController
  * @constructor
  * @extends {Controller}
  *
@@ -15,10 +13,10 @@ function BlogRouteController() {
 
 BlogRouteController.prototype.onRouteConfiguration = function(app) {
 
-  app.get(this.$routes.standard.blog.index,
-  this.onGetBlogIndexRequest.bind(this));
+	app.get(this.$routes.standard.blog.index,
+		this.onGetBlogIndexRequest.bind(this));
 
-  app.get(this.$routes.standard.blog.post,
+	app.get(this.$routes.standard.blog.post,
 		this.onGetBlogPageRequest.bind(this));
 
 };
@@ -73,7 +71,8 @@ BlogRouteController.prototype.onGetBlogIndexRequest = function(req, res, next) {
 	pager.paginate(Number(req.params[0]) || 0, {
 		state: 'published'
 	}).
-	then(function(pager) {
+          then(function(pager) {
+          res.locals.$blog = res.locals.$settings.blog;
 		res.locals.$pagination = pager;
 		res.locals.$posts = pager.items;
 		res.render('blog/index.html');

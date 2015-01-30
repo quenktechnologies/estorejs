@@ -42,12 +42,8 @@ module.exports = {
 					default: false,
 					label: 'Use for site index?'
 
-				},
-				isNav: {
-					type: Boolean,
-					default: false,
-					label: 'Include in navigation menu?'
 				}
+
                         },{
                                 content: 	{
                                   type: types.Markdown,
