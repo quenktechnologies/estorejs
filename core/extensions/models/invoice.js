@@ -41,6 +41,7 @@ module.exports = {
 			}, {
 				items: {
 					type: types.Table,
+					noedit: true,
 					columns: [{
 						name: 'name'
 					}, {
