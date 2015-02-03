@@ -173,6 +173,8 @@ module.exports = function EStore() {
 		this.viewEngine.addFilter('delivery', require('./core/filters/delivery'));
 		this.viewEngine.addFilter('total', require('./core/filters/total'));
 
+		this.viewEngine.addFilter('capitalise', require('./core/filters/capitalise'));
+
 		this.keystone.init();
 		this.viewEngine.express(this.keystone.app);
 
@@ -274,8 +276,8 @@ module.exports = function EStore() {
 		extensions.push(require('./core/extensions/models/category'));
 		extensions.push(require('./core/extensions/models/transaction'));
 		extensions.push(require('./core/extensions/models/country'));
-                extensions.push(require('./core/extensions/models/navigation.js'));
-                extensions.push(require('./core/extensions/models/gallery.js'));
+		extensions.push(require('./core/extensions/models/navigation.js'));
+		extensions.push(require('./core/extensions/models/gallery.js'));
 
 		if (config.get('MANDRILL_API_KEY'))
 			extensions.push(require('./core/extensions/services/mandrill'));
