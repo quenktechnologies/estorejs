@@ -54,7 +54,7 @@ StoreRoutesController.prototype.onShowCategoryPageRequest = function(req, res, n
 
 	this.$data.getDataModel('Category').
 	findOne({
-		name: req.params[0]
+	slug: req.params[0]
 	}).
 	populate('products').
 	lean().
