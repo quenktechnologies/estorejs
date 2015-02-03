@@ -2,6 +2,7 @@
  * @module
  */
 var q = require('q');
+var format = require('string-template');
 
 
 /**
@@ -47,17 +48,26 @@ TransactionPromiseFactory.prototype.getInventoryUpdatePromise = function(item) {
 
 		then(function(product) {
 
-			//		if (product)
-			if (product.stock.balance <= 0)
-				this.store.broadcast(
-					this.store.PRODUCT_OUT_OF_STOCK,
-					product,
-					transaction);
+			if (!product) {
 
+				console.log(
+					format('Item {name} appears to have' +
+						' already been updated! ' +
+						'\nDid the application ' +
+						'crash before?', item));
+
+
+			} else {
+				if (product.stock.balance <= 0)
+					this.store.broadcast(
+						this.store.PRODUCT_OUT_OF_STOCK,
+						product,
+						transaction);
+			}
 			return transaction;
 
-		});
-	};
+		}.bind(this));
+	}.bind(this);
 };
 
 
@@ -91,7 +101,6 @@ TransactionPromiseFactory.prototype.getSaveInvoicePromise = function(transaction
  */
 TransactionPromiseFactory.prototype.getSaveCommittedTransactionPromise = function(transaction) {
 
-  transaction.set('flag', 'muyla');
 	return transaction.saveQStyle().
 	then(function(saved) {
 		console.log('Transaction ' + transaction._id + ' committed successfully');
