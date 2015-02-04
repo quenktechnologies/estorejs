@@ -16,9 +16,8 @@ module.exports = function delivery(items) {
 	var total = new Big(0);
 
 	items.forEach(function(item) {
-
-		if (item.order.delivery)
-			total = total.plus(item.order.delivery);
+		if (item.charges.delivery)
+			total = total.plus(item.charges.delivery);
 	});
 
 	return total.toString();

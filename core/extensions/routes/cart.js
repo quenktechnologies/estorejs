@@ -1,7 +1,5 @@
-/** @module */
-
 var Paginator = require('../../util/Paginator');
-var Cart = require('../../cart/Cart');
+var CartFactory = require('../../cart/CartFactory');
 var _ = require('lodash');
 
 /**
@@ -32,6 +30,9 @@ CartRoutesController.prototype.onRouteConfiguration = function(app) {
 	app.post(this.$routes.standard.cart.item,
 		this.onAddItemToCartRequest.bind(this));
 
+	app.post(this.$routes.standard.cart.update,
+		this.onUpdateItemsInCartRequest.bind(this));
+
 	app.put(this.$routes.standard.cart.item,
 		this.onAddItemToCartRequest.bind(this));
 
@@ -42,11 +43,7 @@ CartRoutesController.prototype.onRouteConfiguration = function(app) {
 
 /**
  * onAddItemToCartRequest
- *
- * @method AddItemToCartRequest
- * @param {Object} req The express Request object.
- * @param {Object} res The express Response object.
- * @return
+ * @todo enforce a max amount of items that can be added to the cart.
  *
  */
 CartRoutesController.prototype.onAddItemToCartRequest = function(req, res, next) {
@@ -71,13 +68,63 @@ CartRoutesController.prototype.onAddItemToCartRequest = function(req, res, next)
 
 
 		item.uuid = req.params[0];
-		Cart.createStandardAssistant(req.session.cart, res).
-		addToCart(item, product);
+		CartFactory.
+		createStandardAssistant(
+			CartFactory.createCart(req.session.cart), res).
+		addProductToCart(item, product);
 
 	}).end();
 
 
 };
+
+
+/**
+ * onUpdateItemsInCartRequest
+ */
+CartRoutesController.prototype.onUpdateItemsInCartRequest = function(req, res, next) {
+
+	var cart = CartFactory.createCart(req.session.cart);
+	var handler = CartFactory.createBufferedStandardCartAssistantHandler(res);
+	var assist = CartFactory.createStandardAssistant(cart, res, handler);
+
+	req.body.products = (_.isObject(req.body.products)) ? req.body.products : {};
+
+	var _in = Object.keys(req.body.products).map(function(uuid) {
+
+		if (cart.hasUUID)
+			return uuid;
+
+	});
+
+	var items = _in.map(function(uuid) {
+		return {
+			uuid: uuid,
+			quantity: req.body.products[uuid].quantity
+		};
+
+	});
+
+	this.$data.getDataModel('Product').
+	findQStyle({
+		uuid: {
+			$in: _in
+		}
+	}).
+	then(function(products) {
+
+		products = products || [];
+		assist.addProductsToCart(items, products);
+		handler.flush();
+
+	}).
+	catch(function(err) {
+		console.log(err);
+		next();
+	}).done();
+
+};
+
 
 
 /**
@@ -88,7 +135,8 @@ CartRoutesController.prototype.onAddItemToCartRequest = function(req, res, next)
  */
 CartRoutesController.prototype.onRemoveItemFromCartRequest = function(req, res, next) {
 
-	Cart.createStandardAssistant(req.session.cart, res).
+	CartFactory.createStandardAssistant(
+		CartFactory.createCart(req.session.cart), res).
 	removeFromCart(req.params[0]);
 
 };

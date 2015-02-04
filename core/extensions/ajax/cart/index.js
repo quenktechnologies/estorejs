@@ -1,5 +1,5 @@
 var _ = require('lodash');
-var Cart = require('../../../cart/Cart');
+var CartFactory = require('../../../cart/CartFactory');
 //@todo use new cart apis
 /**
  *
@@ -152,7 +152,7 @@ AjaxCartController.prototype.onAddItemToCartRequest = function(req, res, next) {
 		item.slug = req.params[0];
 
 
-		Cart.createAjaxAssistant(req.session, res).
+		CartFactory.createAjaxAssistant(req.session, res).
 		addToCart(item, product);
 
 	}).end();

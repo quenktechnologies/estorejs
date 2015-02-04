@@ -16,32 +16,29 @@
           <ul class="list-unstyled">
             <li><strong>Price:</strong>  <span><$ $product._.price.format('$0,00.00') $></span>
             </li>
-            <li><strong>Product Code:</strong> 
-              <$ $product.sku $>
-            </li>
             {% if $product.stock.isDisplayed %}
             <li><strong>Stock: </strong>
               <$ $product.stock.balance $>
             </li>
-            {% endif %}
-            {% if $product.stock.hasConstraint %}
+            {% endif %} {% if $product.stock.hasConstraint %}
             <li><strong>Min Order: </strong>
               <$ $product.order.min | int $>
             </li>
             <li><strong>Max Order: </strong>
               <$ $product.order.max | int $>
             </li>
-            {% endif %}
-            {% if $product.order.deliveryCharge %}
+            {% endif %} {% if $product.order.deliveryCharge %}
             <li><strong>Delivery Charge: </strong>
-            {{ <$ $product.order.deliveryCharge $> | currency }}
+              {{
+              <$ $product.order.deliveryCharge $>| currency }}
             </li>
             {% endif %}
- </ul>
+          </ul>
         </div>
       </div>
       <div class="row">
         <div class="col-md-5">
+          {% if $product.stock.track %} {% if $product.stock.balance > 0 %}
           <form name="cartAddition" action="/cart/items/<$ $product.uuid $>" method="POST">
             <div class="input-group">
               <input name="quantity" type="number" min="1" value="1" max="<$ $product.order.max $>" class="form-control input-small">
@@ -51,6 +48,20 @@
             </span>
             </div>
           </form>
+          {% else %}
+          <p class="text-danger lead">Sorry this product is out of stock!</p>
+          {% endif %}  
+          {% else %}
+<form name="cartAddition" action="/cart/items/<$ $product.uuid $>" method="POST">
+            <div class="input-group">
+              <input name="quantity" type="number" min="1" value="1" max="<$ $product.order.max $>" class="form-control input-small">
+              <input type="hidden" name="_csrf" value="<$ _csrf $>">
+              <span class="input-group-btn">
+              <button type="sumbit" class="btn btn-danger">Add to Cart</button>
+            </span>
+            </div>
+          </form>
+          {% endif %}
         </div>
       </div>
       <div class="row">
@@ -78,8 +89,9 @@
         </li>
       </ul>
       <div class="tab-content">
-        <div id="description" class="tab-pane fade" role="tabpanel" style="padding-top:10px">
-          <$ $product.description.long.html | safe $>
+        <div id="description" class="tab-pane" role="tabpanel" style="padding-top:10px">
+          <br>
+          <$ $product.description.html | safe $>
         </div>
       </div>
     </div>

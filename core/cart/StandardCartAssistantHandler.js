@@ -1,62 +1,72 @@
-/** @module */
+var fmt = require('string-template');
+var OUT_OF_STOCK = 'Sorry, {name} is out of stock!';
 
+var QUANTITY_MORE_THAN_BALANCE =
+	'Sorry, we don\'t have that many {name} right now!';
+
+var MIN = 'Please select a minimum quantity of {min} {name}(s).';
+var MAX = 'Please select a maximum quantity of {max} {name}(s).';
 /**
  * StandardCartAssistantHandler is the CartAssistantHandler for standard requests.
  *
- * @alias StandardCartAssistantHandler
- * @param {Request} req
  * @param {Response} res
  * @constructor
  * @implements {CartAssistantHandler}
  *
  */
-module.exports = function StandardCartAssistantHandler(res) {
+function StandardCartAssistantHandler(res) {
+	this.res = res;
+}
 
-	var render = function(status, view, error) {
-		res.locals.$cartError = error;
-		res.status(status);
-		res.render(view);
-	};
+StandardCartAssistantHandler.prototype.render = function(status, view, error, product) {
+	this.res.locals.$cartError = error;
+	this.res.locals.$cartErrorProduct = product;
+	this.res.status(status);
+	this.res.render(view);
+};
 
-	this.onProductOutOfStock = function(product) {
+StandardCartAssistantHandler.prototype.onProductOutOfStock = function(product) {
 
-		render(409, 'cart.html', 'That product is out of stock!');
-
-	};
-
-	this.onQuantityMoreThanBalance = function(qty, balance, product) {
-
-		render(409, 'cart.html',
-			'The quantity you selected is more than that available!');
-
-	};
-
-	this.onQuantityLessThanMin = function(qty, min, product) {
-
-		render(409, 'cart.html',
-			'Please select a minimum quantity of ' +
-			min + ' ' + product.name + ' (s).');
-
-	};
-
-	this.onQuantityMoreThanMax = function(qty, max, product) {
-
-		render(409, 'cart.html',
-			'Please select a maximum quantity of ' +
-			max + ' ' + product.name + ' (s).');
-
-	};
-
-	this.onItemAddedToCart = function(item) {
-
-		res.redirect(303, '/cart');
-
-	};
-
-	this.onItemHasBeenRemoved = function(item) {
-
-		res.redirect(303,'/cart');
-
-	};
+	this.render(409, 'cart.html', fmt(OUT_OF_STOCK, {name: product.name}), product);
 
 };
+
+StandardCartAssistantHandler.prototype.onQuantityMoreThanBalance = function(qty, balance, product) {
+
+	this.render(409, 'cart.html',
+		fmt(QUANTITY_MORE_THAN_BALANCE, {name:product.name}), product);
+
+};
+
+StandardCartAssistantHandler.prototype.onQuantityLessThanMin = function(qty, min, product) {
+
+	this.render(409, 'cart.html', fmt(MIN, {
+			name: product.name,
+			min: product.order.min
+		}),
+		product);
+
+};
+
+StandardCartAssistantHandler.prototype.onQuantityMoreThanMax = function(qty, max, product) {
+
+	this.render(409, 'cart.html', fmt(MAX, {
+			name: product.name,
+			max: product.order.max
+		}),
+		product);
+};
+
+StandardCartAssistantHandler.prototype.onItemAddedToCart = function(item) {
+
+	this.res.redirect(303, '/cart');
+
+};
+
+StandardCartAssistantHandler.prototype.onItemHasBeenRemoved = function(item) {
+
+	this.res.redirect(303, '/cart');
+
+};
+
+module.exports = StandardCartAssistantHandler;

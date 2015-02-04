@@ -1,8 +1,10 @@
 var _ = require('lodash');
+var Big = require('bignumber.js');
+
 /**
  * CartAssistant provides useful methods for manipulating the visitors cart.
  * @alias CartAssistant
- * @param {Array} cart
+ * @param {Cart} cart
  * @param {CartAssistantHandler} handler
  * @constructor
  *
@@ -13,22 +15,21 @@ function CartAssistant(cart, handler) {
 }
 
 /**
- * addToCart adds an item to the cart.
+ * addProductToCart adds an item to the cart.
  *
  * @param {Object} item The item to add.
  * @param {Product} product Product data to compare the item against.
  * @return
  *
  */
-CartAssistant.prototype.addToCart = function(item, product) {
+CartAssistant.prototype.addProductToCart = function(item, product) {
 
-	var Big = require('bignumber.js');
 
 	if (!item.quantity)
-		item.quantity = 1;
+		item.quantity = 0;
 
-	if (_.isNaN(item.quantity))
-		item.quantity = 1;
+	if (isNaN(item.quantity))
+		item.quantity = 0;
 
 	if (item.quantity === 0)
 		return this.removeFromCart(item.uuid);
@@ -49,20 +50,14 @@ CartAssistant.prototype.addToCart = function(item, product) {
 		return this.handler.onQuantityMoreThanMax(item.quantity,
 			product.order.max, product);
 
-	this.cart.forEach(function(cartItem, index) {
-
-		if (item.uuid === cartItem.uuid)
-			this.cart.splice(index, 1);
-	}.bind(this));
-
-
 	item = {
 		_id: product._id,
 		uuid: product.uuid,
 		name: product.name,
 		price: product.price,
 		slug: product.slug,
-		stock: product.stock,
+                stock: product.stock,
+                charges: product.charges,
 		order: product.order,
 		attributes: product.attributes,
 		image: product.image,
@@ -71,7 +66,7 @@ CartAssistant.prototype.addToCart = function(item, product) {
 
 	};
 
-	this.cart.push(item);
+	this.cart.add(item);
 	this.handler.onItemAddedToCart(item);
 
 };
@@ -85,24 +80,36 @@ CartAssistant.prototype.addToCart = function(item, product) {
  */
 CartAssistant.prototype.removeFromCart = function(uuid) {
 
-	var found;
+	var item = this.cart.removeUUID(uuid);
+	if (item)
+		this.handler.onItemHasBeenRemoved(item);
 
-	this.cart.forEach(function(item, index) {
+};
 
-		if (uuid === item.uuid) {
-			this.cart.splice(index, 1);
-			found = item;
-		}
 
-	}.bind(this));
+/**
+ * addProductsToCart
+ *
+ * @param {Array} items
+ * @param {Array} products
+ *
+ */
+CartAssistant.prototype.addProductsToCart = function(items, products) {
 
-	if (found)
-		this.handler.onItemHasBeenRemoved(found);
+	var self = this;
+
+	items.forEach(function(item) {
+		products.forEach(function(product) {
+
+			if (product.uuid === item.uuid)
+				self.addProductToCart(item, product);
+
+		});
+	});
 
 
 
 };
-
 
 
 

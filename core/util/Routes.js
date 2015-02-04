@@ -6,23 +6,23 @@ module.exports = {
 
 	ajax: {
 
-          checkout: {
-            options: {
-              countries :'/_/countries',
-              gateways: '/_/payments/options',
+		checkout: {
+			options: {
+				countries: '/_/countries',
+				gateways: '/_/payments/options',
 
 
-            },
+			},
 			transactions: '/_/checkout/transactions',
 		},
-                cart: {
-                  items: {
-                    all: '/_/cart/items',
-                    item: /^\/_\/cart\/items\/([a-z0-9-])+$/,
-                    count: '/_/cart/items/count',
+		cart: {
+			items: {
+				all: '/_/cart/items',
+				item: /^\/_\/cart\/items\/([a-z0-9-])+$/,
+				count: '/_/cart/items/count',
 
-                  }
-			},
+			}
+		},
 		products: {
 			index: '/_/products',
 			product: /^\/_\/products\/([a-z0-9-])$/,
@@ -43,8 +43,8 @@ module.exports = {
 
 			search: '/search',
 			categories: {
-                          //				all: /^\/products\/(?:\/([\d]{1,9999}))?$/,
-                          all: '/categories/all',
+				//				all: /^\/products\/(?:\/([\d]{1,9999}))?$/,
+				all: '/categories/all',
 				category: /^\/categories\/([\w]+(?:-[\w]+)*)$/,
 				product: /^\/categories\/([\w]+(?:-[\w]+)*)\/products\/([\w]+(?:-[\w]+)*)$/,
 
@@ -67,6 +67,7 @@ module.exports = {
 		cart: {
 			index: '/cart',
 			item: /^\/cart\/items\/([\w]+(?:-[\w]+)*)$/,
+			update: '/cart/items/update'
 
 		},
 		checkout: {

@@ -30,7 +30,7 @@
         {% for product in results %}
         <div class="row">
           <div class="col-md-3">
-            <img src="<$ product.image $>" class="img img-responsive pull-left" alt="Image of <$ product.name $>">
+            <img src="<$ product.image.url $>" class="img img-responsive pull-left" alt="Image of <$ product.name $>">
           </div>
           <div class="col-md-9">
             <a href="/products/<$ product.slug $>" class="">

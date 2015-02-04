@@ -48,6 +48,7 @@
     "paypal-rest-sdk": "^1.2.2",
     "promised-mongo": "^0.11.1",
     "q": "^1.1.2",
+    "string-template": "^0.2.0",
     "validate.js": "^0.3.2"
   },
   "engines": {

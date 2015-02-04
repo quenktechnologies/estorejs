@@ -422,6 +422,7 @@ module.exports = function EStore() {
 		find().
 		lean().
 		populate('children').
+		populate('products').
 		exec().
 		then(function(categories) {
 			this.locals.categories = categories;

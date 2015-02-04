@@ -5,12 +5,22 @@
   <div class="row">
     <div class="col-md-12">
       {% if $cartError %}
-      <div class="alert alert-dismissable alert-warning">
+      <div class="alert alert-dismissable alert-danger">
         <button type="button" class="close" data-dismiss="alert">×</button>
         <h4>Wait!</h4>
         <$ $cartError $>
       </div>
-      {% endif %} {% if $cart.length
+      {% endif %}
+      {% if $cartErrors %}
+      <div class="alert alert-dismissable alert-danger">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <h4>Please correct the following errors:</h4>
+        {% for error in $cartErrors %}
+        <p><$ error.error $></p>
+        {% endfor %}
+      </div>
+      {% endif %} 
+      {% if $cart.length
       < 1 %} <div>
         <h4>Your cart empty!</h4>
         <p><a class="btn btn-danger btn-xs" href="/categories/all">Continue Shopping</a> 

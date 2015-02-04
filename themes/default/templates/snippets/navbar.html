@@ -1,26 +1,14 @@
 {% macro navbar($cart, $categories, $settings) %}
 <div class="row">
-  <div class="col-md-6">
-    <a class="" href="/">
-      <h3><$ $settings.site.name $></h3>
+  <div class="col-md-12">
+    <a href="/" class="navbar-brand" style="padding-left:0px;">
+        <img alt="<$ $settings.brand.name $>" src="<$ $settings.brand.logo.small $>"/>
     </a>
-  </div>
-  <div class="col-md-6">
-    <a data-toggle="dropdown" class="dropdown-toggle pull-right" href="#">
-      <$ $settings.currency $><b class="caret"></b>
-    </a>
-    <ul class="dropdown-menu pull-right">
-      <li>
-        <a href="#">
-          <$ $settings.currency $>
-        </a>
-      </li>
-    </ul>
   </div>
 </div>
-<div class="row">
-  <div class="col-md-12">
-    <ul class="list-unstyled list-inline pull-right">
+<div class="row" style="margin-bottom:30px;">
+  <div class="col-md-6">
+    <ul class="list-unstyled list-inline pull-left">
       <li><a href="/">Home</a>
       </li>
       <li><a href="/categories/all">Shop</a>
@@ -33,10 +21,20 @@
       {% endif %}
     </ul>
   </div>
+    <div class="col-md-6">
+      <form class="" action="/search" method="GET">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Search here." name="q" id="srch-term">
+          <span class="input-group-btn">
+          <button class="btn btn-default" type="submit">Go</button>
+          </span>
+        </div>
+      </form>
+    </div>
 </div>
 <div class="row">
   <div class="col-md-12">
-    <div class="navbar navbar-inverse">
+    <div class="navbar navbar-default">
       <div class="navbar-header">
         <button data-target=".navbar-inverse-collapse" data-toggle="collapse" class="navbar-toggle" type="button">
           <span class="icon-bar"></span>
@@ -49,13 +47,13 @@
           {% for cat in $categories %} {% if cat.isFeatured %} {% if cat.children.length > 0 %}
           <li class="dropdown">
             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-              <$ cat.name $><b class="caret"></b>
+              <$ cat.name $>
             </a>
             <ul class="dropdown-menu">
               {% for sub in cat.children %}
               <li>
-                <a href="/categories/<$ sub.name $>">
-                  <$ cat.name | capitalize $>
+                <a href="/categories/<$ sub.slug $>">
+                  <$ sub.name $>
                 </a>
               </li>
               {% endfor %}
@@ -63,21 +61,14 @@
           </li>
           {% else %}
           <li>
-            <a href="/categories/<$ cat.name $>">
-              <$ cat.name | capitalize $>
+            <a href="/categories/<$ cat.slug $>">
+              <$ cat.name | capitalise $>
             </a>
           </li>
           {% endif %} {% endif %} {% endfor %}
 
         </ul>
-        <form class="navbar-form navbar-left pull-right" action="/search" method="GET">
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="Search here." name="q" id="srch-term">
-            <span class="input-group-btn">
-          <button class="btn btn-warning" type="submit">Go</button>
-          </span>
-          </div>
-        </form>
+
       </nav>
     </div>
   </div>

@@ -9,48 +9,55 @@
     <div class="col-md-5">
       <div class="panel panel-default">
         <div class="panel-heading">
-      <h4>Your Order</h4>
-    </div>
-    <div class="panel-body">
-      <div class="table-responsive cart_info">
-        <table class="table table-condensed">
-          <thead>
-            <tr class="cart_menu">
-              <td class="image">Item</td>
-              <td class="price">Price</td>
-              <td class="quantity">Quantity</td>
-              <td class="total">Total</td>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in $cart %}
-            <tr>
-              <td class="cart_image">
-                <img src="<$ item.image $>" alt="<$ item.name $> image">
-              </td>
-              <td class="cart_product">
-                {{'
-                <$ item.name $>'| characters:30}}
-              </td>
-              <td class="cart_price">
-                <p>{{'
-                  <$ item.price $>' | currency}}</p>
-              </td>
-              <td class="cart_quantity">
-                {{'
-                <$ item.quantity $>'}}
-              </td>
-              <td class="cart_total">
-                <p class="cart_total_price">{{
-                  <$ item.price $>*
-                    <$ item.quantity $>| currency}}</p>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
+          <h4>Your Order</h4>
+        </div>
+        <div class="panel-body">
+          <div class="table-responsive cart_info">
+            <table class="table table-condensed">
+              <thead>
+                <tr class="cart_menu">
+                  <th></th>
+                  <th class="image">Item</th>
+                  <th class="price">Price</th>
+                  <th class="quantity">Quantity</th>
+                  <th class="total">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in $cart %}
+                <tr>
+                  <td class="col-md-4">
+                    <img class="img-responsive" src="<$ item.image.url $>" alt="<$ item.name $> image">
+                  </td>
+                  <td class="col-md-3">
+                    {{'
+                    <$ item.name $>'| characters:30}}
+                  </td>
+                  <td class="col-md-2">
+                    <p>{{'
+                      <$ item.price $>' | currency}}</p>
+                  </td>
+                  <td class="col-md-1">
+                    {{'
+                    <$ item.quantity $>'}}
+                  </td>
+                  <td class="col-md-2">
+                    <p class="cart_total_price">{{
+                      <$ item.price $>*
+                        <$ item.quantity $>| currency}}</p>
+                  </td>
+                </tr>
+                {% endfor %}
+                <tr>
+                  <td colspan="100">
+                    <strong>Total:</strong> 
+                    <$ $cart | total $> <span class="label label-info"><$ $currency $></span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
     <div class="col-md-7">

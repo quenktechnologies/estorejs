@@ -11,12 +11,12 @@ module.exports = {
 		track: true,
 		drilldown: 'products'
 	},
+	defaultColumns: 'name, isFeatured, children, createdAt',
 	model: function(store, types, ui) {
 		return [{
 
 				name: {
 					type: String,
-					lowercase: true,
 					trim: true,
 					required: true,
 					initial: true
@@ -24,7 +24,8 @@ module.exports = {
 
 				isFeatured: {
 					type: Boolean,
-					initial: true
+					initial: true,
+					label: 'Feature this category?'
 				},
 
 				image: types.Image
@@ -32,24 +33,24 @@ module.exports = {
 			},
 
 			{
-				description: ui.PageContentEditor()
-
-			}, {
 				products: {
 
 					type: types.Relationship,
 					ref: 'Product',
 					many: true,
-					label: 'Child products',
+					label: 'Products',
 					width: 'medium',
-					collapse: true
 				},
 				children: {
 					type: types.Relationship,
 					ref: 'Category',
-					label: 'Child categories',
+					label: 'Sub Categories',
 					many: true,
+					width: 'medium',
+
 				}
+			}, {
+				description: types.Markdown
 			}
 
 		];

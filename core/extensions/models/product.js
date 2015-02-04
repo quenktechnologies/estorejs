@@ -30,17 +30,16 @@ module.exports = {
 					initial: true,
 					width: 'medium',
 				},
+				isFeatured: {
+					type: Boolean,
+					label: 'Feature this product?'
+				},
 				price: {
 					type: types.Money,
 					required: true,
 					initial: true
 				},
-				description: {
-
-					type: types.Markdown,
-					height: 400,
-				}
-			}, 'Additional Details', {
+			}, 'Details', {
 				vendor: {
 					type: String,
 					width: 'short'
@@ -101,7 +100,7 @@ module.exports = {
 					}
 
 				}
-			}, 'Charges', {
+			}, {
 
 				charges: {
 
@@ -111,8 +110,7 @@ module.exports = {
 						default: '0.00',
 					}
 				}
-			},
-			'Search Engines', {
+			}, 'About', {
 
 				meta: {
 
@@ -120,27 +118,26 @@ module.exports = {
 
 						type: String,
 						width: 'medium',
-						label: 'Title'
+						label: 'Meta Title'
 
 					},
 					description: {
 						type: types.Textarea,
 						width: 'medium',
-						label: 'Description',
+						label: 'Meta Description',
 					}
 				}
 
-			},
-			'Options', {
-				isFeatured: {
-					type: Boolean,
-					label: 'Featured product?'
+			}, {
+				description: {
+
+					type: types.Markdown,
+					height: 400,
+					label: 'Page Description'
 				}
-			},
-			'Keywords', {
+			}, {
 				keywords: {
 					type: types.TextArray,
-					label: 'Terms',
 				}
 
 			},

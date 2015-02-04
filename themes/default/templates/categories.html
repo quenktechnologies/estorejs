@@ -2,11 +2,11 @@
 <$ navbar($cart, $categories, $settings) $>
   <div class="row">
     <div class="col-md-12">
-      <h3 class=""><$ $category.name | capitalize $></h3>
+      <h3 class="">Products</h3>
     </div>
   </div>
   <div class="row" style="padding-top:35px;">
-    {% for product in $category.products %}
+    {% for product in $products %}
     <div class="col-md-3">
       <div class="thumbnail no-border">
         <a href="/categories/<$ $currentCategory $>/products/<$ product.slug $>">
@@ -14,7 +14,9 @@
         </a>
         <div class="caption">
           <div class="col-md-12">
-            <h6 class="product-title"><a  href="/categories/<$ $currentCategory $>/products/<$ product.slug $>"><$ product.name | truncate(128) $></a></h6>
+            <h6 class="product-title"><a  href="/categories/<$
+                $currentCategory $>/products/<$ product.slug $>"><$
+            product.name | truncate(128) | capitalise $></a></h6>
           </div>
           <div class="col-md-12">
             <span class="product-price">
@@ -32,32 +34,29 @@
     </div>
     {% endfor %}
   </div>
-<div class="row">
+  <div class="row">
     <div class="col-md-12 text-center">
       <ul class="pagination">
         {% if $pagination.previous > -1 %}
         <li><a href="/categories/all/<$ $pagination.previous $>">&laquo; previous</a>
         </li>
-        {% endif %}
-        {% for page in $pagination.pages %}
-        {% if $pagination.current == page %}
+        {% endif %} {% for page in $pagination.pages %} {% if $pagination.current == page %}
         <li class="active">
-        {% else %}
-        <li>
-        {% endif %}
-          <a href="/categories/all/<$ page $>">
-            <$ page $>
-          </a>
-        </li>
-        {% endfor %}
-        {% if $pagination.next > -1 %}
-        <li><a href="/categories/all/<$ $pagination.next $>">next &raquo;</a>
-        </li>
-        {% endif %}
+          {% else %}
+          <li>
+            {% endif %}
+            <a href="/categories/all/<$ page $>">
+              <$ page $>
+            </a>
+          </li>
+          {% endfor %} {% if $pagination.next > -1 %}
+          <li><a href="/categories/all/<$ $pagination.next $>">next &raquo;</a>
+          </li>
+          {% endif %}
       </ul>
 
 
     </div>
   </div>
   <$ footer() $>
-{% endblock %}
+    {% endblock %}
