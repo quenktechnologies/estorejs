@@ -12,6 +12,7 @@
   "website":"https://github.com/quenktechnologies/estorejs",
   "repository":"https://github.com/quenktechnologies/estorejs",
   "env" : {
+    "NODE_ENV": "production",
     "COOKIE_SECRET": {
       "description": "Secret for signing cookies",
       "generator": "secret"
