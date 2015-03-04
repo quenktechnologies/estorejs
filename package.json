@@ -1,16 +1,8 @@
 {
   "name": "estore",
   "version": "0.2.13,
-  "description": "ECommerce in your cloud.",
-  "keywords": [
-    "ecommerce",
-    "mongodb",
-    "keystone",
-    "mongoose",
-    "express",
-    "nunjucks"
-  ],
-  "repository": "https://github.com/quenktechnologies/estorejs",
+
+  "repository": "https://github.com/stunjiturner/estorejs",
   "main": "run",
   "author": {
     "name": "Lasana Murray",
