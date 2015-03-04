@@ -1,12 +1,6 @@
 {
   "name": "estore",
   "version": "0.2.13,
-  "repository": "https://github.com/stunjiturner/estorejs",
-  "main": "run",
-  "author": {
-    "name": "Lasana Murray",
-    "email": "dev@quenk.com"
-  },
   "scripts": {
     "start": "node run.js",
     "test-spec": "mocha --recursive -R spec --ui bdd --timeout 120000 core/test/spec/shopping_spec.js",
@@ -54,5 +48,7 @@
     "sinon": "^1.12.1",
     "supertest": "^0.13.0",
     "supertest-as-promised": "^1.0.0"
-  }
+  },
+  "main": "run",
+
 }
