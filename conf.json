@@ -12,7 +12,7 @@
   "markdown":{
     "parser":"gfm",
     "githubReponame":"estorejs",
-    "githubRepoOwner":"quenktechnologies"
+    "githubRepoOwner":"stunjiturner"
   },
   "templates": {
     "cleverLinks": false,
