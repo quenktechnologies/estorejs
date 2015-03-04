@@ -5,7 +5,7 @@
 ![Build Status](https://travis-ci.org/quenktechnologies/estorejs.svg)
 
 
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/quenktechnologies/estorejs)
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/stunjiturner/estorejs)
 
 Run an eCommerce store in your cloud!
 
@@ -18,7 +18,7 @@ third party applications and services.
 ##Current Status
 
 EStoreJS is just about ready to run small, low traffic sites. It ships with a
-default template to get you started. 
+default template to get you started.
 
 ##Features
 
@@ -72,4 +72,3 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 [![forthebadge](http://forthebadge.com/badges/built-with-love.svg)](http://forthebadge.com)
-
