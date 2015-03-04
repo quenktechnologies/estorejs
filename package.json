@@ -1,7 +1,6 @@
 {
   "name": "estore",
   "version": "0.2.13,
-
   "repository": "https://github.com/stunjiturner/estorejs",
   "main": "run",
   "author": {
