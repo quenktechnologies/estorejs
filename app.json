@@ -9,8 +9,8 @@
     "express",
     "nunjucks"
   ],
-  "website":"https://github.com/quenktechnologies/estorejs",
-  "repository":"https://github.com/quenktechnologies/estorejs",
+  "website":"https://github.com/stunjiturner/estorejs",
+  "repository":"https://github.com/stunjiturner/estorejs",
   "env" : {
     "NODE_ENV": "production",
     "COOKIE_SECRET": {
