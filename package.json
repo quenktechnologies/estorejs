@@ -20,7 +20,7 @@
     "npm": "1.4.x"
   },
   "scripts": {
-    "start": "node run.js keystone.js"
+    "start": "node keystone.js"
   },
   "main": "run"
 }
