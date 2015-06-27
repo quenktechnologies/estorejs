@@ -7,6 +7,7 @@
     "accounting":"^0.4.1",
     "2checkout-node": "0.0.1",
     "bignumber.js": "1.4.x",
+    "bcrypt": "^0.8.3",
     "chance": "^0.7.0",
     "connect-mongo": "~0.4.2",
     "currency-codes": "1.1.0",
@@ -15,7 +16,7 @@
     "express": "3.3.x",
     "json2csv": "2.2.x",
     "just.randomstring": "^0.1.1",
-    "keystone": "0.3.3",
+    "keystone": "upgradeadvice/keystone#estorejs",
     "lodash": "2.4.x",
     "mongojs": "^0.18.0",
     "node-uuid": "^1.4.1",
@@ -29,10 +30,10 @@
     "q": "^1.1.2",
     "string-template": "^0.2.0",
     "validate.js": "^0.3.2",
-    "underscore": "~1.7.0"
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "asynctrace": "1.4.1",
+    "asynctrace": "upgradeadvice/asynctrace",
     "grunt-supervisor": "^0.2.4",
     "gulp": "~3.8.10",
     "gulp-jshint": "~1.9.0",
