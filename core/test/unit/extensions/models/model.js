@@ -1,7 +1,7 @@
 //Test for common model functionality
 
 var demand = require('must');
-var EStore = require('../../../index.js');
+var EStore = require('../../../../../index.js');
 var ext = require('../../test-util/mockModelExtension');
 
 var store;

@@ -1,6 +1,6 @@
 var demand = require('must');
-var Validator = require('../../../core/models/validation/Validator');
-var fieldValidate = require('../../../core/models/validation/fieldValidate');
+var Validator = require('../../../../../core/models/validation/Validator');
+var fieldValidate = require('../../../../../core/models/validation/fieldValidate');
 
 
 describe('fieldValidate()', function() {

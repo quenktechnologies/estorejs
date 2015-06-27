@@ -1,5 +1,5 @@
 /* Ease the stress of testing with a god like util object.*/
-require('dotenv')().load();
+require('dotenv').load();
 
 module.exports = {
 

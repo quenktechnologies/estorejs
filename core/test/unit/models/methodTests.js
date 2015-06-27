@@ -1,7 +1,7 @@
 var demand = require('must');
 var sinon = require('sinon');
-var FieldsMethod = require('../../core/models/FieldsMethod');
-var RunMethod = require('../../core/models/RunMethod');
+var FieldsMethod = require('../../../../core/models/FieldsMethod');
+var RunMethod = require('../../../../core/models/RunMethod');
 
 var method;
 var spy;

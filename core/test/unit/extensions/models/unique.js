@@ -1,7 +1,7 @@
 var demand = require('must');
-var EStore = require('../../../index.js');
+var EStore = require('../../../../../index.js');
 var ext = require('../../test-util/mockModelExtension');
-var unique = require('../../../core/models/validation/unique');
+var unique = require('../../../../../core/models/validation/unique');
 
 var store;
 var tested;
