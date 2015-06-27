@@ -1,2 +1,2 @@
-require('dotenv')().load();
+require('dotenv').load();
   (new (require('./index'))()).start();
