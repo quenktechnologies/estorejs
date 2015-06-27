@@ -102,7 +102,7 @@ describe('Browsing the catalog and making purchases.', function() {
 				demand(iv).not.be.null();
 				done();
 
-			}).done();
+			}).then();
 
 		}, 15000);
 

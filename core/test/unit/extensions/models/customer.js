@@ -1,4 +1,4 @@
-var EStore = require('../../../index.js');
+var EStore = require('../../../../../index.js');
 var store;
 var demand = require('must');
 
@@ -8,7 +8,7 @@ before(function(done) {
 	process.env.MONGO_URI = 'mongodb://localhost/estorejs-spec-testing-database';
 	this.timeout(300000);
 	store = new EStore();
-	store.extensions.push(require('../../../core/extensions/customers'));
+	store.extensions.push(require('../../../../../core/extensions/customers'));
 	store.start(done);
 });
 

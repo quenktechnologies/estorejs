@@ -1,11 +1,11 @@
 var syntax, model, stack, source;
 var demand = require('must');
 var sinon = require('sinon');
-var ModelCompilerSyntax = require('../../core/models/ModelCompilerSyntax');
-var DocumentMethod = require('../../core/models//DocumentMethod');
-var ModelMethod = require('../../core/models//ModelMethod');
-var RunMethod = require('../../core/models/RunMethod');
-var FieldsMethod = require('../../core/models/FieldsMethod');
+var ModelCompilerSyntax = require('../../../../core/models/ModelCompilerSyntax');
+var DocumentMethod = require('../../../../core/models//DocumentMethod');
+var ModelMethod = require('../../../../core/models//ModelMethod');
+var RunMethod = require('../../../../core/models/RunMethod');
+var FieldsMethod = require('../../../../core/models/FieldsMethod');
 
 beforeEach(function() {
 

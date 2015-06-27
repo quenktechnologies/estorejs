@@ -1,7 +1,7 @@
 var demand = require('must');
-var EStore = require('../../../index.js');
+var EStore = require('../../../../../index.js');
 var ext = require('../../test-util/mockModelExtension');
-var unique = require('../../../core/models/validation/unique');
+var unique = require('../../../../../core/models/validation/unique');
 
 var store;
 var tested;
@@ -83,7 +83,7 @@ describe('invalid data', function() {
 			console.log(arguments);
 			demand(doc).not.exist();
 			done();
-		}).done(null, function() {
+		}).then(null, function() {
 			console.log(arguments);
 		});
 

@@ -21,7 +21,7 @@ module.exports = function(store) {
 			throw new Error(' "' + value + '" already exists');
 
 
-		}).done();
+		}).then();
 
 
 		return def.promise;

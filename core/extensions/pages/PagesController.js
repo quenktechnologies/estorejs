@@ -83,7 +83,7 @@ PagesController.prototype.onGetIndexRequest = function(req, res, next) {
 		console.log(err);
 		next();
 
-	}).done();
+	}).then();
 
 
 

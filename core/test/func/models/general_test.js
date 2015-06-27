@@ -40,7 +40,7 @@ return 	store.start(function() {
 				model.must.have.enumerable('mockField1');
 				store.shutDown(done);
 			}).
-			catch(done).done();
+			catch(done).then();
 
 
 		});

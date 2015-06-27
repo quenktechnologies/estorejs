@@ -1,8 +1,8 @@
-require('dotenv')().load();
+require('dotenv').load();
 var must = require('must');
 var keystone = require('keystone');
 var invoice;
-var EStore = require('../../index');
+var EStore = require('../../../../index');
 var store = new EStore(require('keystone'));
 store.start();
 var request = require('supertest')(store.app);

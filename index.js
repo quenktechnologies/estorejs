@@ -462,7 +462,7 @@ module.exports = function EStore() {
 
 			});
 
-		}).done(null, function(err) {
+		}).then(null, function(err) {
 			if (err) throw err;
 		});
 
