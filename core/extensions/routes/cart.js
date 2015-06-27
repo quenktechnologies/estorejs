@@ -121,7 +121,7 @@ CartRoutesController.prototype.onUpdateItemsInCartRequest = function(req, res, n
 	catch(function(err) {
 		console.log(err);
 		next();
-	}).done();
+	}).then();
 
 };
 

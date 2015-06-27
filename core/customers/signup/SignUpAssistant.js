@@ -43,7 +43,7 @@ module.exports = function SignUpAssistant(domain, store, callbacks) {
                   mediator.
 			onCustomerRegistered(new NewCustomerEvent(customer));
 
-		}).done();
+		}).then();
 
 	};
 

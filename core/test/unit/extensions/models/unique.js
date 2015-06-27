@@ -83,7 +83,7 @@ describe('invalid data', function() {
 			console.log(arguments);
 			demand(doc).not.exist();
 			done();
-		}).done(null, function() {
+		}).then(null, function() {
 			console.log(arguments);
 		});
 

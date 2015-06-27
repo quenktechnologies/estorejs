@@ -38,7 +38,7 @@ describe('The Transaction daemon', function() {
 				must(invoice).exist();
 				must(invoice.number).equal(1);
 
-			}).catch(done).done();
+			}).catch(done).then();
 		}, 20000);
 
 

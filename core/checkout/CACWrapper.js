@@ -65,7 +65,7 @@ CACWrapper.prototype.onTransactionApproved = function(trn) {
 
 			self.callbacks.onTransactionSaveFailed(err, trn);
 
-		}).done();
+		}).then();
 
 	}).end();
 

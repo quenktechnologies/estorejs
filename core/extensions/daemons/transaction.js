@@ -48,7 +48,7 @@ module.exports = {
 
 					list.push(factory.getSaveInvoicePromise.bind(factory));
 					list.push(factory.getSaveCommittedTransactionPromise.bind(factory));
-					list.reduce(q.when, q(transaction)).done();
+					list.reduce(q.when, q(transaction)).then();
 
 
 				});
